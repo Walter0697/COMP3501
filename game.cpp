@@ -116,8 +116,11 @@ void Game::SetupResources(void){
     // Create geometry of the "wall"
     resman_.CreateWall("WallMesh");
 
+	std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/fly.obj");
+	resman_.LoadResource(Mesh, "FlyMesh", filename.c_str());
+
     // Load material to be used for normal mapping
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
 
     // Load texture to be used in normal mapping
@@ -132,7 +135,9 @@ void Game::SetupScene(void){
     scene_.SetBackgroundColor(viewport_background_color_g);
 
     // Create an instance of the wall
-    game::SceneNode *wall = CreateInstance("WallInstance1", "WallMesh", "NormalMapMaterial", "NormalMap");
+    //game::SceneNode *wall = CreateInstance("WallInstance1", "WallMesh", "NormalMapMaterial", "NormalMap");
+	game::SceneNode *fly = CreateInstance("WallInstance1", "FlyMesh", "NormalMapMaterial", "");
+	fly->SetScale(glm::vec3(50, 50, 50));
 }
 
 
@@ -145,7 +150,7 @@ void Game::MainLoop(void){
 			static double last_time = 0;
 			double current_time = glfwGetTime();
 			if ((current_time - last_time) > 0.01) {
-				//scene_.Update();
+				scene_.Update();
 
 				// Animate the wall
 				SceneNode *node = scene_.GetNode("WallInstance1");
@@ -283,7 +288,7 @@ Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string obje
 
     // Create asteroid instance
     Asteroid *ast = new Asteroid(entity_name, geom, mat);
-    scene_.AddNode(ast);
+    scene_.AddRoot(ast);
     return ast;
 }
 
