@@ -12,7 +12,7 @@
 - setting up additional features
 - debugging
 
-#### Game object  :floppy_disk: :
+#### Game object :penguin: :
 ###### Fly.cpp
 - the main character of the game
 
@@ -22,3 +22,7 @@
 #### Dev_log  :notebook: :
 ###### Week 1 (10/27):
 - nothing
+
+#### Assets :floppy_disk: :
+- https://free3d.com/3d-model/fly-7412.html 
+- https://free3d.com/3d-model/308-bullet-4683.html
