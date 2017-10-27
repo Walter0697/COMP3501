@@ -12,4 +12,4 @@
 - setting up additional features
 - debugging
 
-##### Game object  :floppydisk: :
+##### Game object  :floppy_disk: :
