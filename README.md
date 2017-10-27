@@ -2,7 +2,7 @@
 #### Our project in COMP 3501
 ### Project Name : Flying Undersized Controlled Killer
 
-##### Progress :wrench: :
+##### Current progress :wrench: :
 - setting up architecture
 - setting up game objects :trollface:
 - setting up game world
@@ -13,3 +13,12 @@
 - debugging
 
 ##### Game object  :floppy_disk: :
+####### Fly.cpp
+- the main character of the game
+
+##### Hierarchical model  :bikini: :
+- will be implemented
+
+##### Dev_log  :notebook: :
+####### Week 1 (10/27):
+- nothing
