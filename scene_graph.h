@@ -21,7 +21,7 @@ namespace game {
             glm::vec3 background_color_;
 
             // Scene nodes to render
-            std::vector<SceneNode *> node_;
+            std::vector<SceneNode *> root;
 
         public:
             typedef std::vector<SceneNode *>::const_iterator const_iterator;
@@ -36,13 +36,15 @@ namespace game {
             // Create a scene node from two resources
             SceneNode *CreateNode(std::string node_name, Resource *geometry, Resource *material, Resource *texture = NULL);
             // Add an already-created node
-            void AddNode(SceneNode *node);
+            //void AddNode(SceneNode *node);
             // Find a scene node with a specific name
             SceneNode *GetNode(std::string node_name) const;
             // Get node const iterator
             std::vector<SceneNode *>::const_iterator begin() const;
             std::vector<SceneNode *>::const_iterator end() const;
 
+			void AddRoot(SceneNode*);
+			void AddChild(SceneNode* , SceneNode*);
             // Draw the entire scene
             void Draw(Camera *camera);
 

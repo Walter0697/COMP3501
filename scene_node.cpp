@@ -140,29 +140,44 @@ GLuint SceneNode::GetMaterial(void) const {
 }
 
 
-void SceneNode::Draw(Camera *camera){
+void SceneNode::Draw(Camera *camera)
+{
+	//check children first
+	if (visible)
+	{
+		// Select proper material (shader program)
+		glUseProgram(material_);
 
-    // Select proper material (shader program)
-    glUseProgram(material_);
+		// Set geometry to draw
+		glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_array_buffer_);
 
-    // Set geometry to draw
-    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_array_buffer_);
+		// Set globals for camera
+		camera->SetupShader(material_);
 
-    // Set globals for camera
-    camera->SetupShader(material_);
+		// Set world matrix and other shader input variables
+		SetupShader(parenttrans, material_);
 
-    // Set world matrix and other shader input variables
-    SetupShader(material_);
 
-    // Draw geometry
-    if (mode_ == GL_POINTS){
-        glDrawArrays(mode_, 0, size_);
-    } else {
-        glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0);
-    }
+		// Draw geometry
+		if (mode_ == GL_POINTS) {
+			glDrawArrays(mode_, 0, size_);
+		}
+		else {
+			glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0);
+		}
+	}
+
+	for (int i = 0; i < children.size(); i++)
+	{
+		glm::mat4 rotation = glm::mat4_cast(GetOrientation());
+		glm::mat4 translation = glm::translate(glm::mat4(1.0), GetPosition());
+
+		children[i]->parenttrans = parenttrans * translation * rotation;
+		//give it your transformations
+		children[i]->Draw(camera);
+	}
 }
-
 
 void SceneNode::Update(void){
 
@@ -170,7 +185,7 @@ void SceneNode::Update(void){
 }
 
 
-void SceneNode::SetupShader(GLuint program){
+void SceneNode::SetupShader(glm::mat4 parenttrans , GLuint program){
 
     // Set attributes for shaders
     GLint vertex_att = glGetAttribLocation(program, "vertex");
