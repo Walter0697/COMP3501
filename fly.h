@@ -15,8 +15,8 @@
 namespace game {
 
     // Class that manages one object in a scene 
-    class SceneNode {
-
+    class Fly {
+		/*
         public:
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource *texture = NULL);
@@ -70,7 +70,7 @@ namespace game {
 
             // Set matrices that transform the node in a shader program
             void SetupShader(GLuint program);
-
+			*/
     }; // class SceneNode
 
 } // namespace game
