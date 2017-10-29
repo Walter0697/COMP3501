@@ -11,9 +11,12 @@
 #include "resource_manager.h"
 #include "camera.h"
 #include "asteroid.h"
+#include "Rocket.h"
+#include "CameraNode.h"
+#include "fly.h"
 
-namespace game {
-
+namespace game 
+{
     // Exception type for the game
     class GameException: public std::exception
     {
@@ -26,37 +29,27 @@ namespace game {
     };
 
     // Game application
-    class Game {
-
+    class Game 
+	{
         public:
             // Constructor and destructor
             Game(void);
             ~Game();
-            // Call Init() before calling any other method
-            void Init(void); 
-            // Set up resources for the game
-            void SetupResources(void);
-            // Set up initial scene
-            void SetupScene(void);
-            // Run the game: keep the application active
-            void MainLoop(void); 
-			
+
+            void Init(void);				// Call Init() before calling any other method
+            void SetupResources(void);		// Set up resources for the game
+            void SetupScene(void);			// Set up resources for the game
+            void MainLoop(void);			// Run the game: keep the application active
 
         private:
-            // GLFW window
-            GLFWwindow* window_;
-
-            // Scene graph containing all nodes to render
-            SceneGraph scene_;
-
-            // Resources available to the game
-            ResourceManager resman_;
-
-            // Camera abstraction
-            Camera camera_;
-
-            // Flag to turn animation on/off
-            bool animating_;
+            GLFWwindow* window_;						// GLFW window
+            SceneGraph scene_;							// Scene graph containing all nodes to render
+			ResourceManager resman_;					// Resources available to the game
+            Camera camera_;								// Camera abstraction
+			CameraNode* camNode;
+            bool animating_;							// Flag to turn animation on/off
+			Fly* player;									// player fly
+			// STORE COLLIDABLES
 
             // Methods to initialize the game
             void InitWindow(void);
@@ -65,20 +58,14 @@ namespace game {
  
             // Methods to handle events
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-			static void MouseCallback(GLFWwindow* window, int button, int action, int mods);
-			static void ResizeCallback(GLFWwindow* window, int width, int height);
+            static void ResizeCallback(GLFWwindow* window, int width, int height);
 
-            // Asteroid field
-            // Create instance of one asteroid
-            //Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);
-            // Create entire random asteroid field
-            //void CreateAsteroidField(int num_asteroids = 1500);
+            Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);	// Create instance of one asteroid
+			Rocket* createRocket(std::string , std::string , std::string,std::string);										// Asteroid field
+            void CreateAsteroidField(int num_asteroids = 1500);																// Create entire random asteroid field
+			Fly* createFly(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name);					// Create a fly instance
 
-            // Create an instance of an object stored in the resource manager
-            SceneNode *CreateInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string(""));
-
+            SceneNode *CreateInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string("")); // Create an instance of an object stored in the resource manager
     }; // class Game
-
 } // namespace game
-
 #endif // GAME_H_
