@@ -31,6 +31,8 @@ namespace game {
 		const std::string GetName(void) const;
 
 		SceneNode* parent; // parent to receive transformations from 
+		std::vector<SceneNode*> children; //children to transform
+
 		glm::mat4 parenttrans;
 
 		// Get node attributes
@@ -47,8 +49,6 @@ namespace game {
 		virtual void Translate(glm::vec3 trans);
 		virtual  void Rotate(glm::quat rot);
 		virtual void Scale(glm::vec3 scale);
-		std::vector<SceneNode*> children; //children to transform
-
 										  // Draw the node according to scene parameters in 'camera'
 										  // variable
 		virtual void Draw(Camera *camera);
