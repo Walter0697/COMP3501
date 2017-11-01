@@ -10,7 +10,12 @@ namespace game
 
 	glm::vec3 CameraNode::GetPosition(void) const
 	{
-		return camera->GetPosition();
+		if (camera->firstPerson) {
+			return camera->GetPosition() + (camera->GetForward() * camera->distance);
+		}
+		else {
+			return camera->GetPosition();
+		}
 	}
 
 	glm::quat CameraNode::GetOrientation(void) const

@@ -19,13 +19,7 @@ namespace game
 
 	/* Getters */
 	glm::vec3 Camera::GetPosition(void) const			{ 
-		if (firstPerson) {
-			return position_ + (orientation_ * forward_) * distance;
-		}
-		else {
 			return position_;
-		}
-
 	}
 	glm::quat Camera::GetOrientation(void) const		{ return orientation_; }
 
@@ -88,7 +82,7 @@ namespace game
 		// Reset orientation and position of camera
 		position_ = position;
 		orientation_ = glm::quat();
-		distance = 2.0f;
+		distance = -2.0f;
 	}
 
 	void Camera::SetProjection(GLfloat fov, GLfloat near, GLfloat far, GLfloat w, GLfloat h) 
