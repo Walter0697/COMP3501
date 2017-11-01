@@ -1,8 +1,8 @@
 #include "asteroid.h"
 
 namespace game {
-
-Asteroid::Asteroid(const std::string name, const Resource *geometry, const Resource *material) : SceneNode(name, geometry, material, 0) {
+	//texture is empty???????????!!!!!!!!!!!!!
+Asteroid::Asteroid(const std::string name, const Resource *geometry, const Resource *material) : SceneNode(name, geometry, material,0) {
 }
 
 

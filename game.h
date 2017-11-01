@@ -42,13 +42,14 @@ namespace game
             void MainLoop(void);			// Run the game: keep the application active
 
         private:
-            GLFWwindow* window_;						// GLFW window
-            SceneGraph scene_;							// Scene graph containing all nodes to render
-			ResourceManager resman_;					// Resources available to the game
-            Camera camera_;								// Camera abstraction
+            GLFWwindow* window_;			// GLFW window
+            SceneGraph scene_;				// Scene graph containing all nodes to render
+			ResourceManager resman_;		// Resources available to the game
+            Camera camera_;					// Camera abstraction
 			CameraNode* camNode;
-            bool animating_;							// Flag to turn animation on/off
-			Fly* player;									// player fly
+            bool animating_;				// Flag to turn animation on/off
+			Fly* player;					// player fly
+			SceneNode* target;
 			// STORE COLLIDABLES
 
             // Methods to initialize the game
@@ -60,12 +61,12 @@ namespace game
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void ResizeCallback(GLFWwindow* window, int width, int height);
 
-            Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);	// Create instance of one asteroid
-			Rocket* createRocket(std::string , std::string , std::string,std::string);										// Asteroid field
-            void CreateAsteroidField(int num_asteroids = 1500);																// Create entire random asteroid field
+            Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid
+			Rocket* createRocket(std::string , std::string , std::string,std::string);																// Asteroid field
+            void CreateAsteroidField(int num_asteroids = 1500);																						// Create entire random asteroid field
 			Fly* createFly(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name);					// Create a fly instance
-
-            SceneNode *CreateInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string("")); // Create an instance of an object stored in the resource manager
-    }; // class Game
+            SceneNode* CreateInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string("")); // Create an instance of an object stored in the resource manager
+			SceneNode* createTarget(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string(""));
+	}; // class Game
 } // namespace game
 #endif // GAME_H_

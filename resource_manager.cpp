@@ -152,9 +152,230 @@ std::string ResourceManager::LoadTextFile(const char *filename){
     return content;
 }
 
+void ResourceManager::CreateCylinder(std::string object_name, float height, float loop_radius, float circle_radius, int num_loop_samples, int num_circle_samples, glm::vec3 color)
+{
+	// Vertices are sampled along the circles
 
-void ResourceManager::CreateTorus(std::string object_name, float loop_radius, float circle_radius, int num_loop_samples, int num_circle_samples){
+	// Number of vertices and faces to be created
+	const GLuint vertex_num = num_loop_samples * num_circle_samples + (num_circle_samples * 2) + 2;
+	const GLuint face_num = num_loop_samples * (num_circle_samples + 1) * 2;
 
+	// Number of attributes for vertices and faces
+	const int vertex_att = 11;  // 11 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3), 2D texture coordinates (2)
+	const int face_att = 3; // Vertex indices (3)
+
+							// Data buffers for the torus
+	GLfloat *vertex = NULL;
+	GLuint *face = NULL;
+
+	// Allocate memory for buffers
+	try {
+		vertex = new GLfloat[vertex_num * vertex_att];
+		face = new GLuint[face_num * face_att];
+	}
+	catch (std::exception &e) {
+		throw e;
+	}
+
+	// Create vertices 
+	float theta, phi; // Angles for circles
+	glm::vec3 loop_center;
+	glm::vec3 vertex_position;
+	glm::vec3 vertex_normal;
+	glm::vec3 vertex_color;
+	glm::vec2 vertex_coord;
+
+	float heightcyl = height * num_loop_samples;	//size of the cylinder
+
+	loop_center = glm::vec3(0, (-heightcyl / 2), 0);
+
+	/*   cylinder vertices  */
+	for (int i = 0; i < num_loop_samples; i++) {    //large loop
+
+		theta = 0;   // loop sample (angle theta)
+		loop_center = glm::vec3(0, (-heightcyl / 2) + i*height, 0);
+
+		for (int j = 0; j < num_circle_samples; j++) { //small circle
+
+			phi = 2.0*glm::pi<GLfloat>()*j / num_circle_samples;  //circle sample (angle phi)
+
+			vertex_normal = glm::vec3(cos(theta)*cos(phi), sin(theta)*cos(phi), sin(phi)); //normal
+			vertex_position = loop_center + vertex_normal*circle_radius; //position
+			vertex_color = color;	//color
+			vertex_coord = glm::vec2(theta / 2.0*glm::pi<GLfloat>(), //texture coordinates
+				phi / 2.0*glm::pi<GLfloat>());
+
+			// Add vectors to the data buffer
+			for (int k = 0; k < 3; k++) 
+			{
+				vertex[(i*num_circle_samples + j)*vertex_att + k] = vertex_position[k];
+				vertex[(i*num_circle_samples + j)*vertex_att + k + 3] = vertex_normal[k];
+				vertex[(i*num_circle_samples + j)*vertex_att + k + 6] = vertex_color[k];
+			}
+
+			vertex[(i*num_circle_samples + j)*vertex_att + 9] = vertex_coord[0];
+			vertex[(i*num_circle_samples + j)*vertex_att + 10] = vertex_coord[1];
+		}
+	}
+
+	/*   endcaps   */
+
+	vertex_normal = glm::vec3(0, 1, 0);         //top endcap center
+	vertex_position = loop_center;				//position
+	vertex_color = color;						//color
+	vertex_coord = glm::vec2(theta / 2.0*glm::pi<GLfloat>(), phi / 2.0*glm::pi<GLfloat>());		//tex coord
+
+	// Add vectors to the data buffer
+	for (int k = 0; k < 3; k++)
+	{
+		vertex[(vertex_num - 2)* vertex_att + k] = vertex_position[k];
+		vertex[(vertex_num - 2)* vertex_att + k + 3] = vertex_normal[k];
+		vertex[(vertex_num - 2)* vertex_att + k + 6] = vertex_color[k];
+	}
+	vertex[(vertex_num - 2)* vertex_att + 9] = vertex_coord[0];
+	vertex[(vertex_num - 2)* vertex_att + 10] = vertex_coord[1];
+
+	//top endcap vertices
+	for (int j = 0; j < num_circle_samples; j++)
+	{
+		phi = 2.0*glm::pi<GLfloat>()*j / num_circle_samples; // circle sample (angle phi)
+
+		vertex_normal = glm::vec3(cos(theta)*cos(phi), sin(theta)*cos(phi), sin(phi));
+		//position
+		vertex_position = loop_center + vertex_normal*circle_radius;
+		//color
+		vertex_color = color;
+		//tex coord
+		vertex_coord = glm::vec2(theta / 2.0*glm::pi<GLfloat>(), phi / 2.0*glm::pi<GLfloat>());
+
+		vertex_normal = glm::vec3(0, 1, 0); //reset the normal
+											// Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) 
+		{
+			vertex[(num_loop_samples * num_circle_samples + j)* vertex_att + k] = vertex_position[k];
+			vertex[(num_loop_samples * num_circle_samples + j)* vertex_att + k + 3] = vertex_normal[k];
+			vertex[(num_loop_samples * num_circle_samples + j)* vertex_att + k + 6] = vertex_color[k];
+		}
+
+		vertex[(num_loop_samples * num_circle_samples + j)* vertex_att + 9] = vertex_coord[0];
+		vertex[(num_loop_samples * num_circle_samples + j)* vertex_att + 10] = vertex_coord[1];
+	}
+
+	//bottom endcap 
+	loop_center = glm::vec3(0, (-heightcyl / 2), 0);
+	//normal
+	vertex_normal = glm::vec3(0, 1, 0);
+	//position
+	vertex_position = loop_center;
+	//color
+	vertex_color = color;
+	//tex coord
+	vertex_coord = glm::vec2(theta / 2.0*glm::pi<GLfloat>(), phi / 2.0*glm::pi<GLfloat>());
+
+	// Add vectors to the data buffer
+	for (int k = 0; k < 3; k++) 
+	{
+		vertex[(vertex_num - 1)* vertex_att + k] = vertex_position[k];
+		vertex[(vertex_num - 1)* vertex_att + k + 3] = vertex_normal[k];
+		vertex[(vertex_num - 1)* vertex_att + k + 6] = vertex_color[k];
+	}
+	vertex[(vertex_num - 1)* vertex_att + 9] = vertex_coord[0];
+	vertex[(vertex_num - 1)* vertex_att + 10] = vertex_coord[1];
+
+
+	//bottom endcap vertices
+	for (int j = 0; j < num_circle_samples; j++)
+	{
+		phi = 2.0*glm::pi<GLfloat>()*j / num_circle_samples; // circle sample (angle phi)
+
+		vertex_normal = glm::vec3(cos(theta)*cos(phi), sin(theta)*cos(phi), sin(phi));
+		//position
+		vertex_position = loop_center + vertex_normal*circle_radius;
+		//color
+		vertex_color = color;
+		//tex coord
+		vertex_coord = glm::vec2(theta / 2.0*glm::pi<GLfloat>(), phi / 2.0*glm::pi<GLfloat>());
+		//reset the normal
+		vertex_normal = glm::vec3(0, 1, 0);
+
+		// Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			vertex[(num_loop_samples * num_circle_samples + num_circle_samples + j)* vertex_att + k] = vertex_position[k];
+			vertex[(num_loop_samples * num_circle_samples + num_circle_samples + j)* vertex_att + k + 3] = vertex_normal[k];
+			vertex[(num_loop_samples * num_circle_samples + num_circle_samples + j)* vertex_att + k + 6] = vertex_color[k];
+		}
+
+		vertex[(num_loop_samples * num_circle_samples + num_circle_samples + j)* vertex_att + 9] = vertex_coord[0];
+		vertex[(num_loop_samples * num_circle_samples + num_circle_samples + j)* vertex_att + 10] = vertex_coord[1];
+	}
+
+	/* Create triangles */
+
+	for (int i = 0; i < num_loop_samples; i++) {
+		for (int j = 0; j < num_circle_samples; j++) {
+			// Two triangles per quad
+			glm::vec3 t1(((i + 1) % num_loop_samples)*num_circle_samples + j,
+				i*num_circle_samples + ((j + 1) % num_circle_samples),
+				i*num_circle_samples + j);
+			glm::vec3 t2(((i + 1) % num_loop_samples)*num_circle_samples + j,
+				((i + 1) % num_loop_samples)*num_circle_samples + ((j + 1) % num_circle_samples),
+				i*num_circle_samples + ((j + 1) % num_circle_samples));
+			// Add two triangles to the data buffer
+			for (int k = 0; k < 3; k++) {
+				face[(i*num_circle_samples + j)*face_att * 2 + k] = (GLuint)t1[k];
+				face[(i*num_circle_samples + j)*face_att * 2 + k + face_att] = (GLuint)t2[k];
+			}
+		}
+	}
+
+
+	//create top endcap triangles
+	for (int i = 0; i < num_circle_samples; i++)
+	{
+		glm::vec3 t1(vertex_num - 2,
+			(vertex_num - 2 * num_circle_samples - 2) + i,
+			(vertex_num - 2 * num_circle_samples - 2) + (i + 1) % (num_circle_samples));
+		//Add t1 to buffer 
+		for (int k = 0; k < 3; k++)
+		{
+			face[(num_loop_samples*num_circle_samples + i)*face_att + k] = (GLuint)t1[k];
+		}
+	}
+
+	//create bottom endcap triangles
+	for (int i = 0; i < num_circle_samples; i++)
+	{
+		glm::vec3 t1(vertex_num - 1,
+			(vertex_num - num_circle_samples - 2) + i,
+			(vertex_num - num_circle_samples - 2) + (i + 1) % (num_circle_samples));
+		//Add t1 to buffer
+		for (int k = 0; k < 3; k++)
+		{
+			face[(num_loop_samples*num_circle_samples + num_circle_samples + i)*face_att + k] = (GLuint)t1[k];
+		}
+	}
+
+	GLuint vbo, ebo;
+	// Create buffer for vertices
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertex_num * vertex_att * sizeof(GLfloat), vertex, GL_STATIC_DRAW);
+
+	// Create buffer for faces
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, face_num * face_att * sizeof(GLuint), face, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] vertex;
+	delete[] face;
+
+	// Create resource
+	AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
+}
+
+void ResourceManager::CreateTorus(std::string object_name, float loop_radius, float circle_radius, int num_loop_samples, int num_circle_samples)
+{
     // Create a torus
     // The torus is built from a large loop with small circles around the loop
 
@@ -378,9 +599,7 @@ void ResourceManager::LoadMesh(const std::string name, const char *filename){
     // Open file
     std::ifstream f;
     f.open(filename);
-    if (f.fail()){
-        throw(std::ios_base::failure(std::string("Error opening file ")+std::string(filename)));
-    }
+    if (f.fail()) { throw(std::ios_base::failure(std::string("Error opening file ")+std::string(filename))); }
 
     // Parse lines
     std::string line;
@@ -653,8 +872,8 @@ std::vector<std::string> string_split(std::string str, std::string separator){
 }
 
 
-std::vector<std::string> string_split_once(std::string str, std::string separator){
-
+std::vector<std::string> string_split_once(std::string str, std::string separator)
+{
     // Initialize output
     std::vector<std::string> output;
     output.push_back(std::string(""));

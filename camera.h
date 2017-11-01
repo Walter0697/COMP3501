@@ -7,15 +7,18 @@
 #include <glm/glm.hpp>
 
 
-namespace game {
-
+namespace game 
+{
     // Abstraction of a camera
-    class Camera {
-
+    class Camera 
+	{
         public:
             Camera(void);
             ~Camera();
  
+			bool firstPerson;	//first or third person
+			int distance;		//distance from camera to player
+
             // Get global camera attributes
             glm::vec3 GetPosition(void) const;
             glm::quat GetOrientation(void) const;
@@ -47,13 +50,8 @@ namespace game {
             void SetProjection(GLfloat fov, GLfloat near, GLfloat far, GLfloat w, GLfloat h);
             // Set all camera-related variables in shader program
             void SetupShader(GLuint program);
-			void SetThirdPerson(bool b);
-			bool GetThirdPerson(void);
-			void SetMoved(bool b);
-			bool GetMoved(void);
+
         private:
-			bool thirdperson; // Whether the camera is set to be 3rd or 1st person
-			bool moved;
             glm::vec3 position_; // Position of camera
             glm::quat orientation_; // Orientation of camera
             glm::vec3 forward_; // Initial forward vector
@@ -63,9 +61,7 @@ namespace game {
 
             // Create view matrix from current camera parameters
             void SetupViewMatrix(void);
-
     }; // class Camera
-
 } // namespace game
 
 #endif // CAMERA_H_

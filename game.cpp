@@ -5,7 +5,13 @@
 #include "game.h"
 #include "bin/path_config.h"
 
-//CENTER OF FLY IS NOT PROPERLY ALIGNED FOR SOME REASON
+// HANDLING ROCKETSSSSSS ?????????
+// HANDLING EVRYTHING BEING A CHILD OF CAMERA ????????????
+// ASK ABOUT CAMERA NODE ?????????
+
+// SHOOT ROCKET WITH C
+// W,A,S,D for movement
+// Right click to move from first to third person (Not implemented!!!!)
 namespace game 
 {
 	// Some configuration constants
@@ -28,11 +34,14 @@ namespace game
 
 	// Materials 
 	const std::string material_directory_g = MATERIAL_DIRECTORY;
+
 	Game::Game(void)
 	{
 		//dummy player to compile maybe need to deallocate it 
 		player = new Fly("",0,0,0);
 	}
+
+	Game::~Game() { glfwTerminate(); }
 
 	void Game::Init(void) 
 	{
@@ -95,8 +104,8 @@ namespace game
 		camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
 
 		//setup camera as a sceneNode
-		//camNode = new CameraNode(&camera_);
-		//scene_.AddRoot(camNode);
+		camNode = new CameraNode(&camera_);
+		scene_.SetRoot(camNode);
 	}
 
 	void Game::InitEventHandlers(void)
@@ -112,13 +121,22 @@ namespace game
 	void Game::SetupResources(void)
 	{
 		/* Create Geometries */
-		resman_.CreateCylinder("Rocket");
+		resman_.CreateCylinder("RocketMesh");
 		resman_.CreateWall("WallMesh");
 		resman_.CreateSphere("SimpleSphereMesh");
+		resman_.CreateCylinder("TargetMesh", 0.1, 0.6, 0.35, 4, 4, glm::vec3(1,0,0));
 
 		/* Create Resources */
+		//Asteroids
+		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+		resman_.LoadResource(Material, "SimpleSphereMesh", filename.c_str());
+
+		//TARGET
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+		resman_.LoadResource(Material, "TargetMesh", filename.c_str());
+
 		// FLY
-		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/fly.obj");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/fly.obj");
 		resman_.LoadResource(Mesh, "FlyMesh", filename.c_str());
 
 		// ROCKET
@@ -138,7 +156,9 @@ namespace game
 	{
 		// Set background color for the scene
 		scene_.SetBackgroundColor(viewport_background_color_g);
+		CreateAsteroidField(100);
 		player = createFly("WallInstance1", "FlyMesh", "NormalMapMaterial", "");
+		target = createTarget("playerTarget", "TargetMesh", "ObjectMaterial" , "");
 	}
 
 	void Game::MainLoop(void)
@@ -158,13 +178,8 @@ namespace game
 				}
 			}
 
-			//get size of scene graph
-			//std::cout << scene_.getRootSize() << std::endl;
-
 			// Update player
 			player->Update();
-			player->SetOrientation(camera_.GetOrientation());
-			player->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.35, -2));
 
 			// Draw the scene
 			scene_.Draw(&camera_);
@@ -237,16 +252,15 @@ namespace game
 		{
 			if (game->player->fireRate <= 0)
 			{
-				game->player->rockets.push_back(game->createRocket("Rocket", "Rocket", "ObjectMaterial", ""));
+				game->player->rockets.push_back(game->createRocket("Rocket", "RocketMesh", "ObjectMaterial", ""));
 				game->player->fireRate = game->player->maxFireRate;
 			}
-
 		}
 		if (key == GLFW_MOUSE_BUTTON_RIGHT) 
 		{
 			//change to third or first person
 			//game->camera_.SetThirdPerson(!game->camera_.GetThirdPerson());
-			game->animating_ = false;
+			game->camera_.firstPerson = !game->camera_.firstPerson;
 		}
 	}
 
@@ -259,8 +273,6 @@ namespace game
 		game->camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
 	}
 
-	Game::~Game() { glfwTerminate(); }
-
 	Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name)
 	{
 		// Get resources
@@ -271,7 +283,7 @@ namespace game
 
 		// Create asteroid instance
 		Asteroid *ast = new Asteroid(entity_name, geom, mat);
-		scene_.AddRoot(ast);
+		camNode->AddChild(ast);
 		return ast;
 	}
 
@@ -291,7 +303,7 @@ namespace game
 
 			// Set attributes of asteroid: random position, orientation, and
 			// angular momentum
-			ast->SetPosition(glm::vec3(-300.0 + 600.0*((float)rand() / RAND_MAX), -300.0 + 600.0*((float)rand() / RAND_MAX), 600.0*((float)rand() / RAND_MAX)));
+			ast->SetPosition(glm::vec3(-300 + 400*((float)rand() / RAND_MAX), -300 + 400*((float)rand() / RAND_MAX), - 400*((float)rand() / RAND_MAX)));
 			ast->SetOrientation(glm::normalize(glm::angleAxis(glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
 			ast->SetAngM(glm::normalize(glm::angleAxis(0.05f*glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
 		}
@@ -304,19 +316,19 @@ namespace game
 		if (!geom) { throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\""))); }
 		Resource *mat = resman_.GetResource(material_name);
 		if (!mat) { throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\""))); }
+
+		//THIS NEEDS TO BE CHANGED 
 		//Resource *tex = resman_.GetResource(texture_name);
 		//if (!tex) { throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\""))); }
 
 		//Create an instance of a fly
 		Fly* fly = new Fly(entity_name, geom, mat, 0);
-		//scene_.AddChild(camNode , fly);
-		scene_.AddRoot(fly);
+		camNode->AddChild(fly);
 
 		//Set initial values and rotate the fly by 180 degrees
 		fly->SetScale(glm::vec3(100, 100, 100));
-		fly->SetOrientation(camera_.GetOrientation());
 		fly->Rotate(glm::angleAxis(glm::pi<float>() , glm::vec3(0 , 1 , 0)));
-		fly->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.35, -2));
+		fly->SetPosition(glm::vec3(0.0, -0.3, -1.5));
 
 		return fly;
 	}
@@ -333,17 +345,38 @@ namespace game
 
 		// Create a rocket instance add it as a root
 		Rocket* rocket = new Rocket(entity_name, geom, mat, 0, camera_.GetForward());
-		scene_.AddRoot(rocket);
+		camNode->AddChild(rocket);
 
 		//Set initial values
 		rocket->SetScale(glm::vec3(0.08, 0.02, 0.08));
-		rocket->SetOrientation(player->GetOrientation());
 		rocket->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		rocket->SetPosition(player->GetPosition());
+		//rocket->SetPosition(player->GetPosition());
 
 		return rocket;
 	}
 
+	SceneNode * Game::createTarget(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
+	{
+		// Get resources
+		Resource *geom = resman_.GetResource(object_name);
+		if (!geom) { throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\""))); }
+		Resource *mat = resman_.GetResource(material_name);
+		if (!mat) { throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\""))); }
+		//Resource *tex = resman_.GetResource(texture_name);
+		//if (!tex) { throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\""))); }
+
+		// Create a Target instance and make it a child of camera 
+		SceneNode* Target = new SceneNode(entity_name, geom, mat, 0);
+		camNode->AddChild(Target);
+
+		//Set initial values
+		Target->SetScale(glm::vec3(0.001, 0.001, 0.001));
+		Target->SetPosition(glm::vec3(0, 0, -0.2));
+
+		return Target;
+	}
+
+	// DO NOT USE THIS FUNCTION IT DOES NOT WORK!!!!!!!!!!
 	SceneNode *Game::CreateInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name) 
 	{
 		Resource *geom = resman_.GetResource(object_name);
@@ -351,7 +384,8 @@ namespace game
 		Resource *mat = resman_.GetResource(material_name);
 		if (!mat) { throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\""))); }
 
-		SceneNode *scn = scene_.CreateNode(entity_name, geom, mat);
-		return scn;
+		//SceneNode *scn = scene_.CreateNode(entity_name, geom, mat);
+		//return scn;
+		return NULL;
 	}
 } // namespace game
