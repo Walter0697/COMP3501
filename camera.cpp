@@ -18,7 +18,15 @@ namespace game
 	Camera::~Camera() {}
 
 	/* Getters */
-	glm::vec3 Camera::GetPosition(void) const			{ return position_; }
+	glm::vec3 Camera::GetPosition(void) const			{ 
+		if (firstPerson) {
+			return position_ + (orientation_ * forward_) * distance;
+		}
+		else {
+			return position_;
+		}
+
+	}
 	glm::quat Camera::GetOrientation(void) const		{ return orientation_; }
 
 	/* Setters */
@@ -80,6 +88,7 @@ namespace game
 		// Reset orientation and position of camera
 		position_ = position;
 		orientation_ = glm::quat();
+		distance = 2.0f;
 	}
 
 	void Camera::SetProjection(GLfloat fov, GLfloat near, GLfloat far, GLfloat w, GLfloat h) 
@@ -102,6 +111,8 @@ namespace game
 		// Set projection matrix in shader
 		GLint projection_mat = glGetUniformLocation(program, "projection_mat");
 		glUniformMatrix4fv(projection_mat, 1, GL_FALSE, glm::value_ptr(projection_matrix_));
+
+		
 	}
 
 	void Camera::SetupViewMatrix(void) 

@@ -23,7 +23,7 @@ namespace game
 
 	private:
 		Camera* camera;
-
+		
 	};
 }
 #endif //CAMERANODE_H

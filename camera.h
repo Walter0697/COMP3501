@@ -17,7 +17,7 @@ namespace game
             ~Camera();
  
 			bool firstPerson;	//first or third person
-			int distance;		//distance from camera to player
+			float distance;		//distance from camera to player
 
             // Get global camera attributes
             glm::vec3 GetPosition(void) const;

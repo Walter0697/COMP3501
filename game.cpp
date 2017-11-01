@@ -112,6 +112,7 @@ namespace game
 	{
 		// Set event callbacks
 		glfwSetKeyCallback(window_, KeyCallback);
+		glfwSetMouseButtonCallback(window_, MouseButtonCallback);
 		glfwSetFramebufferSizeCallback(window_, ResizeCallback);
 
 		// Set pointer to game object, so that callbacks can access it
@@ -256,11 +257,18 @@ namespace game
 				game->player->fireRate = game->player->maxFireRate;
 			}
 		}
-		if (key == GLFW_MOUSE_BUTTON_RIGHT) 
-		{
+	}
+
+	void Game::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+	{
+		// Get user data with a pointer to the game class
+		void* ptr = glfwGetWindowUserPointer(window);
+		Game *game = (Game *)ptr;
+
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 			//change to third or first person
-			//game->camera_.SetThirdPerson(!game->camera_.GetThirdPerson());
 			game->camera_.firstPerson = !game->camera_.firstPerson;
+			//std::cout << "Mouse2pressed" << std::endl;
 		}
 	}
 

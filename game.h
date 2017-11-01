@@ -59,7 +59,8 @@ namespace game
  
             // Methods to handle events
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-            static void ResizeCallback(GLFWwindow* window, int width, int height);
+			static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+			static void ResizeCallback(GLFWwindow* window, int width, int height);
 
             Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid
 			Rocket* createRocket(std::string , std::string , std::string,std::string);																// Asteroid field
