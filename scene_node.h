@@ -19,22 +19,25 @@ namespace game {
     class SceneNode {
 
         public:
-            // Create scene node from given resources
-			SceneNode(const std::string name, const Resource *geometry, const Resource* material, const Resource*);
-
-            // Destructor
-            ~SceneNode();
+			SceneNode(const std::string name, const Resource *geometry, const Resource* material, const Resource*);		// Create scene node from given resources
+            ~SceneNode();	// Destructor
             
-			//check visibility
-			bool visible;
+			bool visible;	//check visibility
 
-            // Get name of node
-            const std::string GetName(void) const;
-
-            // Get node attributes
+			// Get node attributes
+            const std::string GetName(void) const;		// Get name of node
             virtual glm::vec3 GetPosition(void) const;
+			virtual glm::vec3 getAbsolutePosition(void) const;
             virtual glm::quat GetOrientation(void) const;
+			virtual glm::quat getAbsoluteOrientation(void) const;
             glm::vec3 GetScale(void) const;
+
+			// OpenGL variables
+			GLenum GetMode(void) const;
+			GLuint GetArrayBuffer(void) const;
+			GLuint GetElementArrayBuffer(void) const;
+			GLsizei GetSize(void) const;
+			GLuint GetMaterial(void) const;
 
             // Set node attributes
             void SetPosition(glm::vec3 position);
@@ -46,19 +49,8 @@ namespace game {
             void Rotate(glm::quat rot);
             void Scale(glm::vec3 scale);
 
-            // Draw the node according to scene parameters in 'camera'
-            // variable
-            virtual glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf);
-
-            // Update the node
-            virtual void Update(void);
-
-            // OpenGL variables
-            GLenum GetMode(void) const;
-            GLuint GetArrayBuffer(void) const;
-            GLuint GetElementArrayBuffer(void) const;
-            GLsizei GetSize(void) const;
-            GLuint GetMaterial(void) const;
+            virtual glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf);	 // Draw the node according to scene parameters in 'camera'
+            virtual void Update(void);		// Update the node
 
             // Hierarchy-related methods
             void AddChild(SceneNode *node);
@@ -73,9 +65,12 @@ namespace game {
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
 			GLuint texture_; // Reference to texture
-            glm::vec3 position_; // Position of node
+            glm::vec3 position_; // Relative Position of node
+			glm::vec3 absolutePosition; // Absolute position of node 
             glm::quat orientation_; // Orientation of node
+			glm::quat absoluteOrientation; // Absolute orientation
             glm::vec3 scale_; // Scale of node
+			
  
             // Hierarchy
             SceneNode *parent_;
@@ -87,7 +82,6 @@ namespace game {
             glm::mat4 SetupShader(GLuint program, glm::mat4 parent_transf);
 
     }; // class SceneNode
-
 } // namespace game
 
 #endif // SCENE_NODE_H_

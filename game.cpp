@@ -5,13 +5,12 @@
 #include "game.h"
 #include "bin/path_config.h"
 
-// HANDLING ROCKETSSSSSS ?????????
-// HANDLING EVRYTHING BEING A CHILD OF CAMERA ????????????
-// ASK ABOUT CAMERA NODE ?????????
+// DOES THE BSOLUTE POSITION OF THE CAMERA MATTER???
+// DO WE KEEP SCENEGRAPH'S UPDATE OR COLLAPSE IT INTO MULTIPLE UPDATES?????????????
 
 // SHOOT ROCKET WITH C
 // W,A,S,D for movement
-// Right click to move from first to third person (Not implemented!!!!)
+// Right click to move from first to third person
 namespace game 
 {
 	// Some configuration constants
@@ -52,24 +51,21 @@ namespace game
 
 		// Set variables
 		animating_ = true;
+		world = new SceneNode("world", 0, 0, 0);	// Dummy Node
+		scene_.SetRoot(world);						// Set dummy as Root of Heirarchy
+		world->AddChild(camNode);					// Set the camera as a child of the world
 	}
-
 
 	void Game::InitWindow(void) 
 	{
 		// Initialize the window management library (GLFW)
-		if (!glfwInit()) {
-			throw(GameException(std::string("Could not initialize the GLFW library")));
-		}
+		if (!glfwInit()) { throw(GameException(std::string("Could not initialize the GLFW library"))); }
 
 		// Create a window and its OpenGL context
-		if (window_full_screen_g) {
-			window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL);
-		}
-		else {
-			window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL);
-		}
-		if (!window_) {
+		if (window_full_screen_g) { window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL); }
+		else { window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL); }
+		if (!window_) 
+		{
 			glfwTerminate();
 			throw(GameException(std::string("Could not create window")));
 		}
@@ -81,9 +77,7 @@ namespace game
 		// Need to do it after initializing an OpenGL context
 		glewExperimental = GL_TRUE;
 		GLenum err = glewInit();
-		if (err != GLEW_OK) {
-			throw(GameException(std::string("Could not initialize the GLEW library: ") + std::string((const char *)glewGetErrorString(err))));
-		}
+		if (err != GLEW_OK) { throw(GameException(std::string("Could not initialize the GLEW library: ") + std::string((const char *)glewGetErrorString(err)))); }
 	}
 
 	void Game::InitView(void)
@@ -103,9 +97,7 @@ namespace game
 		// Set projection
 		camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
 
-		//setup camera as a sceneNode
-		camNode = new CameraNode(&camera_);
-		scene_.SetRoot(camNode);
+		camNode = new CameraNode(&camera_);		//setup camera as a sceneNode
 	}
 
 	void Game::InitEventHandlers(void)
@@ -128,11 +120,11 @@ namespace game
 		resman_.CreateCylinder("TargetMesh", 0.1, 0.6, 0.35, 4, 4, glm::vec3(1,0,0));
 
 		/* Create Resources */
-		//Asteroids
+		// Asteroids
 		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
 		resman_.LoadResource(Material, "SimpleSphereMesh", filename.c_str());
 
-		//TARGET
+		// TARGET
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
 		resman_.LoadResource(Material, "TargetMesh", filename.c_str());
 
@@ -155,11 +147,10 @@ namespace game
 
 	void Game::SetupScene(void) 
 	{
-		// Set background color for the scene
-		scene_.SetBackgroundColor(viewport_background_color_g);
-		CreateAsteroidField(100);
-		player = createFly("WallInstance1", "FlyMesh", "NormalMapMaterial", "");
-		target = createTarget("playerTarget", "TargetMesh", "ObjectMaterial" , "");
+		scene_.SetBackgroundColor(viewport_background_color_g);						// Set background color for the scene
+		CreateAsteroidField(100);													// For testing
+		player = createFly("WallInstance1", "FlyMesh", "NormalMapMaterial", "");	// Create player
+		target = createTarget("playerTarget", "TargetMesh", "ObjectMaterial" , ""); // Create target for shooting
 	}
 
 	void Game::MainLoop(void)
@@ -173,7 +164,7 @@ namespace game
 				static double last_time = 0;
 				double current_time = glfwGetTime();
 				if ((current_time - last_time) > 0.01) {
-					//scene_.Update();
+					scene_.Update();
 
 					last_time = current_time;
 				}
@@ -181,6 +172,8 @@ namespace game
 
 			// Update player
 			player->Update();
+
+			std::cout << target->getAbsolutePosition().y << std::endl;
 
 			// Draw the scene
 			scene_.Draw(&camera_);
@@ -193,6 +186,19 @@ namespace game
 		}
 	}
 
+	void Game::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+	{
+		// Get user data with a pointer to the game class
+		void* ptr = glfwGetWindowUserPointer(window);
+		Game *game = (Game *)ptr;
+
+		// Mouse click checks
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+			//change to third or first person
+			game->camera_.firstPerson = !game->camera_.firstPerson;
+		}
+	}
+
 	void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		// Get user data with a pointer to the game class
@@ -200,55 +206,36 @@ namespace game
 		Game *game = (Game *)ptr;
 
 		// Quit game if 'q' is pressed
-		if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-			glfwSetWindowShouldClose(window, true);
-		}
+		if (key == GLFW_KEY_Q && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
 
 		// Stop animation if space bar is pressed
-		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-			game->animating_ = (game->animating_ == true) ? false : true;
-		}
+		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) { game->animating_ = !game->animating_; }
 
 		// View control
 		float rot_factor(glm::pi<float>() / 180);
-		float trans_factor = 0.1;
-		if (key == GLFW_KEY_UP) {
-			game->camera_.Pitch(rot_factor);
-		}
-		if (key == GLFW_KEY_DOWN) {
-			game->camera_.Pitch(-rot_factor);
-		}
-		if (key == GLFW_KEY_LEFT) {
-			game->camera_.Yaw(rot_factor);
-		}
-		if (key == GLFW_KEY_RIGHT) {
-			game->camera_.Yaw(-rot_factor);
-		}
-		if (key == GLFW_KEY_Z) {
-			game->camera_.Roll(-rot_factor);
-		}
-		if (key == GLFW_KEY_X) {
-			game->camera_.Roll(rot_factor);
-		}
-		if (key == GLFW_KEY_W) {
-			game->camera_.Translate(game->camera_.GetForward()*trans_factor);
-		}
-		if (key == GLFW_KEY_S) {
-			game->camera_.Translate(-game->camera_.GetForward()*trans_factor);
-		}
-		if (key == GLFW_KEY_A) {
-			game->camera_.Translate(-game->camera_.GetSide()*trans_factor);
-		}
-		if (key == GLFW_KEY_D) {
-			game->camera_.Translate(game->camera_.GetSide()*trans_factor);
-		}
-		//TO BE CHANGED!!!!!!!!!!!!!!
-		if (key == GLFW_KEY_I) {
-			game->camera_.Translate(game->camera_.GetUp()*trans_factor);
-		}
-		if (key == GLFW_KEY_K) {
-			game->camera_.Translate(-game->camera_.GetUp()*trans_factor);
-		}
+		float trans_factor = 2.0;
+
+		// Move camera up, down, and to the sides
+		if (key == GLFW_KEY_UP) { game->camera_.Pitch(rot_factor); }
+		if (key == GLFW_KEY_DOWN) {	game->camera_.Pitch(-rot_factor); }
+		if (key == GLFW_KEY_LEFT) { game->camera_.Yaw(rot_factor); }
+		if (key == GLFW_KEY_RIGHT) { game->camera_.Yaw(-rot_factor); }
+
+		// Roll camera
+		if (key == GLFW_KEY_Z) { game->camera_.Roll(-rot_factor); }
+		if (key == GLFW_KEY_X) { game->camera_.Roll(rot_factor); }
+
+		// Forward backward and side movements
+		if (key == GLFW_KEY_W) { game->camera_.Translate(game->camera_.GetForward()*trans_factor); }
+		if (key == GLFW_KEY_S) { game->camera_.Translate(-game->camera_.GetForward()*trans_factor); }
+		if (key == GLFW_KEY_A) { game->camera_.Translate(-game->camera_.GetSide()*trans_factor); }
+		if (key == GLFW_KEY_D) { game->camera_.Translate(game->camera_.GetSide()*trans_factor); }
+
+		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
+		if (key == GLFW_KEY_I) { game->camera_.Translate(game->camera_.GetUp()*trans_factor); }
+		if (key == GLFW_KEY_K) { game->camera_.Translate(-game->camera_.GetUp()*trans_factor); }
+
+		// Shoot a rocket
 		if (key == GLFW_KEY_C && action == GLFW_PRESS)
 		{
 			if (game->player->fireRate <= 0)
@@ -259,19 +246,7 @@ namespace game
 		}
 	}
 
-	void Game::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-	{
-		// Get user data with a pointer to the game class
-		void* ptr = glfwGetWindowUserPointer(window);
-		Game *game = (Game *)ptr;
-
-		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-			//change to third or first person
-			game->camera_.firstPerson = !game->camera_.firstPerson;
-			//std::cout << "Mouse2pressed" << std::endl;
-		}
-	}
-
+	/* Resize Screen */
 	void Game::ResizeCallback(GLFWwindow* window, int width, int height)
 	{
 		// Set up viewport and camera projection based on new window size
@@ -291,7 +266,7 @@ namespace game
 
 		// Create asteroid instance
 		Asteroid *ast = new Asteroid(entity_name, geom, mat);
-		camNode->AddChild(ast);
+		world->AddChild(ast);
 		return ast;
 	}
 
@@ -317,6 +292,7 @@ namespace game
 		}
 	}
 
+	// FLY NEEDS TO HAVE A TEXTURE!!! (MAYBE ALSO MAKE IT INDEPENDENT OF CAMERA LATER ON)
 	Fly* Game::createFly(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
 	{
 		// Get resources
@@ -341,6 +317,7 @@ namespace game
 		return fly;
 	}
 
+	// NEED TO FIX ORIGINAL DIRECTION SUCH THAT IT WOULD HAVE THE DIRECTION OF THE PLAYER AS ITS DIRECTION VECTOR (MAYBE USE A QUATERNION INSTEAD OF A DIRECTION VECTOR)
 	Rocket* Game::createRocket(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
 	{
 		// Get resources
@@ -353,16 +330,19 @@ namespace game
 
 		// Create a rocket instance add it as a root
 		Rocket* rocket = new Rocket(entity_name, geom, mat, 0, camera_.GetForward());
-		camNode->AddChild(rocket);
+		world->AddChild(rocket);
 
-		//Set initial values
+		//Set initial value
 		rocket->SetScale(glm::vec3(0.08, 0.02, 0.08));
+		//rocket->SetOrientation(camera_.GetOrientation());
+		rocket->SetOrientation(player->getAbsoluteOrientation());
 		rocket->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		//rocket->SetPosition(player->GetPosition());
+		rocket->SetPosition(player->getAbsolutePosition());
 
 		return rocket;
 	}
 
+	// NEEDS FIXING (Target is a child of player since it should move according to the player's position)
 	SceneNode * Game::createTarget(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
 	{
 		// Get resources
@@ -375,11 +355,12 @@ namespace game
 
 		// Create a Target instance and make it a child of camera 
 		SceneNode* Target = new SceneNode(entity_name, geom, mat, 0);
-		camNode->AddChild(Target);
+		player->AddChild(Target);
 
 		//Set initial values
 		Target->SetScale(glm::vec3(0.001, 0.001, 0.001));
-		Target->SetPosition(glm::vec3(0, 0, -0.2));
+		//Target->SetPosition(glm::vec3(0,0,-3));
+		Target->SetPosition(glm::vec3(player->GetPosition().x, player->GetPosition().y + 0.6, -1.4));
 
 		return Target;
 	}

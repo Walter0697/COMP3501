@@ -7,10 +7,12 @@
 	std::cerr << exception_object.what() << std::endl
 
 // Main function that builds and runs the game
-int main(void){
+int main(void)
+{
     game::Game app; // Game application
 
-    try {
+    try 
+	{
         // Initialize game
         app.Init();
         // Setup the main resources and scene in the game
@@ -19,7 +21,8 @@ int main(void){
         // Run game
         app.MainLoop();
     }
-    catch (std::exception &e){
+    catch (std::exception &e)
+	{
         PrintException(e);
     }
 

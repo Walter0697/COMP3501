@@ -18,7 +18,6 @@ namespace game
 
 		for (int i = 0; i < rockets.size(); i++)
 		{
-			//std::cout << GetPosition().y << std::endl;
 			// when timer is 0 delete the rocket else update it
 			if (rockets[i]->timer <= 0)
 			{

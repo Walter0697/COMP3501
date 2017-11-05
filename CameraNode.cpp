@@ -8,20 +8,23 @@ namespace game
 		visible = false;
 	}
 
+	CameraNode::~CameraNode() {}
+
+	/*
 	glm::vec3 CameraNode::GetPosition(void) const
 	{
-		if (camera->firstPerson) {
-			return camera->GetPosition() + (camera->GetForward() * camera->distance);
-		}
-		else {
-			return camera->GetPosition();
-		}
+		return camera->GetPosition();
 	}
+	*/
 
-	glm::quat CameraNode::GetOrientation(void) const
+	// glm::vec3 CameraNode::
+
+	// MIGHT NEED TO BE CHANGED !!!!!!!!
+	glm::vec3 CameraNode::GetPosition(void) const
 	{
-		return camera->GetOrientation();
+		if (camera->firstPerson) { return camera->GetPosition() - (camera->GetForward() * camera->distance); }
+		else { return camera->GetPosition(); }
 	}
 
-	CameraNode::~CameraNode() {}
-}
+	glm::quat CameraNode::GetOrientation(void) const { return camera->GetOrientation(); }
+}// Game namespace 

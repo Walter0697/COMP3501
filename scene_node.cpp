@@ -14,6 +14,8 @@ namespace game
 	{
 		// Set name of scene node
 		name_ = name;
+		position_ = glm::vec3(0, 0, 0);
+		absolutePosition = glm::vec3(0, 0, 0);
 
 		// Check for geometry
 		if (geometry)
@@ -53,15 +55,17 @@ namespace game
 	SceneNode::~SceneNode() {}
 
 	/* Getters */
-	const std::string SceneNode::GetName(void) const	{ return name_; }
-	glm::vec3 SceneNode::GetPosition(void) const		{ return position_; }
-	glm::quat SceneNode::GetOrientation(void) const		{ return orientation_; }
-	glm::vec3 SceneNode::GetScale(void) const			{ return scale_; }
-	GLenum SceneNode::GetMode(void) const				{ return mode_; }
-	GLuint SceneNode::GetArrayBuffer(void) const		{ return array_buffer_; }
-	GLuint SceneNode::GetElementArrayBuffer(void) const { return element_array_buffer_; }
-	GLsizei SceneNode::GetSize(void) const				{ return size_; }
-	GLuint SceneNode::GetMaterial(void) const			{ return material_; }
+	const std::string SceneNode::GetName(void) const	    { return name_; }
+	glm::vec3 SceneNode::GetPosition(void) const		    { return position_; }
+	glm::quat SceneNode::GetOrientation(void) const		    { return orientation_; }
+	glm::vec3 SceneNode::GetScale(void) const			    { return scale_; }
+	GLenum SceneNode::GetMode(void) const				    { return mode_; }
+	GLuint SceneNode::GetArrayBuffer(void) const		    { return array_buffer_; }
+	GLuint SceneNode::GetElementArrayBuffer(void) const     { return element_array_buffer_; }
+	GLsizei SceneNode::GetSize(void) const				    { return size_; }
+	GLuint SceneNode::GetMaterial(void) const			    { return material_; }
+	glm::vec3 SceneNode::getAbsolutePosition(void) const    { return absolutePosition; }
+	glm::quat SceneNode::getAbsoluteOrientation(void) const { return absoluteOrientation; }
 
 	/* Setters */
 	void SceneNode::SetPosition(glm::vec3 position) { position_ = position; }
@@ -90,6 +94,14 @@ namespace game
 	/* Draw */
 	glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf)
 	{
+		// Set absolute position and orientation
+		if (parent_ != NULL) 
+		{
+			glm::vec4 temp = parent_transf * glm::vec4(GetPosition().x , GetPosition().y , GetPosition().z , 1.0);
+			absolutePosition = glm::vec3(temp.x, temp.y, temp.z);		
+			absoluteOrientation = parent_->getAbsoluteOrientation() * GetOrientation();
+		}
+
 		if ((array_buffer_ > 0) && (material_ > 0)) 
 		{
 			// Select proper material (shader program)

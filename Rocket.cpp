@@ -5,7 +5,7 @@ namespace game
 	Rocket::Rocket(const std::string name, const Resource *geometry, const Resource *material, const Resource *texture , glm::vec3 direction) : SceneNode (name, geometry, material,texture)
 	{
 		this->direction = glm::normalize(direction);
-		this->speed = 3.0;				// Hardcode speed 
+		this->speed = 0.5;				// Hardcode speed 
 		this->timer = 100;				// Hardcoded timer to get rid of rocket
 		visible = true;
 	}

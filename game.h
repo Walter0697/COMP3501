@@ -48,8 +48,9 @@ namespace game
             Camera camera_;					// Camera abstraction
 			CameraNode* camNode;
             bool animating_;				// Flag to turn animation on/off
-			Fly* player;					// player fly
-			SceneNode* target;
+			Fly* player;					// Player fly
+			SceneNode* target;				// Target for shooting
+			SceneNode* world;				// Dummy for root of the heirarchy
 			// STORE COLLIDABLES
 
             // Methods to initialize the game
@@ -60,7 +61,7 @@ namespace game
             // Methods to handle events
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 			static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-			static void ResizeCallback(GLFWwindow* window, int width, int height);
+            static void ResizeCallback(GLFWwindow* window, int width, int height);
 
             Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid
 			Rocket* createRocket(std::string , std::string , std::string,std::string);																// Asteroid field
