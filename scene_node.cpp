@@ -16,6 +16,7 @@ namespace game
 		name_ = name;
 		position_ = glm::vec3(0, 0, 0);
 		absolutePosition = glm::vec3(0, 0, 0);
+		del = false;
 
 		// Check for geometry
 		if (geometry)
@@ -91,9 +92,20 @@ namespace game
 		node->parent_ = this;
 	}
 
+	/* Maintain children if a child needs to be deleted, delete it */
+	void SceneNode::maintainChildren()
+	{
+		for (int i = 0; i < children_.size(); i++)
+		{
+			if (children_[i]->del) { children_.erase(children_.begin() + i); }
+		}
+	}
+
 	/* Draw */
 	glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf)
 	{
+		maintainChildren(); // Check children for deletion
+
 		// Set absolute position and orientation
 		if (parent_ != NULL) 
 		{
@@ -118,7 +130,7 @@ namespace game
 			glm::mat4 transf = SetupShader(material_, parent_transf);
 
 			// Draw geometry
-			if (mode_ == GL_POINTS) { glDrawArrays(mode_, 0, size_); }
+			if (mode_ == GL_POINTS) { glDrawArrays(GL_TRIANGLES, 0, size_); }
 			else { glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0); }
 
 			return transf;

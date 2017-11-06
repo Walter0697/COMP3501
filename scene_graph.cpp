@@ -82,7 +82,7 @@ namespace game
 	/* Update */
 	void SceneGraph::Update(void) 
 	{
-		// Traverse hierarchy to update all nodes
+		// Traverse hierarchy to update all nodes and delete ones that need to be deleted
 		std::stack<SceneNode *> stck;
 		stck.push(root_);
 		while (stck.size() > 0) 

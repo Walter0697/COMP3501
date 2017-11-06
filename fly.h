@@ -18,19 +18,17 @@
 #include "camera.h"
 #include "scene_node.h"
 #include "Rocket.h"
+#include "Character.h"
 
 namespace game 
 {
-    class Fly : public SceneNode
+    class Fly : public SceneNode , public Character
 	{
 	public:
-		Fly(std::string , const Resource* , const Resource* , const Resource*);
+		Fly(std::string = "" , const Resource* = 0, const Resource* = 0, const Resource* = 0);
 		~Fly();
 
-		float speed;
 		std::vector<Rocket*> rockets; //store the rockets
-		int fireRate;
-		int maxFireRate;
 
 		virtual void Update();	//update fly and all things that are related to it
 	private:

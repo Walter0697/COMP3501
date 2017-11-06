@@ -18,13 +18,12 @@ namespace game
 
 		for (int i = 0; i < rockets.size(); i++)
 		{
-			// when timer is 0 delete the rocket else update it
+			// when timer is 0 delete the rocket
 			if (rockets[i]->timer <= 0)
 			{
 				rockets[i]->visible = false;
 				rockets.erase(rockets.begin() + i);
 			}
-			else { rockets[i]->Update(); }
 		}
 	}
 } // namespace game;

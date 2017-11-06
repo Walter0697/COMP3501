@@ -22,7 +22,8 @@ namespace game {
 			SceneNode(const std::string name, const Resource *geometry, const Resource* material, const Resource*);		// Create scene node from given resources
             ~SceneNode();	// Destructor
             
-			bool visible;	//check visibility
+			bool visible;	// Check visibility
+			bool del;		// Check whether to delete or not
 
 			// Get node attributes
             const std::string GetName(void) const;		// Get name of node
@@ -71,7 +72,6 @@ namespace game {
 			glm::quat absoluteOrientation; // Absolute orientation
             glm::vec3 scale_; // Scale of node
 			
- 
             // Hierarchy
             SceneNode *parent_;
             std::vector<SceneNode *> children_;
@@ -80,8 +80,8 @@ namespace game {
             // Return transformation of current node combined with
             // parent transformation, without including scaling
             glm::mat4 SetupShader(GLuint program, glm::mat4 parent_transf);
+			void maintainChildren();
 
     }; // class SceneNode
 } // namespace game
-
 #endif // SCENE_NODE_H_

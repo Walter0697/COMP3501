@@ -1,6 +1,9 @@
 #include <iostream>
 #include <exception>
+#include <chrono>
+#include <thread>
 #include "game.h"
+
 
 // Macro for printing exceptions
 #define PrintException(exception_object)\
@@ -24,7 +27,8 @@ int main(void)
     catch (std::exception &e)
 	{
         PrintException(e);
-    }
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000000000));
+	}
 
     return 0;
 }

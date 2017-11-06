@@ -1,12 +1,13 @@
 #include "Rocket.h"
+#include <iostream>
 
 namespace game
 {
 	Rocket::Rocket(const std::string name, const Resource *geometry, const Resource *material, const Resource *texture , glm::vec3 direction) : SceneNode (name, geometry, material,texture)
 	{
 		this->direction = glm::normalize(direction);
-		this->speed = 0.5;				// Hardcode speed 
-		this->timer = 100;				// Hardcoded timer to get rid of rocket
+		this->speed = 1.0;				// Hardcode speed 
+		this->timer = 200;				// Hardcoded timer to get rid of rocket
 		visible = true;
 	}
 
@@ -15,8 +16,10 @@ namespace game
 	// Update rocket
 	void Rocket::Update() 
 	{ 
-		timer--;
-		Translate(glm::vec3(speed * direction)); 
+		timer--;	// Decrement timer 
+		// If timer is zero then we should delete the bullet else update the position of the bullet 
+		if (timer <= 0) { del = true; }	
+		else { Translate(glm::vec3(speed * direction)); }
 	}
 
 	// Collision between rocket and other collidables

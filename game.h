@@ -14,6 +14,7 @@
 #include "Rocket.h"
 #include "CameraNode.h"
 #include "fly.h"
+#include "Human.h"
 
 namespace game 
 {
@@ -51,6 +52,22 @@ namespace game
 			Fly* player;					// Player fly
 			SceneNode* target;				// Target for shooting
 			SceneNode* world;				// Dummy for root of the heirarchy
+			Human* human;					// human enemy
+			bool up;
+			bool down;
+			bool left;
+			bool right;
+			bool W;
+			bool A;
+			bool S;
+			bool D;
+			bool Z;
+			bool X;
+			bool Q;
+			bool I;
+			bool K;
+			bool space;
+
 			// STORE COLLIDABLES
 
             // Methods to initialize the game
@@ -62,12 +79,14 @@ namespace game
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 			static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
             static void ResizeCallback(GLFWwindow* window, int width, int height);
-
-            Asteroid *CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid
+			
+			void checkInput();
+			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
+            Asteroid* CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid
 			Rocket* createRocket(std::string , std::string , std::string,std::string);																// Asteroid field
             void CreateAsteroidField(int num_asteroids = 1500);																						// Create entire random asteroid field
 			Fly* createFly(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name);					// Create a fly instance
-            SceneNode* CreateInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string("")); // Create an instance of an object stored in the resource manager
+			Human* createHuman(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name);
 			SceneNode* createTarget(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string(""));
 	}; // class Game
 } // namespace game
