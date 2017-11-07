@@ -5,14 +5,22 @@
 #include "game.h"
 #include "bin/path_config.h"
 
+// SHOOTING WHILE MOVING IS HORRIBLE !!!!
+// CHECKING WHETHER A BUTTON IS HELD DOWN OR NOT IS AN ISSUE???????? WITH THE CHECK INPUT FUNCTION MAYBE USE A MIXTURE OF THE 2 !!!!!
 // A LITTLE DISTORTION IN PART OF THE LEFT WING OF THE FLY !!!!
 // WHEN MOVING THE BULLETS STOP MOVING !!!!!!!!!!!!
 // TARGET AND BULLETS DON'T EXACTLY LINE UP !!!!!
 // HOW TO SMOOTH OUT CAMERA AND PLAYER MOVEMENT !!!!!
+// WHEN CHANGING BETWEEN FIRST AND THIRD PRERSON VIEW WE ALSO NEED TO MOVE THE 
+// STORE COLLIDABLES OR SMTHG
 
-// SHOOT ROCKET WITH SPACEBAR
+// Spacebar to shoot rocket
 // W,A,S,D for movement
 // Right click to move from first to third person
+// Up,down,left,right arrow keys for camera movement 
+// Esc to quit 
+// Z,X to roll the camera (maybe we need to change that to be decided)
+// MIGHT NEED TO CHANGE THE ACSENT AND DECSENT CONTROLS SINCE THEY ARE HORRIBLE (I , K)
 namespace game 
 {
 	// Some configuration constants
@@ -36,7 +44,6 @@ namespace game
 	const std::string material_directory_g = MATERIAL_DIRECTORY;	// Materials 
 
 	Game::Game(void) {}
-
 	Game::~Game() { glfwTerminate(); }
 
 	void Game::Init(void) 
@@ -99,6 +106,8 @@ namespace game
 		/* Set event callbacks */
 		glfwSetKeyCallback(window_, KeyCallback);
 		glfwSetMouseButtonCallback(window_, MouseButtonCallback);
+		// Something
+		glfwSetInputMode(window_, GLFW_STICKY_KEYS, 1);
 		glfwSetFramebufferSizeCallback(window_, ResizeCallback);
 
 		glfwSetWindowUserPointer(window_, (void *) this);	// Set pointer to game object, so that callbacks can access it
@@ -167,16 +176,11 @@ namespace game
 				}
 			}
 
-			checkInput();
+			checkInput(); // Check for input
 
-			// Draw the scene
-			scene_.Draw(&camera_);
-
-			// Push buffer drawn in the background onto the display
-			glfwSwapBuffers(window_);
-
-			// Update other events like input handling
-			glfwPollEvents();
+			scene_.Draw(&camera_);	// Draw the scene
+			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
+			glfwPollEvents();	// Update other events like input handling
 		}
 	}
 
@@ -195,11 +199,8 @@ namespace game
 		// Get user data with a pointer to the game class
 		void* ptr = glfwGetWindowUserPointer(window);
 		Game* game = (Game *)ptr;
-
-		// View control
-		float rot_factor(glm::pi<float>() / 180);
-		float trans_factor = 2.0;
-
+		
+		/*
 		// Move camera up, down, and to the sides
 		if (key == GLFW_KEY_UP) { game->up = true; }
 		if (key == GLFW_KEY_DOWN) { game->down = true; }
@@ -219,14 +220,19 @@ namespace game
 		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
 		if (key == GLFW_KEY_I) { game->I = true; }
 		if (key == GLFW_KEY_K) { game->K = true; }
+		*/
 
-		// Quit game if 'q' is pressed
-		if (key == GLFW_KEY_Q && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+		// Quit game if ESC button is pressed
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
 
 		// Shoot a rocket
 		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 		{
-			game->space = true;
+			if (game->player->fireRate <= 0)
+			{
+				game->player->rockets.push_back(game->createRocket("Rocket", "simpleSphereMesh", "textureMaterial", "rocketTex"));
+				game->player->fireRate = game->player->maxFireRate;
+			}
 		}
 	}
 
@@ -240,12 +246,34 @@ namespace game
 		game->camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
 	}
 
+	// CHECKING WHETHER A BUTTON IS HELD DOWN OR NOT IS AN ISSUE???????? WITH THE CHECK INPUT FUNCTION
 	void Game::checkInput()
 	{
 		// View control
-		float rot_factor(glm::pi<float>() / 180);
-		float trans_factor = 2.0;
+		float rot_factor(glm::pi<float>() / 360);
+		float trans_factor = 1.0;
 
+		// Move camera up, down, and to the sides
+		if (glfwGetKey(window_, GLFW_KEY_UP)) { camera_.Pitch(rot_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_DOWN)) { camera_.Pitch(-rot_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_LEFT)) { camera_.Yaw(rot_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_RIGHT)) { camera_.Yaw(-rot_factor); }
+
+		// Forward backward and side movements
+		if (glfwGetKey(window_, GLFW_KEY_W)) { camera_.Translate(camera_.GetForward() * trans_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_S)) { camera_.Translate(-camera_.GetForward() * trans_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_A)) { camera_.Translate(-camera_.GetSide() * trans_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_D)) { camera_.Translate(camera_.GetSide() * trans_factor); }
+
+		// Roll camera
+		if (glfwGetKey(window_, GLFW_KEY_Z)) { camera_.Roll(-rot_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_X)) { camera_.Roll(rot_factor); }
+
+		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
+		if (glfwGetKey(window_, GLFW_KEY_I)) { camera_.Translate(camera_.GetUp() * trans_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_K)) { camera_.Translate(-camera_.GetUp() * trans_factor); }
+
+		/*
 		// Move camera up, down, and to the sides
 		if (up) { camera_.Pitch(rot_factor); up = false; }
 		if (down) { camera_.Pitch(-rot_factor); down = false; }
@@ -279,6 +307,7 @@ namespace game
 			}
 			space = false;
 		}
+		*/
 	}
 
 	Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name)
@@ -334,7 +363,7 @@ namespace game
 		return fly;
 	}
 
-	// Creates humans
+	// CREATE HUMAN
 	Human* Game::createHuman(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
 	{
 		std::vector<Resource*> resources = loadAssetResources(object_name, material_name, texture_name);	// Holder of resources
@@ -361,7 +390,7 @@ namespace game
 		rocket->SetScale(glm::vec3(0.1, 0.03, 0.1));
 		rocket->SetOrientation(player->getAbsoluteOrientation());
 		rocket->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		rocket->SetPosition(player->getAbsolutePosition());
+		rocket->SetPosition(player->getAbsolutePosition() - glm::normalize(camera_.GetForward()));
 
 		return rocket;
 	}

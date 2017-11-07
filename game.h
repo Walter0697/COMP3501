@@ -53,22 +53,7 @@ namespace game
 			SceneNode* target;				// Target for shooting
 			SceneNode* world;				// Dummy for root of the heirarchy
 			Human* human;					// human enemy
-			bool up;
-			bool down;
-			bool left;
-			bool right;
-			bool W;
-			bool A;
-			bool S;
-			bool D;
-			bool Z;
-			bool X;
-			bool Q;
-			bool I;
-			bool K;
-			bool space;
-
-			// STORE COLLIDABLES
+			// STORE COLLIDABLES OR SMTHG
 
             // Methods to initialize the game
             void InitWindow(void);
