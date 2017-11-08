@@ -11,7 +11,7 @@
 // WHEN MOVING THE BULLETS STOP MOVING !!!!!!!!!!!!
 // TARGET AND BULLETS DON'T EXACTLY LINE UP !!!!!
 // HOW TO SMOOTH OUT CAMERA AND PLAYER MOVEMENT !!!!!
-// WHEN CHANGING BETWEEN FIRST AND THIRD PRERSON VIEW WE ALSO NEED TO MOVE THE 
+// WHEN CHANGING BETWEEN FIRST AND THIRD PRERSON VIEW WE ALSO NEED TO MOVE THE TARGET
 // STORE COLLIDABLES OR SMTHG
 
 // Spacebar to shoot rocket
@@ -131,7 +131,7 @@ namespace game
 		resman_.LoadResource(Material, "textureMaterial", filename.c_str());
 
 		// HUMAN
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/human3.blend");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/human12.obj");
 		resman_.LoadResource(Mesh, "humanMesh", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/skin.png");
 		resman_.LoadResource(Texture, "humanTex", filename.c_str());
@@ -199,28 +199,6 @@ namespace game
 		// Get user data with a pointer to the game class
 		void* ptr = glfwGetWindowUserPointer(window);
 		Game* game = (Game *)ptr;
-		
-		/*
-		// Move camera up, down, and to the sides
-		if (key == GLFW_KEY_UP) { game->up = true; }
-		if (key == GLFW_KEY_DOWN) { game->down = true; }
-		if (key == GLFW_KEY_LEFT) { game->left = true; }
-		if (key == GLFW_KEY_RIGHT) { game->right = true; }
-
-		// Roll camera
-		if (key == GLFW_KEY_Z) { game->Z = true; }
-		if (key == GLFW_KEY_X) { game->X = true; }
-
-		// Forward backward and side movements
-		if (key == GLFW_KEY_W) { game->W = true; std::cout << "this is W" << std::endl; }
-		if (key == GLFW_KEY_S) { game->S = true; }
-		if (key == GLFW_KEY_A) { game->A = true; std::cout << "this is A" << std::endl; }
-		if (key == GLFW_KEY_D) { game->D = true; }
-
-		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
-		if (key == GLFW_KEY_I) { game->I = true; }
-		if (key == GLFW_KEY_K) { game->K = true; }
-		*/
 
 		// Quit game if ESC button is pressed
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
@@ -272,42 +250,6 @@ namespace game
 		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
 		if (glfwGetKey(window_, GLFW_KEY_I)) { camera_.Translate(camera_.GetUp() * trans_factor); }
 		if (glfwGetKey(window_, GLFW_KEY_K)) { camera_.Translate(-camera_.GetUp() * trans_factor); }
-
-		/*
-		// Move camera up, down, and to the sides
-		if (up) { camera_.Pitch(rot_factor); up = false; }
-		if (down) { camera_.Pitch(-rot_factor); down = false; }
-		if (left) { camera_.Yaw(rot_factor);  left = false; }
-		if (right) { camera_.Yaw(-rot_factor); right = false; }
-
-		// Roll camera
-		if (Z) { camera_.Roll(-rot_factor); Z = false; }
-		if (X) { camera_.Roll(rot_factor); X = false; }
-
-		// Forward backward and side movements
-		if (W) { camera_.Translate(camera_.GetForward()*trans_factor); W = false; }
-		if (S) { camera_.Translate(-camera_.GetForward()*trans_factor); S = false; }
-		if (A) { camera_.Translate(-camera_.GetSide()*trans_factor); A = false; }
-		if (D) { camera_.Translate(camera_.GetSide()*trans_factor); D = false; }
-
-		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
-		if (I) { camera_.Translate(camera_.GetUp()*trans_factor); I = false; }
-		if (K) { camera_.Translate(-camera_.GetUp()*trans_factor); K = false; }
-
-		// Quit game if 'q' is pressed
-		//if (Q) { glfwSetWindowShouldClose(window, true); }
-
-		// Shoot a rocket
-		if (space)
-		{
-			if (player->fireRate <= 0)
-			{
-				player->rockets.push_back(createRocket("Rocket", "simpleSphereMesh", "textureMaterial", "rocketTex"));
-				player->fireRate = player->maxFireRate;
-			}
-			space = false;
-		}
-		*/
 	}
 
 	Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name)
@@ -372,7 +314,7 @@ namespace game
 		world->AddChild(hum);
 
 		hum->SetScale(glm::vec3(1, 1, 1));
-		hum->SetPosition(camera_.GetPosition());
+		hum->SetPosition(glm::vec3(0, 0, -200));
 
 		return hum;
 	}

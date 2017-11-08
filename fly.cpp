@@ -8,6 +8,8 @@ namespace game
 		maxFireRate = 30;				// maximum fire rate
 		fireRate = 0;					// fire rate handler
 		visible = true;
+		maxHealth = 100;
+		health = maxHealth;
 	}
 
 	Fly::~Fly(){}
@@ -25,5 +27,10 @@ namespace game
 				rockets.erase(rockets.begin() + i);
 			}
 		}
+	}
+
+	bool Fly::collision(SceneNode * object)
+	{
+		return false;
 	}
 } // namespace game;
