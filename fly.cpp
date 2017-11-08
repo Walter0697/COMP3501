@@ -9,7 +9,7 @@ namespace game
 		fireRate = 0;					// fire rate handler
 		visible = true;
 
-		timer = 5;
+		timer = 20;
 		up = true;
 		
 		maxHealth = 100;
@@ -36,7 +36,7 @@ namespace game
 		if (up)
 		{
 			timer--;
-			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(5, 0, 0)));
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 500, glm::vec3(2, 0, 0)));
 			wing->Rotate(rotation);
 			if (timer <= 0)
 				up = false;
@@ -44,9 +44,9 @@ namespace game
 		else
 		{
 			timer++;
-			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(-5, 0, 0)));
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 500, glm::vec3(-2, 0, 0)));
 			wing->Rotate(rotation);
-			if (timer >= 5)
+			if (timer >= 20)
 				up = true;
 		}
 	}
