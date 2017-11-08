@@ -8,12 +8,11 @@ namespace game
 		maxFireRate = 30;				// maximum fire rate
 		fireRate = 0;					// fire rate handler
 		visible = true;
-
-		timer = 20;
-		up = true;
-		
-		maxHealth = 100;
-		health = maxHealth;
+		timer = 10;						// Timer for wing movement
+		upWingMovement = false;			// Checking for upwards or downwards fly rotation
+		wing = NULL;					// Wings of the fly
+		maxHealth = 100;				// Maximum health
+		health = maxHealth;				// Health of fly
 	}
 
 	Fly::~Fly(){}
@@ -33,21 +32,20 @@ namespace game
 		}
 		
 		//wing animation
-		if (up)
+		if (upWingMovement)
 		{
 			timer--;
-			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 500, glm::vec3(2, 0, 0)));
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(1, 0, 0)));
 			wing->Rotate(rotation);
 			if (timer <= 0)
-				up = false;
+				upWingMovement = false;
 		}
 		else
 		{
 			timer++;
-			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 500, glm::vec3(-2, 0, 0)));
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(-1, 0, 0)));
 			wing->Rotate(rotation);
-			if (timer >= 20)
-				up = true;
+			if (timer >= 10) { upWingMovement = true; }
 		}
 	}
 
