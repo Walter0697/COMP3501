@@ -8,6 +8,9 @@ namespace game
 		maxFireRate = 30;				// maximum fire rate
 		fireRate = 0;					// fire rate handler
 		visible = true;
+
+		timer = 5;
+		up = true;
 	}
 
 	Fly::~Fly(){}
@@ -15,6 +18,24 @@ namespace game
 	void Fly::Update()
 	{
 		fireRate--;
+
+		if (up)
+		{
+			timer--;
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(5, 0, 0)));
+			wing->Rotate(rotation);
+			if (timer <= 0)
+				up = false;
+		}
+		else
+		{
+			timer++;
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(-5, 0, 0)));
+			wing->Rotate(rotation);
+			if (timer >= 5)
+				up = true;
+		}
+		
 
 		for (int i = 0; i < rockets.size(); i++)
 		{

@@ -1,4 +1,4 @@
-#include <iostream>
+ #include <iostream>
 #include <time.h>
 #include <sstream>
 
@@ -137,8 +137,10 @@ namespace game
 		resman_.LoadResource(Texture, "humanTex", filename.c_str());
 
 		// FLY
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/fly.obj");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/fly2.obj");
 		resman_.LoadResource(Mesh, "flyMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flywing.obj");
+		resman_.LoadResource(Mesh, "flyWingMesh", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/stripes.png");
 		resman_.LoadResource(Texture, "flyTex", filename.c_str());
 
@@ -359,6 +361,16 @@ namespace game
 		fly->SetScale(glm::vec3(100, 100, 100));
 		fly->Rotate(glm::angleAxis(glm::pi<float>() , glm::vec3(0 , 1 , 0)));
 		fly->SetPosition(glm::vec3(0.0, -0.3, -1.5));
+
+		resources = loadAssetResources("flyWingMesh", material_name, texture_name);
+
+		SceneNode *wing = new SceneNode("Fly_wing", resources[0], resources[1], resources[2]);
+
+		fly->AddChild(wing);
+
+		wing->SetScale(glm::vec3(100, 100, 100));
+		wing->SetPosition(glm::vec3(0.0, 0.2, 0.0));
+		fly->wing = wing;
 
 		return fly;
 	}

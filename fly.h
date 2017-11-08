@@ -30,6 +30,10 @@ namespace game
 
 		std::vector<Rocket*> rockets; //store the rockets
 
+		SceneNode *wing = NULL;
+		int timer;
+		bool up = false;
+
 		virtual void Update();	//update fly and all things that are related to it
 	private:
 	protected:
