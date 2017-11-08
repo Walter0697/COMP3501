@@ -32,9 +32,9 @@ namespace game
 
 		std::vector<Rocket*> rockets; //store the rockets
 
-		SceneNode *wing = NULL;
+		SceneNode* wing;
 		int timer;
-		bool up = false;
+		bool upWingMovement;
 
 		virtual void Update();	//update fly and all things that are related to it
 		bool collision(SceneNode*);
