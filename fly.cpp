@@ -11,14 +11,28 @@ namespace game
 
 		timer = 5;
 		up = true;
+		
+		maxHealth = 100;
+		health = maxHealth;
 	}
 
 	Fly::~Fly(){}
 
 	void Fly::Update()
 	{
-		fireRate--;
+		fireRate--;		
 
+		for (int i = 0; i < rockets.size(); i++)
+		{
+			// when timer is 0 delete the rocket
+			if (rockets[i]->timer <= 0)
+			{
+				rockets[i]->visible = false;
+				rockets.erase(rockets.begin() + i);
+			}
+		}
+		
+		//wing animation
 		if (up)
 		{
 			timer--;
@@ -35,16 +49,10 @@ namespace game
 			if (timer >= 5)
 				up = true;
 		}
-		
+	}
 
-		for (int i = 0; i < rockets.size(); i++)
-		{
-			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0)
-			{
-				rockets[i]->visible = false;
-				rockets.erase(rockets.begin() + i);
-			}
-		}
+	bool Fly::collision(SceneNode * object)
+	{
+		return false;
 	}
 } // namespace game;

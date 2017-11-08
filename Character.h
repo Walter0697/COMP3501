@@ -10,6 +10,8 @@ namespace game
 		float speed;
 		int fireRate;
 		int maxFireRate;
+		int health;
+		int maxHealth;
 
 	private:
 	protected:
