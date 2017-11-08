@@ -1,6 +1,10 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+
+#include <iostream>
+#include <ctime>
+
 // CREATE A GENERAL CHARACTER WHICH WILL BE INHERITED BY ALL CHARACTER TYPES 
 namespace game
 {

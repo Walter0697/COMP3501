@@ -169,8 +169,13 @@ namespace game
 			{
 				static double last_time = 0;
 				double current_time = glfwGetTime();
+
+				human->UpdateTarget(camera_.GetPosition());
+				human->UpdateOrientation(camera_.GetOrientation());
+				
 				if ((current_time - last_time) > 0.01) {
 					scene_.Update();
+					
 
 					//glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(0,1,0)));
 					//player->Rotate(rotation);
