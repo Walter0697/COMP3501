@@ -1,14 +1,12 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-
-#include <iostream>
-#include <ctime>
+#include "Collidable.h"
 
 // CREATE A GENERAL CHARACTER WHICH WILL BE INHERITED BY ALL CHARACTER TYPES 
 namespace game
 {
-	class Character
+	class Character : public Collidable
 	{
 	public:
 		float speed;
@@ -16,6 +14,8 @@ namespace game
 		int maxFireRate;
 		int health;
 		int maxHealth;
+
+		virtual void update() = 0;
 
 	private:
 	protected:

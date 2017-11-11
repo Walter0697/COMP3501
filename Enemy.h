@@ -17,13 +17,20 @@ namespace game
 	class Enemy : public Character
 	{
 	public:
-		virtual void UpdateTarget(glm::vec3 targPos) = 0;
-		virtual void UpdateOrientation(glm::quat orient) = 0;
+		virtual void updateTarget(glm::vec3 targPos) { targetPos = targPos; }
+
+		virtual	void updateTargetOrientation(glm::quat orient)
+		{
+			targetOrientation = orient;
+			glm::quat rotation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			targetOrientation = rotation * targetOrientation;
+		}
+
 
 	private:
 	protected:
 		glm::vec3 targetPos;
-		glm::quat orientation;
+		glm::quat targetOrientation;
 		time_t lastUpdate;
 		time_t updateTime;
 		int state;

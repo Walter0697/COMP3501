@@ -2,24 +2,28 @@
 #define HUMAN_H
 
 #include "scene_node.h"
+#include "Character.h"
 #include "Enemy.h"
-#include "Collidable.h"
 
-// HUMANS ARE SCENENODES CHARACTERS AND COLLIDABLES 
+// HUMANS ARE CHARACTERS AND COLLIDABLES 
 namespace game
 {
-	class Human : public SceneNode , public Enemy, public Collidable
+	class Human : public Enemy
 	{
 	public:
-		Human(const std::string = "", const Resource* = 0, const Resource* = 0, const Resource* = 0);
+		Human(SceneNode*, SceneNode*, SceneNode*, SceneNode*, SceneNode*);
 		~Human();
-		void Update();
-		void Human::UpdateTarget(glm::vec3 targPos);
-		void Human::UpdateOrientation(glm::quat orient);
+
+		SceneNode* body;		// human body
+		SceneNode* leftHand;	// left hand
+		SceneNode* rightHand;	// right hand
+		SceneNode* leftLeg;		// left leg
+		SceneNode* rightLeg;	// right leg
+
+		void update();
 		bool collision(SceneNode*);
+
 	private:
-
-
 	protected:
 	};
 }

@@ -14,23 +14,26 @@
 #include "camera.h"
 #include "Collidable.h"
 
+
+// Rockets 
 namespace game
 {
-	class Rocket : public SceneNode , public Collidable
+	class Rocket : public Collidable 
 	{
 	public:
-		Rocket(const std::string name, const Resource *geometry, const Resource *material, const Resource *texture , glm::vec3);
+		Rocket(SceneNode*, glm::vec3);
 		~Rocket();
 
 		glm::vec3 direction;	// direction of the rocket
 		float speed;			// speed of the rocket
 		int timer;				// time after which rocket gets deleted 
+		SceneNode* rocketNode;	// rocket node
 
 		virtual void Update();	// update the position of the rocket
 		bool collision(SceneNode* , Camera*);	// collision detection between rocket and other collidables
 		bool collision(SceneNode*);
-	private:
 
+	private:
 	protected:
 	};
 }

@@ -19,25 +19,28 @@
 #include "scene_node.h"
 #include "Rocket.h"
 #include "Character.h"
-#include "Collidable.h"
 
-// FLIES ARE COLLIDABLES SCENENODES AND CHARACTERS
+// FLIES ARE COLLIDABLES AND CHARACTERS
 namespace game 
 {
-    class Fly : public SceneNode , public Character , public Collidable
+    class Fly : public Character
 	{
 	public:
-		Fly(std::string = "" , const Resource* = 0, const Resource* = 0, const Resource* = 0);
+		Fly(SceneNode*,SceneNode*,SceneNode*);
 		~Fly();
 
 		std::vector<Rocket*> rockets; //store the rockets
 
-		SceneNode* wing;
+		SceneNode* body;
+		SceneNode* wings;
+		SceneNode* legs;
+
 		int timer;
 		bool upWingMovement;
 
-		virtual void Update();	//update fly and all things that are related to it
+		void update();	//update fly and all things that are related to it
 		bool collision(SceneNode*);
+
 	private:
 	protected:
     }; 

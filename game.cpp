@@ -5,14 +5,10 @@
 #include "game.h"
 #include "bin/path_config.h"
 
-// SHOOTING WHILE MOVING IS HORRIBLE !!!!
-// CHECKING WHETHER A BUTTON IS HELD DOWN OR NOT IS AN ISSUE???????? WITH THE CHECK INPUT FUNCTION MAYBE USE A MIXTURE OF THE 2 !!!!!
+// TARGET SHOULD BE ALWAYS AT THE TOP
+// MOVING THE ENEMY WITH THE PLAYER
 // A LITTLE DISTORTION IN PART OF THE LEFT WING OF THE FLY !!!!
-// WHEN MOVING THE BULLETS STOP MOVING !!!!!!!!!!!!
-// TARGET AND BULLETS DON'T EXACTLY LINE UP !!!!!
-// HOW TO SMOOTH OUT CAMERA AND PLAYER MOVEMENT !!!!!
-// WHEN CHANGING BETWEEN FIRST AND THIRD PRERSON VIEW WE ALSO NEED TO MOVE THE TARGET
-// STORE COLLIDABLES OR SMTHG
+// STORE COLLIDABLES OR SMTHG (CHARACTERS)
 
 // Spacebar to shoot rocket
 // W,A,S,D for movement
@@ -122,6 +118,8 @@ namespace game
 		resman_.CreateCylinder("targetMesh", 0.1, 0.6, 0.35, 4, 4, glm::vec3(1,0,0));
 
 		/* Create Resources */
+
+		/* MATERIAL GLSL FILES */
 		// OBJECT MATREIAL FOR GENERAL OBJECTS
 		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
 		resman_.LoadResource(Material, "objectMaterial", filename.c_str());
@@ -130,32 +128,84 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/texture");
 		resman_.LoadResource(Material, "textureMaterial", filename.c_str());
 
-		// HUMAN
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/human12.obj");
-		resman_.LoadResource(Mesh, "humanMesh", filename.c_str());
+		/* TEXTURES */
+		// ROCKET TEXTURE
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/rocketTexture.png");
+		resman_.LoadResource(Texture, "rocketTex", filename.c_str());
+
+		// HUMAN TEXTURE
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/skin.png");
 		resman_.LoadResource(Texture, "humanTex", filename.c_str());
 
-		// FLY
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/fly2.obj");
-		resman_.LoadResource(Mesh, "flyMesh", filename.c_str());
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flywing.obj");
-		resman_.LoadResource(Mesh, "flyWingMesh", filename.c_str());
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/stripes.png");
-		resman_.LoadResource(Texture, "flyTex", filename.c_str());
+		// FLY TEXTURES
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/flyBodyTexture.png");
+		resman_.LoadResource(Texture, "flyBodyTex", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/flyWingsTexture.png");
+		resman_.LoadResource(Texture, "flyWingsTex", filename.c_str());
 
-		// ROCKET
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/plain.png");
-		resman_.LoadResource(Texture, "rocketTex", filename.c_str());
+		// SPIDER TEXTURES
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/spiderBodyTexture.png");
+		resman_.LoadResource(Texture, "spiderBodyTex", filename.c_str());
+
+		// DRAGONFLY TEXTURES
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/dragonFlyBodyTexture.png");
+		resman_.LoadResource(Texture, "dragonFlyBodyTex", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/dragonFlyWingsTexture.png");
+		resman_.LoadResource(Texture, "dragonFlyWingsTex", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/dragonFlyLegsTexture.png");
+		resman_.LoadResource(Texture, "dragonFlyLegsTex", filename.c_str());
+
+		/* GEOMETRIES */
+		// HUMAN BODY LEFT AND RIGHT HANDS AND LEGS
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
+		resman_.LoadResource(Mesh, "humanBodyMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanLeftHand.obj");
+		resman_.LoadResource(Mesh, "humanLeftHandMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanRightHand.obj");
+		resman_.LoadResource(Mesh, "humanRightHandMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanLeftLeg.obj");
+		resman_.LoadResource(Mesh, "humanLeftLegMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanRightLeg.obj");
+		resman_.LoadResource(Mesh, "humanRightLegMesh", filename.c_str());
+		
+		// SPIDER BODY and RIGHT AND LEFT LEGS
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderBody.obj");
+		resman_.LoadResource(Mesh, "spiderBodyMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderLeftLeg.obj");
+		resman_.LoadResource(Mesh, "spiderLeftLegMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderRightLeg.obj");
+		resman_.LoadResource(Mesh, "spiderRightLegMesh", filename.c_str());
+
+		// DRAGONFLY BODY, RIGHT and LEFT WINGS and LEGS
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/dragonFlyBody.obj");
+		resman_.LoadResource(Mesh, "dragonFlyBodyMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/dragonFlyLeftWing.obj");
+		resman_.LoadResource(Mesh, "dragonFlyLeftWingMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/dragonFlyRightWing.obj");
+		resman_.LoadResource(Mesh, "dragonFlyRightWingMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/dragonFlyLegs.obj");
+		resman_.LoadResource(Mesh, "dragonFlyLegsMesh", filename.c_str());
+
+		// FLY BODY WINGS AND LEGS
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyBody.obj");
+		resman_.LoadResource(Mesh, "flyBodyMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyWings.obj");
+		resman_.LoadResource(Mesh, "flyWingsMesh", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyLegs.obj");
+		resman_.LoadResource(Mesh, "flyLegsMesh", filename.c_str());
 	}
 
+	/* Setup game elements */
 	void Game::SetupScene(void) 
 	{
-		scene_.SetBackgroundColor(viewport_background_color_g);						// Set background color for the scene
-		CreateAsteroidField(100);													// For testing
-		player = createFly("player", "flyMesh", "textureMaterial", "flyTex");	    // Create player
-		target = createTarget("playerTarget", "targetMesh", "objectMaterial" , ""); // Create target for shooting
-		human = createHuman("human1", "humanMesh", "textureMaterial", "humanTex");	// Create human enemy
+		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
+		CreateAsteroidField(100);															// For testing
+
+		player = createFly("player");														// Create player
+		target = createTarget("playerTarget");												// Create target for shooting
+		human = createHuman("human1");														// Create human enemy
+		spider = createSpider("spider1");													// Create Spider enemy
+		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
 	}
 
 	void Game::MainLoop(void)
@@ -163,27 +213,17 @@ namespace game
 		// Loop while the user did not close the window
 		while (!glfwWindowShouldClose(window_)) 
 		{
-			// Animate the scene
-			// ANIMATING THE WINGS SHOULD OCCUR IN THE PLAYER'S UPDATE!!!!!!
-			if (animating_)
-			{
-				static double last_time = 0;
-				double current_time = glfwGetTime();
-
-				human->UpdateTarget(camera_.GetPosition());
-				human->UpdateOrientation(camera_.GetOrientation());
-				
-				if ((current_time - last_time) > 0.01) {
-					scene_.Update();
-					
-
-					//glm::quat rotation(glm::angleAxis(glm::pi<float>() / 180, glm::vec3(0,1,0)));
-					//player->Rotate(rotation);
-					last_time = current_time;
-				}
-			}
-
 			checkInput(); // Check for input
+
+
+			player->update();
+
+			//float angle = glm::dot(glm::normalize(human->body->getAbsolutePosition() - camera_.GetPosition()), glm::normalize(player->body->getAbsolutePosition() - camera_.GetPosition()));
+			//glm::vec3 axis = glm::cross(glm::normalize(human->body->getAbsolutePosition() - camera_.GetPosition()), glm::normalize(player->body->getAbsolutePosition() - camera_.GetPosition()));
+
+			human->updateTarget(player->body->getAbsolutePosition());
+			human->updateTargetOrientation(player->body->getAbsoluteOrientation());
+			human->update();
 
 			scene_.Draw(&camera_);	// Draw the scene
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
@@ -209,16 +249,6 @@ namespace game
 
 		// Quit game if ESC button is pressed
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-
-		// Shoot a rocket
-		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-		{
-			if (game->player->fireRate <= 0)
-			{
-				game->player->rockets.push_back(game->createRocket("Rocket", "simpleSphereMesh", "textureMaterial", "rocketTex"));
-				game->player->fireRate = game->player->maxFireRate;
-			}
-		}
 	}
 
 	/* Resize Screen */
@@ -236,7 +266,7 @@ namespace game
 	{
 		// View control
 		float rot_factor(glm::pi<float>() / 360);
-		float trans_factor = 1.0;
+		float trans_factor = 0.1;
 
 		// Move camera up, down, and to the sides
 		if (glfwGetKey(window_, GLFW_KEY_UP)) { camera_.Pitch(rot_factor); }
@@ -257,6 +287,16 @@ namespace game
 		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
 		if (glfwGetKey(window_, GLFW_KEY_I)) { camera_.Translate(camera_.GetUp() * trans_factor); }
 		if (glfwGetKey(window_, GLFW_KEY_K)) { camera_.Translate(-camera_.GetUp() * trans_factor); }
+
+		// Shoot a rocket
+		if (glfwGetKey(window_ , GLFW_KEY_SPACE))
+		{
+			if (player->fireRate <= 0)
+			{
+				player->rockets.push_back(createRocket("Rocket1"));
+				player->fireRate = player->maxFireRate;
+			}
+		}
 	}
 
 	Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name)
@@ -287,88 +327,164 @@ namespace game
 			// Create asteroid instance
 			Asteroid *ast = CreateAsteroidInstance(name, "simpleSphereMesh", "objectMaterial");
 
-			// Set attributes of asteroid: random position, orientation, and
-			// angular momentum
+			// Set attributes of asteroid: random position, orientation, and angular momentum
 			ast->SetPosition(glm::vec3(-300 + 400*((float)rand() / RAND_MAX), -300 + 400*((float)rand() / RAND_MAX), - 400*((float)rand() / RAND_MAX)));
 			ast->SetOrientation(glm::normalize(glm::angleAxis(glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
 			ast->SetAngM(glm::normalize(glm::angleAxis(0.05f*glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
 		}
 	}
 
-	// (MAYBE MAKE IT INDEPENDENT OF CAMERA LATER ON)
-	Fly* Game::createFly(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
+	// (MAYBE MAKE IT INDEPENDENT OF CAMERA LATER ON) initial values are set in the constructor
+	Fly* Game::createFly(std::string entity_name)
 	{
-		std::vector<Resource*> resources = loadAssetResources(object_name, material_name, texture_name);	// Holder of resources
+		// Setup fly parts
+		SceneNode* flyBody = createSceneNode(entity_name + "Body", "flyBodyMesh", "textureMaterial", "flyBodyTex");
+		SceneNode* flyWings = createSceneNode(entity_name + "Wings", "flyWingsMesh", "textureMaterial", "flyWingsTex");
+		SceneNode* flyLegs = createSceneNode(entity_name + "Legs", "flyLegsMesh", "textureMaterial", "flyWingsTex");
 
-		//Create an instance of a fly
-		Fly* fly = new Fly(entity_name, resources[0], resources[1], resources[2]);
-		camNode->AddChild(fly);
+		// Setup heirarchy
+		camNode->AddChild(flyBody);
+		//world->AddChild(flyBody);			// testing
+		flyBody->AddChild(flyWings);
+		flyBody->AddChild(flyLegs);
 
-		//Set initial values and rotate the fly by 180 degrees
-		fly->SetScale(glm::vec3(100, 100, 100));
-		fly->Rotate(glm::angleAxis(glm::pi<float>() , glm::vec3(0 , 1 , 0)));
-		fly->SetPosition(glm::vec3(0.0, -0.3, -1.5));
+		// Setup parts Scales
+		flyBody->SetScale(glm::vec3(10, 10, 10));
+		flyWings->SetScale(glm::vec3(10, 10, 10));
+		flyLegs->SetScale(glm::vec3(10, 10, 10));
 
-		resources = loadAssetResources("flyWingMesh", material_name, texture_name);
+		// Setup fly Rotations
+		flyBody->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0)));
 
-		SceneNode *wing = new SceneNode("Fly_wing", resources[0], resources[1], resources[2]);
+		// Setup parts Positions
+		flyBody->SetPosition(glm::vec3(0, -0.3, -1.5));
 
-		fly->AddChild(wing);
+		return new Fly(flyBody, flyWings, flyLegs);
+	}
 
-		wing->SetScale(glm::vec3(100, 100, 100));
-		wing->SetPosition(glm::vec3(0.0, 0.2, 0.0));
-		fly->wing = wing;
+	// Create a Spider instance
+	Spider* Game::createSpider(std::string entity_name)
+	{
+		// Setup spider parts 
+		SceneNode* spiderBody = createSceneNode(entity_name + "Body", "spiderBodyMesh", "textureMaterial", "spiderBodyTex");
+		SceneNode* spiderLeftLeg = createSceneNode(entity_name + "LeftLeg", "spiderLeftLegMesh", "textureMaterial", "spiderBodyTex");
+		SceneNode* spiderRightLeg = createSceneNode(entity_name + "RightLeg", "spiderRightLegMesh", "textureMaterial", "spiderBodyTex");
 
-		return fly;
+		// Setup heirarchy
+		world->AddChild(spiderBody);
+		spiderBody->AddChild(spiderLeftLeg);
+		spiderBody->AddChild(spiderRightLeg);
+
+		// Setup parts Scaling
+		spiderBody->SetScale(glm::vec3(glm::vec3(0.002, 0.002, 0.002)));
+		spiderLeftLeg->SetScale(glm::vec3(0.002, 0.002, 0.002));
+		spiderRightLeg->SetScale(glm::vec3(glm::vec3(0.002, 0.002, 0.002)));
+
+		// Setup parts positions
+		spiderBody->SetPosition(glm::vec3(10, 0, -20));
+
+		return new Spider(spiderBody, spiderLeftLeg, spiderRightLeg);
+	}
+
+	// Create a Dragonfly instance
+	DragonFly* Game::createDragonFly(std::string entity_name)
+	{
+		// Setup dragonFly parts 
+		SceneNode* dragonFlyBody = createSceneNode(entity_name + "Body", "dragonFlyBodyMesh", "textureMaterial", "dragonFlyBodyTex");
+		SceneNode* dragonFlyLeftWing = createSceneNode(entity_name + "LeftWing", "dragonFlyLeftWingMesh", "textureMaterial", "dragonFlyWingsTex");
+		SceneNode* dragonFlyRightWing = createSceneNode(entity_name + "RightWing", "dragonFlyRightWingMesh", "textureMaterial", "dragonFlyWingsTex");
+		SceneNode* dragonFlyLegs = createSceneNode(entity_name + "Legs", "dragonFlyLegsMesh", "textureMaterial", "dragonFlyLegsTex");
+
+		// Setup heirarchy
+		world->AddChild(dragonFlyBody);
+		dragonFlyBody->AddChild(dragonFlyLeftWing);
+		dragonFlyBody->AddChild(dragonFlyRightWing);
+		dragonFlyBody->AddChild(dragonFlyLegs);
+
+		// Setup parts scale
+		dragonFlyBody->SetScale(glm::vec3(20, 20, 20));
+		dragonFlyLeftWing->SetScale(glm::vec3(20, 20, 20));
+		dragonFlyRightWing->SetScale(glm::vec3(20, 20, 20));
+		dragonFlyLegs->SetScale(glm::vec3(20, 20, 20));
+
+		// Setup parts positions
+		dragonFlyBody->SetPosition(glm::vec3(-10, 0, -20));
+
+		return new DragonFly(dragonFlyBody, dragonFlyLeftWing, dragonFlyRightWing, dragonFlyLegs);
 	}
 
 	// CREATE HUMAN
-	Human* Game::createHuman(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
+	Human* Game::createHuman(std::string entity_name)
 	{
-		std::vector<Resource*> resources = loadAssetResources(object_name, material_name, texture_name);	// Holder of resources
+		SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
+		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
+		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
+		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
+		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
 
-		Human* hum = new Human(entity_name, resources[0], resources[1], resources[2]);
-		world->AddChild(hum);
+		// Setup Heirarchy
+		world->AddChild(humanBody);
+		humanBody->AddChild(humanLeftHand);
+		humanBody->AddChild(humanRightHand);
+		humanBody->AddChild(humanLeftLeg);
+		humanBody->AddChild(humanRightLeg);
 
-		hum->SetScale(glm::vec3(1, 1, 1));
-		hum->SetPosition(glm::vec3(0, 0, -200));
+		// Setup part scale
+		humanBody->SetScale (glm::vec3(1, 1, 1));
+		humanLeftHand->SetScale(glm::vec3(1, 1, 1));
+		humanRightHand->SetScale(glm::vec3(1, 1, 1));
+		humanLeftLeg->SetScale(glm::vec3(1, 1, 1));
+		humanRightLeg->SetScale(glm::vec3(1, 1, 1));
 
-		return hum;
+		// Setup part Positions
+		humanBody->SetPosition(glm::vec3(0, 0, -200));
+
+		return new Human(humanBody, humanLeftHand, humanRightHand, humanLeftLeg, humanRightLeg);
 	}
 
-	// NEED TO FIX ORIGINAL DIRECTION SUCH THAT IT WOULD HAVE THE DIRECTION OF THE PLAYER AS ITS DIRECTION VECTOR (MAYBE USE A QUATERNION INSTEAD OF A DIRECTION VECTOR)
-	Rocket* Game::createRocket(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
+	// GENERALIZE TO RECEIVE DIRECTION INSTEAD OF CODING IT FOR ONLY THE FLY AND TEXTURE NAME FOR DIFFERENT TYPE OF ROCKETS
+	Rocket* Game::createRocket(std::string entity_name)
 	{
-		std::vector<Resource*> resources = loadAssetResources(object_name, material_name, texture_name);	// Holder of resources
+		SceneNode* rock = createSceneNode(entity_name, "simpleSphereMesh", "textureMaterial", "rocketTex");
+		world->AddChild(rock);
 
-		// Create a rocket instance add it as a root
-		Rocket* rocket = new Rocket(entity_name, resources[0], resources[1], resources[2], camera_.GetForward());
-		world->AddChild(rocket);
-
-		//Set initial value
-		rocket->SetScale(glm::vec3(0.1, 0.03, 0.1));
-		rocket->SetOrientation(player->getAbsoluteOrientation());
-		rocket->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		rocket->SetPosition(player->getAbsolutePosition() - glm::normalize(camera_.GetForward()));
-
-		return rocket;
+		// Set initial values
+		rock->SetScale(glm::vec3(0.1, 0.1, 0.1));
+		rock->SetOrientation(player->body->getAbsoluteOrientation());
+		rock->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
+		rock->SetPosition(player->body->getAbsolutePosition());
+		
+		// Set the rocket node and the direction of the rocket
+		return new Rocket(rock, target->getAbsolutePosition() - player->body->getAbsolutePosition());
 	}
-
-	// NEEDS FIXING (Target is a child of player since it should move according to the player's position)
-	SceneNode * Game::createTarget(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name)
+	
+	// TARGET IS A CHILD OF CAMERA SINCE OUR TARGET IS BASED ON THE CAMERA POSITION AND MOVE WITH IT AND NOT THE PLAYER
+	SceneNode* Game::createTarget(std::string entity_name)
 	{
-		// Get resources
-		std::vector<Resource*> resources = loadAssetResources(object_name, material_name, texture_name);	// Holder of resources
-
 		// Create a Target instance and make it a child of camera 
-		SceneNode* Target = new SceneNode(entity_name, resources[0], resources[1], resources[2]);
+		SceneNode* Target = createSceneNode(entity_name, "targetMesh", "objectMaterial", "");
 		camNode->AddChild(Target);
 
 		//Set initial values
-		Target->SetScale(glm::vec3(0.01, 0.01, 0.01));
-		Target->SetPosition(glm::vec3(0, 0, -2.0));
+		Target->SetScale(glm::vec3(1, 1, 1));
+		Target->SetPosition(glm::vec3(0, 0, -200));
 
 		return Target;
+	}
+
+	// Function to create a new SceneNode
+	SceneNode* Game::createSceneNode(std::string entity_name, std::string geometryName, std::string materialName, std::string textureName )
+	{
+		// Get resources
+		Resource *geom = resman_.GetResource(geometryName);
+		if (!geom) { throw(GameException(std::string("Could not find resource \"") + geometryName + std::string("\""))); }
+		Resource *mat = resman_.GetResource(materialName);
+		if (!mat) { throw(GameException(std::string("Could not find resource \"") + materialName + std::string("\""))); }
+		Resource *tex = resman_.GetResource(textureName);
+		if (!tex) { std::cout << std::string("Could not find resource \"") + textureName + std::string("\"") << std::endl; }
+
+		//return a new sceneNode object
+		return new SceneNode(entity_name, geom, mat, tex);
 	}
 
 	// LOADS GEOMETRY MATERIAL AND TEXTURE STORES THEM IN A VECTOR AND RETURN THEM

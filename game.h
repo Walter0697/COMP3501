@@ -6,7 +6,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Enemy.h"
+
 #include "scene_graph.h"
 #include "resource_manager.h"
 #include "camera.h"
@@ -15,6 +15,8 @@
 #include "CameraNode.h"
 #include "fly.h"
 #include "Human.h"
+#include "Spider.h"
+#include "Dragonfly.h"
 
 namespace game 
 {
@@ -47,12 +49,15 @@ namespace game
             SceneGraph scene_;				// Scene graph containing all nodes to render
 			ResourceManager resman_;		// Resources available to the game
             Camera camera_;					// Camera abstraction
-			CameraNode* camNode;
             bool animating_;				// Flag to turn animation on/off
+
+			CameraNode* camNode;
 			Fly* player;					// Player fly
 			SceneNode* target;				// Target for shooting
 			SceneNode* world;				// Dummy for root of the heirarchy
 			Human* human;					// human enemy
+			Spider* spider;                 // Spider enemy
+			DragonFly* dragonFly;			// Dragon fly enemy
 			// STORE COLLIDABLES OR SMTHG
 
             // Methods to initialize the game
@@ -67,12 +72,16 @@ namespace game
 			
 			void checkInput();
 			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
-            Asteroid* CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid
-			Rocket* createRocket(std::string , std::string , std::string,std::string);																// Asteroid field
+            Asteroid* CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid																// Asteroid field
             void CreateAsteroidField(int num_asteroids = 1500);																						// Create entire random asteroid field
-			Fly* createFly(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name);					// Create a fly instance
-			Human* createHuman(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name);
-			SceneNode* createTarget(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string(""));
+
+			Rocket* createRocket(std::string);
+			Fly* createFly(std::string entity_name);														// Create a fly instance
+			Human* createHuman(std::string entity_name);													// Create a human instance
+			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
+			Spider* createSpider(std::string entity_name);													// Create a spider instance
+			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
+			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game
 #endif // GAME_H_

@@ -11,5 +11,4 @@ namespace game
 		virtual bool collision(SceneNode*) = 0;
 	};
 }
-
 #endif // COLLIDABLE_H

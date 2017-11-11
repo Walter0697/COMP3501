@@ -1,22 +1,23 @@
 #ifndef SPIDER_H
 #define SPIDER_H
 
-#include "Collidable.h"
 #include "Enemy.h"
 #include "scene_node.h"
 
-// SPIDERS ARE CHARACTERS COLLIDABLES AND SCENENODES
+// SPIDERS ARE CHARACTERS COLLIDABLES 
 namespace game
 {
-	class Spider : public Collidable , public Enemy, public SceneNode
+	class Spider : public Enemy
 	{
 	public:
-		Spider(std::string, const Resource*, const Resource*, const Resource*);
+		Spider(SceneNode*, SceneNode*, SceneNode*);
 		~Spider();
 
-		void Update();
-		void Spider::UpdateTarget(glm::vec3 targPos);
-		void Spider::UpdateOrientation(glm::quat orient);
+		SceneNode* body;		// Spider Body
+		SceneNode* leftLeg;		// Spider left leg
+		SceneNode* rightLeg;	// Spider right leg
+
+		void update();
 		bool collision(SceneNode*);
 	private:
 	protected:

@@ -50,7 +50,8 @@ void main()
 
     // Use texture in determining fragment colour
     gl_FragColor = pixel;
-    //gl_FragColor = (ambient_amount + lambertian_amount) * pixel + specular_amount * specular_color;
-    //gl_FragColor = lambertian_amount * pixel + specular_amount * specular_color;
-	// gl_FragColor = lambertian_amount * pixel;
+    // gl_FragColor = (ambient_amount + lambertian_amount) * pixel + specular_amount * specular_color;
+    // gl_FragColor = lambertian_amount * pixel + specular_amount * specular_color;
+	//gl_FragColor = lambertian_amount * pixel + ambient_amount;
+	//gl_FragColor = lambertian_amount * pixel;
 }

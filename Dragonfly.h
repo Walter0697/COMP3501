@@ -1,23 +1,26 @@
 #ifndef DRAGONFLY_H
 #define DRAGONFLY_H
 
-#include "Collidable.h"
 #include "Enemy.h"
 #include "scene_node.h"
 
-// DRAGONFLIES ARE COLLIDABLES CHARACTERS AND SCENENODES
+// DRAGONFLIES ARE COLLIDABLES AND CHARACTERS
 namespace game
 {
-	class DragonFly : public Collidable , public Enemy, public SceneNode
+	class DragonFly : public Enemy
 	{
 	public:
-		DragonFly(std::string, const Resource*, const Resource*, const Resource*);
+		DragonFly(SceneNode*, SceneNode*, SceneNode*, SceneNode*);
 		~DragonFly();
 
-		void Update();
-		void DragonFly::UpdateTarget(glm::vec3 targPos);
-		void DragonFly::UpdateOrientation(glm::quat orient);
+		SceneNode* body;
+		SceneNode* leftWing;
+		SceneNode* rightWing;
+		SceneNode* legs;
+
+		void update();
 		bool collision(SceneNode*);
+
 	private:
 	protected:
 	};

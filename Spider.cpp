@@ -2,24 +2,29 @@
 
 namespace game
 {
-	Spider::Spider(std::string name, const Resource* geom, const Resource* mat, const Resource* texture) : SceneNode(name, geom, mat, texture)
+	Spider::Spider(SceneNode* spiderBody, SceneNode* spiderLeftLeg, SceneNode* spiderRightLeg)
 	{
-		targetPos = glm::vec3(0, 0, 0);
-		orientation = glm::quat(0, 0, 0, 0);
-		lastUpdate = -1;
-		updateTime = 0.5;
-		state = 0;
+		targetPos = glm::vec3(0, 0, 0);				// Store target position
+		targetOrientation = glm::quat(0, 0, 0, 0);	// Store target orientation
+		lastUpdate = -1;							// Last update time
+		updateTime = 0.5;							// Update time
+		state = 0;									// Machine state
 
-		speed = 1.0;
-		fireRate = 0;
-		maxFireRate = 50;
-		maxHealth = 30;
-		health = maxHealth;
+		body = spiderBody;							// Body of the spider node
+		leftLeg = spiderLeftLeg;					// Left leg of the spider node
+		rightLeg = spiderRightLeg;					// Right leg of the spider node
+			
+		speed = 1.0;								// Speed of movement the spider
+		fireRate = 0;								// FireRate of the shooting webs
+		maxFireRate = 50;							// Maximum fire rate of shooting
+		maxHealth = 30;								// Maximum health
+		health = maxHealth;							// Health
 	}
 
 	Spider::~Spider() {}
 
-	void Spider::Update()
+	/* Update */
+	void Spider::update()
 	{
 		time_t t = time(0);
 		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
@@ -31,13 +36,12 @@ namespace game
 			//std::cout << "no switch yet, t - lastUpdate = " << t << ",  " <<  lastUpdate << std::endl;
 		}
 
-
 		if (state == 0) { //Idle
-			Translate(glm::vec3(0, 0, 0));
+			body->Translate(glm::vec3(0, 0, 0));
 		}
 		else if (state == 1) { //Move to player
 			glEnable(GL_NORMALIZE);
-			Translate(glm::vec3(((targetPos.x - GetPosition().x) * 0.01), ((targetPos.y - GetPosition().y) * 0.01), ((targetPos.z - GetPosition().z) * 0.01)));
+			body->Translate(glm::vec3(((targetPos.x - body->GetPosition().x) * 0.01), ((targetPos.y - body->GetPosition().y) * 0.01), ((targetPos.z - body->GetPosition().z) * 0.01)));
 		}
 		else if (state == 2) { //Attack
 
@@ -49,18 +53,6 @@ namespace game
 			std::cout << "Invalid state in Human" << std::endl;
 		}
 	}
-
-
-	void Spider::UpdateOrientation(glm::quat orient) {
-		orientation = orient;
-		glm::quat rotation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
-		orientation = rotation * orientation;
-	}
-
-	void Spider::UpdateTarget(glm::vec3 targPos) {
-		targetPos = targPos;
-	}
-
 
 	bool Spider::collision(SceneNode* object)
 	{
