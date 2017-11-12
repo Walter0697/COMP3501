@@ -17,6 +17,7 @@
 #include "Human.h"
 #include "Spider.h"
 #include "Dragonfly.h"
+#include "Environment.h"
 
 namespace game 
 {
@@ -58,6 +59,7 @@ namespace game
 			Human* human;					// human enemy
 			Spider* spider;                 // Spider enemy
 			DragonFly* dragonFly;			// Dragon fly enemy
+			Environment* environment;       // Environment
 			// STORE COLLIDABLES OR SMTHG
 
             // Methods to initialize the game
@@ -81,6 +83,7 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
+			Environment *createEnvironment(std::string entity_name);
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game

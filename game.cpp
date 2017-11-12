@@ -206,6 +206,7 @@ namespace game
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
+		environment = createEnvironment("environment");
 	}
 
 	void Game::MainLoop(void)
@@ -470,6 +471,25 @@ namespace game
 		Target->SetPosition(glm::vec3(0, 0, -200));
 
 		return Target;
+	}
+
+	Environment *Game::createEnvironment(std::string entity_name)
+	{
+		SceneNode* floor = createSceneNode(entity_name, "wallMesh", "textureMaterial", "flyWingsTex");
+		world->AddChild(floor);
+
+		floor->SetScale(glm::vec3(300, 300, 1));
+		floor->Translate(glm::vec3(0.0, -30.0, 0.0));
+		floor->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
+
+		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "flyWingsTex");
+		world->AddChild(wall);
+
+		wall->SetScale(glm::vec3(300, 300, 1));
+		wall->Translate(glm::vec3(0.0, 270.0, -300.0));
+
+
+		return new Environment(floor);
 	}
 
 	// Function to create a new SceneNode
