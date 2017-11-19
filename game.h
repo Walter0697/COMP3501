@@ -83,7 +83,7 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
-			Environment *createEnvironment(std::string entity_name);
+			Environment *createEnvironment();
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game

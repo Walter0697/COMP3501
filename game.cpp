@@ -155,6 +155,12 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/dragonFlyLegsTexture.png");
 		resman_.LoadResource(Texture, "dragonFlyLegsTex", filename.c_str());
 
+		// ENVIRONMENT TEXTURES
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/floor-texture.jpg");
+		resman_.LoadResource(Texture, "floorTex", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wall-texture.png");
+		resman_.LoadResource(Texture, "wallTex", filename.c_str());
+
 		/* GEOMETRIES */
 		// HUMAN BODY LEFT AND RIGHT HANDS AND LEGS
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
@@ -193,6 +199,10 @@ namespace game
 		resman_.LoadResource(Mesh, "flyWingsMesh", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyLegs.obj");
 		resman_.LoadResource(Mesh, "flyLegsMesh", filename.c_str());
+
+		// TABLE 
+		//filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/table.obj");
+		//resman_.LoadResource(Mesh, "tableMesh", filename.c_str());
 	}
 
 	/* Setup game elements */
@@ -206,7 +216,7 @@ namespace game
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
-		environment = createEnvironment("environment");
+		environment = createEnvironment();
 	}
 
 	void Game::MainLoop(void)
@@ -473,20 +483,40 @@ namespace game
 		return Target;
 	}
 
-	Environment *Game::createEnvironment(std::string entity_name)
+	Environment *Game::createEnvironment()
 	{
-		SceneNode* floor = createSceneNode(entity_name, "wallMesh", "textureMaterial", "flyWingsTex");
+		SceneNode* floor = createSceneNode("floor", "wallMesh", "textureMaterial", "floorTex");
 		world->AddChild(floor);
 
 		floor->SetScale(glm::vec3(300, 300, 1));
 		floor->Translate(glm::vec3(0.0, -30.0, 0.0));
 		floor->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
 
-		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "flyWingsTex");
+		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall);
-
 		wall->SetScale(glm::vec3(300, 300, 1));
 		wall->Translate(glm::vec3(0.0, 270.0, -300.0));
+
+		SceneNode* wall2 = createSceneNode("wall2", "wallMesh", "textureMaterial", "wallTex");
+		world->AddChild(wall2);
+		wall2->SetScale(glm::vec3(300, 300, 1));
+		wall2->Translate(glm::vec3(300.0, 270.0, 0.0));
+		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
+
+		SceneNode* wall3 = createSceneNode("wall3", "wallMesh", "textureMaterial", "wallTex");
+		world->AddChild(wall3);
+		wall3->SetScale(glm::vec3(300, 300, 1));
+		wall3->Translate(glm::vec3(-300.0, 270.0, 0.0));
+		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
+
+		SceneNode* wall4 = createSceneNode("wall4", "wallMesh", "textureMaterial", "wallTex");
+		world->AddChild(wall4);
+		wall4->SetScale(glm::vec3(300, 300, 1));
+		wall4->Translate(glm::vec3(0.0, 270.0, 300.0));
+
+		//SceneNode* table = createSceneNode("table", "tableMesh", "textureMaterial", "floorTex");
+		//wall->AddChild(table);
+
 
 
 		return new Environment(floor);
