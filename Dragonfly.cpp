@@ -21,6 +21,10 @@ namespace game
 		maxFireRate = 90;								// maxFireRate of dragonfly
 		maxHealth = 20;									// Max health 
 		health = maxHealth;								// Health
+
+		firing = false;									//Controls if the enemy is shooting
+		shotTimer = -1.f;
+		fireRate = 1.0f;
 	}
 
 	/* Destructor */
@@ -30,21 +34,49 @@ namespace game
 	/* Update */
 	void DragonFly::update()
 	{
-		state = rand() % 2;
+		state = rand() % 3;
 
 		if (state == 0) { //Idle
-			body->Translate(glm::vec3(1, 0, 0));
+			body->Translate(glm::vec3(0, 0, 0));
 		}
-		else if (state == 1) { //Move to player
-			body->Translate(glm::vec3(-1, 0, 0));
+		else if (state == 1) { 
+			//Move to player
+
+			body->SetOrientation(targetOrientation);
+
+			glEnable(GL_NORMALIZE);
+			body->Translate(glm::vec3(((targetPos.x - body->getAbsolutePosition().x) * 0.01),
+				((targetPos.y - body->getAbsolutePosition().y) * 0.01),
+				((targetPos.z - body->getAbsolutePosition().z) * 0.01)));
 		}
 		else if (state == 2) { //Attack
-
+			if (glfwGetTime() - this->shotTimer >= this->fireRate) {
+				this->firing = true;
+				this->shotTimer = glfwGetTime();
+			}
+			else {
+				state = 0;
+			}
 		}
 		else if (state == 3) { //Patrol
 
 		}
-		else { std::cout << "Invalid state in Dragonfly" << std::endl; }
+		else { 
+			std::cout << "Invalid state in Dragonfly" << std::endl; 
+		}
+
+		// Check rockets 
+		for (int i = 0; i < rockets.size(); i++)
+		{
+			// when timer is 0 delete the rocket
+			if (rockets[i]->timer <= 0)
+			{
+				rockets[i]->rocketNode->del = true;
+				rockets.erase(rockets.begin() + i);
+			}
+			else { rockets[i]->Update(); }
+		}
+
 	}
 
 	/* Collision */

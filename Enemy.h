@@ -10,6 +10,7 @@
 #include <iostream>
 #include <ctime>
 #include "Character.h"
+#include "Rocket.h"
 
 // CREATE A GENERAL CHARACTER WHICH WILL BE INHERITED BY ALL CHARACTER TYPES 
 namespace game
@@ -25,7 +26,13 @@ namespace game
 			glm::quat rotation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
 			targetOrientation = rotation * targetOrientation;
 		}
-
+		virtual bool getFiring() { return firing; }
+		virtual void fire(Rocket* r) {
+			if (firing) {
+				firing = false;
+				rockets.push_back(r);
+			}
+		}
 
 	private:
 	protected:
@@ -34,6 +41,11 @@ namespace game
 		time_t lastUpdate;
 		time_t updateTime;
 		int state;
+		std::vector<Rocket*> rockets; //store the rockets
+		bool firing;
+		float shotTimer;
+		float fireRate;
+
 
 	};
 }

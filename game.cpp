@@ -209,7 +209,7 @@ namespace game
 	void Game::SetupScene(void) 
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
-		CreateAsteroidField(100);															// For testing
+		//CreateAsteroidField(100);															// For testing
 
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
@@ -235,6 +235,31 @@ namespace game
 			human->updateTarget(player->body->getAbsolutePosition());
 			human->updateTargetOrientation(player->body->getAbsoluteOrientation());
 			human->update();
+
+			spider->updateTarget(player->body->getAbsolutePosition());
+			spider->updateTargetOrientation(player->body->getAbsoluteOrientation());
+			spider->update();
+
+			dragonFly->updateTarget(player->body->getAbsolutePosition());
+			dragonFly->updateTargetOrientation(player->body->getAbsoluteOrientation());
+			dragonFly->update();
+
+			//Human firing
+			//Create new function which fires the shots rather than just having them appear
+			if (human->getFiring()) {
+				human->fire(createRocket("Rocket2", player->body->getAbsolutePosition() - human->body->getAbsolutePosition(), human->body->getAbsolutePosition()));
+			}
+
+			//Spider firing
+			if (spider->getFiring()) {
+				spider->fire(createRocket("Rocket3", player->body->getAbsolutePosition() - spider->body->getAbsolutePosition(), spider->body->getAbsolutePosition()));
+			}
+
+			//Dragonfly firing
+			if (dragonFly->getFiring()) {
+				dragonFly->fire(createRocket("Rocket4", player->body->getAbsolutePosition() - dragonFly->body->getAbsolutePosition(), dragonFly->body->getAbsolutePosition()));
+			}
+
 
 			scene_.Draw(&camera_);	// Draw the scene
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
@@ -304,7 +329,7 @@ namespace game
 		{
 			if (player->fireRate <= 0)
 			{
-				player->rockets.push_back(createRocket("Rocket1"));
+				player->rockets.push_back(createRocket("Rocket1", target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsolutePosition()));
 				player->fireRate = player->maxFireRate;
 			}
 		}
@@ -454,7 +479,7 @@ namespace game
 	}
 
 	// GENERALIZE TO RECEIVE DIRECTION INSTEAD OF CODING IT FOR ONLY THE FLY AND TEXTURE NAME FOR DIFFERENT TYPE OF ROCKETS
-	Rocket* Game::createRocket(std::string entity_name)
+	Rocket* Game::createRocket(std::string entity_name, glm::vec3 direction, glm::vec3 pos)
 	{
 		SceneNode* rock = createSceneNode(entity_name, "simpleSphereMesh", "textureMaterial", "rocketTex");
 		world->AddChild(rock);
@@ -463,10 +488,10 @@ namespace game
 		rock->SetScale(glm::vec3(0.1, 0.1, 0.1));
 		rock->SetOrientation(player->body->getAbsoluteOrientation());
 		rock->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		rock->SetPosition(player->body->getAbsolutePosition());
+		rock->SetPosition(pos);
 		
 		// Set the rocket node and the direction of the rocket
-		return new Rocket(rock, target->getAbsolutePosition() - player->body->getAbsolutePosition());
+		return new Rocket(rock, direction);
 	}
 	
 	// TARGET IS A CHILD OF CAMERA SINCE OUR TARGET IS BASED ON THE CAMERA POSITION AND MOVE WITH IT AND NOT THE PLAYER

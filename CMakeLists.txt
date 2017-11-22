@@ -5,7 +5,7 @@ project(FlyingUndersizedControlledKiller)
 
 # Specify project files: header files and source files
 set(HDRS
-    asteroid.h camera.h CameraNode.h game.h resource.h resource_manager.h scene_graph.h scene_node.h Rocket.h fly.h Human.h Character.h Collidable.h Spider.h DragonFly.h Enemy.h Environment.h
+    asteroid.h camera.h CameraNode.h game.h resource.h resource_manager.h scene_graph.h scene_node.h Rocket.h fly.h Human.h Character.h Collidable.h Spider.h DragonFly.h Enemy.h Environment.h Draggable.h
 )
  
 set(SRCS

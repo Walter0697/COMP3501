@@ -77,7 +77,7 @@ namespace game
             Asteroid* CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid																// Asteroid field
             void CreateAsteroidField(int num_asteroids = 1500);																						// Create entire random asteroid field
 
-			Rocket* createRocket(std::string);
+			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);
 			Fly* createFly(std::string entity_name);														// Create a fly instance
 			Human* createHuman(std::string entity_name);													// Create a human instance
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 

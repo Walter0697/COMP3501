@@ -19,6 +19,10 @@ namespace game
 		maxFireRate = 50;							// Maximum fire rate of shooting
 		maxHealth = 30;								// Maximum health
 		health = maxHealth;							// Health
+
+		firing = false;								//Controls if the enemy is shooting
+		shotTimer = -1.f;
+		fireRate = 1.0f;
 	}
 
 	Spider::~Spider() {}
@@ -28,7 +32,7 @@ namespace game
 	{
 		time_t t = time(0);
 		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
-			state = int(rand() % 2);
+			state = int(rand() % 3);
 			lastUpdate = t;
 			//std::cout << "************SWITCH TO " << state << std::endl;
 		}
@@ -44,14 +48,33 @@ namespace game
 			body->Translate(glm::vec3(((targetPos.x - body->GetPosition().x) * 0.01), ((targetPos.y - body->GetPosition().y) * 0.01), ((targetPos.z - body->GetPosition().z) * 0.01)));
 		}
 		else if (state == 2) { //Attack
-
+			if (glfwGetTime() -  this->shotTimer >= this->fireRate) {
+				this->firing = true;
+				this->shotTimer = glfwGetTime();
+			}
+			else {
+				state = 0;
+			}
 		}
 		else if (state == 3) { //Patrol
 
 		}
 		else {
-			std::cout << "Invalid state in Human" << std::endl;
+			std::cout << "Invalid state in Spider" << std::endl;
 		}
+
+		// Check rockets 
+		for (int i = 0; i < rockets.size(); i++)
+		{
+			// when timer is 0 delete the rocket
+			if (rockets[i]->timer <= 0)
+			{
+				rockets[i]->rocketNode->del = true;
+				rockets.erase(rockets.begin() + i);
+			}
+			else { rockets[i]->Update(); }
+		}
+
 	}
 
 	bool Spider::collision(SceneNode* object)

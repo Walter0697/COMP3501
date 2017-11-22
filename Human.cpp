@@ -23,6 +23,10 @@ namespace game
 		rightHand = humanRightHand;						// Right hand of the human node
 		leftLeg = humanLeftLeg;							// Left leg of the human node
 		rightLeg = humanRightLeg;						// Right leg of the human node
+
+		firing = false;									//Controls if the enemy is shooting
+		shotTimer = -1.f;
+		fireRate = 1.0f;
 	}
 
 	/* Destructor */
@@ -33,7 +37,7 @@ namespace game
 	{
 		time_t t = time(0);
 		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
-			state = int(rand() % 2);
+			state = int(rand() % 3);
 			lastUpdate = t;
 			//std::cout << "************SWITCH TO " << state << std::endl;
 		}
@@ -50,7 +54,7 @@ namespace game
 		}
 		else if (state == 1) 
 		{
-			//Move to playe
+			//Move to player
 
 			body->SetOrientation(targetOrientation);
 
@@ -62,12 +66,34 @@ namespace game
 		else if (state == 2) 
 		{ 
 			//Attack
+			if (glfwGetTime() - this->shotTimer >= this->fireRate) {
+				this->firing = true;
+				this->shotTimer = glfwGetTime();
+			}
+			else {
+				state = 0;
+			}
 		}
 		else if (state == 3) 
 		{ 
 			//Patrol
 		}
-		else { std::cout << "Invalid state in Human" << std::endl; }
+		else { 
+			std::cout << "Invalid state in Human" << std::endl; 
+		}
+
+		// Check rockets 
+		for (int i = 0; i < rockets.size(); i++)
+		{
+			// when timer is 0 delete the rocket
+			if (rockets[i]->timer <= 0)
+			{
+				rockets[i]->rocketNode->del = true;
+				rockets.erase(rockets.begin() + i);
+			}
+			else { rockets[i]->Update(); }
+		}
+
 	}
 
 	/* Collision */
