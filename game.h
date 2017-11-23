@@ -59,9 +59,7 @@ namespace game
 			Human* human;									// human enemy
 			Spider* spider;									// Spider enemy
 			DragonFly* dragonFly;							// Dragon fly enemy
-			Environment* room1;							// Environment
- 			Environment* room2;
-			Environment* room3;						
+			Environment* environment;						// Environment
 			std::vector<Rocket*> rockets;				// All Game projetiles
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans
@@ -89,7 +87,7 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
-			Environment *createEnvironment(glm::vec3 position, std::string id);
+			Environment *createEnvironment();
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game

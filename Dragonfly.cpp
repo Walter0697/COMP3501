@@ -24,8 +24,8 @@ namespace game
 
 		firing = false;									//Controls if the enemy is shooting
 		shotTimer = -1.f;
-		fireRate = 1.0f;
-		
+		fireRate = 20.0f;
+
 		timer = 12;
 		upWingMovement = true;
 	}
@@ -38,31 +38,31 @@ namespace game
 	void DragonFly::update()
 	{
 		//wing animation
- 		if (upWingMovement)
- 		{
- 			timer--;
- 			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, -1)));
- 			leftWing->Rotate(rotation);
- 			rotation = glm::quat(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, 1)));
- 			rightWing->Rotate(rotation);
- 			if (timer <= 0) { upWingMovement = false; }
- 		}
- 		else
- 		{
- 			timer++;
- 			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, 1)));
- 			leftWing->Rotate(rotation);
- 			rotation = glm::quat(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, -1)));
- 			rightWing->Rotate(rotation);
- 			if (timer >= 12) { upWingMovement = true; }
- 		}
-		
+		if (upWingMovement)
+		{
+			timer--;
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, -1)));
+			leftWing->Rotate(rotation);
+			rotation = glm::quat(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, 1)));
+			rightWing->Rotate(rotation);
+			if (timer <= 0) { upWingMovement = false; }
+		}
+		else
+		{
+			timer++;
+			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, 1)));
+			leftWing->Rotate(rotation);
+			rotation = glm::quat(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, -1)));
+			rightWing->Rotate(rotation);
+			if (timer >= 12) { upWingMovement = true; }
+		}
+
 		state = rand() % 3;
 
 		if (state == 0) { //Idle
 			body->Translate(glm::vec3(0, 0, 0));
 		}
-		else if (state == 1) { 
+		else if (state == 1) {
 			//Move to player
 
 			body->SetOrientation(targetOrientation);
@@ -84,8 +84,8 @@ namespace game
 		else if (state == 3) { //Patrol
 
 		}
-		else { 
-			std::cout << "Invalid state in Dragonfly" << std::endl; 
+		else {
+			std::cout << "Invalid state in Dragonfly" << std::endl;
 		}
 
 		// Check rockets 
@@ -100,7 +100,22 @@ namespace game
 			else { rockets[i]->Update(); }
 		}
 
+
+
+		// Check rockets 
+		for (int i = 0; i < rockets.size(); i++)
+		{
+			// when timer is 0 delete the rocket
+			if (rockets[i]->timer <= 0)
+			{
+				rockets[i]->rocketNode->del = true;
+				rockets.erase(rockets.begin() + i);
+			}
+			else { rockets[i]->Update(); }
+		}
 	}
+
+	
 
 	/* Collision */
 	bool DragonFly::collision(SceneNode* object)

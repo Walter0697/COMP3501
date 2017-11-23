@@ -23,7 +23,7 @@ namespace game
 		firing = false;								//Controls if the enemy is shooting
 		shotTimer = -1.f;
 		fireRate = 1.0f;
-		
+
 		timer = 5;
 		legMovement = true;
 		isMoving = false;
@@ -35,22 +35,22 @@ namespace game
 	void Spider::update()
 	{
 		if (isMoving)
- 			if (legMovement)
- 			{
- 				timer--;
- 				leftLeg->Translate(glm::vec3(0, 0, 0.005));
- 				rightLeg->Translate(glm::vec3(0, 0, -0.005));
- 				if (timer <= 0) { legMovement = false; }
- 			}
- 			else
- 			{
- 				timer++;
- 				leftLeg->Translate(glm::vec3(0, 0, -0.005));
- 				rightLeg->Translate(glm::vec3(0, 0, 0.005));
- 				if (timer >= 10) { legMovement = true; }
- 			}
- 
-	 
+			if (legMovement)
+			{
+				timer--;
+				leftLeg->Translate(glm::vec3(0, 0, 0.005));
+				rightLeg->Translate(glm::vec3(0, 0, -0.005));
+				if (timer <= 0) { legMovement = false; }
+			}
+			else
+			{
+				timer++;
+				leftLeg->Translate(glm::vec3(0, 0, -0.005));
+				rightLeg->Translate(glm::vec3(0, 0, 0.005));
+				if (timer >= 10) { legMovement = true; }
+			}
+
+
 		time_t t = time(0);
 		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
 			state = int(rand() % 3);
@@ -71,7 +71,7 @@ namespace game
 			isMoving = true;
 		}
 		else if (state == 2) { //Attack
-			if (glfwGetTime() -  this->shotTimer >= this->fireRate) {
+			if (glfwGetTime() - this->shotTimer >= this->fireRate) {
 				this->firing = true;
 				this->shotTimer = glfwGetTime();
 			}
