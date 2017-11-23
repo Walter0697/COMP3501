@@ -60,8 +60,8 @@ namespace game
 			Spider* spider;									// Spider enemy
 			DragonFly* dragonFly;							// Dragon fly enemy
 			Environment* room1;							// Environment
- -			Environment* room2;
- -			Environment* room3;						
+ 			Environment* room2;
+			Environment* room3;						
 			std::vector<Rocket*> rockets;				// All Game projetiles
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans
