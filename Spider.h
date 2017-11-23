@@ -18,8 +18,8 @@ namespace game
 		SceneNode* rightLeg;	// Spider right leg
 
 		bool isMoving;
- -		bool legMovement;
- -		int timer;
+ 		bool legMovement;
+ 		int timer;
  
 		void update();
 		bool collision(SceneNode*);
