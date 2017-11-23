@@ -19,7 +19,7 @@ namespace game
 		SceneNode* legs;
 		
 		int timer;
- -		bool upWingMovement;
+ 		bool upWingMovement;
 
 		void update();
 		bool collision(SceneNode*);
