@@ -216,7 +216,9 @@ namespace game
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
-		environment = createEnvironment();
+		room1 = createEnvironment(glm::vec3(0, 0, 0), "1");
+		room2 = createEnvironment(glm::vec3(500, 500, 0), "2");
+		room3 = createEnvironment(glm::vec3(-500, 500, 0), "3");
 	}
 
 	void Game::MainLoop(void)
@@ -508,42 +510,41 @@ namespace game
 		return Target;
 	}
 
-	Environment *Game::createEnvironment()
+	Environment *Game::createEnvironment(glm::vec3 position, std::string id)
 	{
-		SceneNode* floor = createSceneNode("floor", "wallMesh", "textureMaterial", "floorTex");
+		SceneNode* floor = createSceneNode("floor" + id , "wallMesh", "textureMaterial", "floorTex");
 		world->AddChild(floor);
 
 		floor->SetScale(glm::vec3(300, 300, 1));
 		floor->Translate(glm::vec3(0.0, -30.0, 0.0));
 		floor->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
 
-		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall = createSceneNode("wall1" + id, "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall);
 		wall->SetScale(glm::vec3(300, 300, 1));
 		wall->Translate(glm::vec3(0.0, 270.0, -300.0));
 
-		SceneNode* wall2 = createSceneNode("wall2", "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall2 = createSceneNode("wall2" + id, "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall2);
 		wall2->SetScale(glm::vec3(300, 300, 1));
 		wall2->Translate(glm::vec3(300.0, 270.0, 0.0));
 		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
-		SceneNode* wall3 = createSceneNode("wall3", "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall3 = createSceneNode("wall3" + id, "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall3);
 		wall3->SetScale(glm::vec3(300, 300, 1));
 		wall3->Translate(glm::vec3(-300.0, 270.0, 0.0));
 		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
-		SceneNode* wall4 = createSceneNode("wall4", "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall4 = createSceneNode("wall4" + id, "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall4);
 		wall4->SetScale(glm::vec3(300, 300, 1));
 		wall4->Translate(glm::vec3(0.0, 270.0, 300.0));
 
+		floor->Translate(position);
+
 		//SceneNode* table = createSceneNode("table", "tableMesh", "textureMaterial", "floorTex");
 		//wall->AddChild(table);
-
-
-
 		return new Environment(floor);
 	}
 
