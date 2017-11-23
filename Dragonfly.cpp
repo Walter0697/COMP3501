@@ -25,6 +25,9 @@ namespace game
 		firing = false;									//Controls if the enemy is shooting
 		shotTimer = -1.f;
 		fireRate = 1.0f;
+		
+		timer = 12;
+		upWingMovement = true;
 	}
 
 	/* Destructor */
@@ -34,6 +37,26 @@ namespace game
 	/* Update */
 	void DragonFly::update()
 	{
+		//wing animation
+ -		if (upWingMovement)
+ -		{
+ -			timer--;
+ -			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, -1)));
+ -			leftWing->Rotate(rotation);
+ -			rotation = glm::quat(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, 1)));
+ -			rightWing->Rotate(rotation);
+ -			if (timer <= 0) { upWingMovement = false; }
+ -		}
+ -		else
+ -		{
+ -			timer++;
+ -			glm::quat rotation(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, 1)));
+ -			leftWing->Rotate(rotation);
+ -			rotation = glm::quat(glm::angleAxis(glm::pi<float>() / 120, glm::vec3(0, 0, -1)));
+ -			rightWing->Rotate(rotation);
+ -			if (timer >= 12) { upWingMovement = true; }
+ -		}
+		
 		state = rand() % 3;
 
 		if (state == 0) { //Idle
