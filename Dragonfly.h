@@ -17,6 +17,9 @@ namespace game
 		SceneNode* leftWing;
 		SceneNode* rightWing;
 		SceneNode* legs;
+		
+		int timer;
+ -		bool upWingMovement;
 
 		void update();
 		bool collision(SceneNode*);
