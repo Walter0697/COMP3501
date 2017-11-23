@@ -228,8 +228,8 @@ namespace game
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
 		room1 = createEnvironment(glm::vec3(0, 0, 0), "1");
- -		room2 = createEnvironment(glm::vec3(500, 500, 0), "2");
- -		room3 = createEnvironment(glm::vec3(-500, 500, 0), "3");
+ 		room2 = createEnvironment(glm::vec3(500, 500, 0), "2");
+ 		room3 = createEnvironment(glm::vec3(-500, 500, 0), "3");
 	}
 
 	void Game::MainLoop(void)
