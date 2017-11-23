@@ -8,6 +8,7 @@ namespace game
 {
 	class Collidable
 	{
+	public:
 		virtual bool collision(SceneNode*) = 0;
 	};
 }

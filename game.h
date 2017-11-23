@@ -53,15 +53,17 @@ namespace game
             bool animating_;				// Flag to turn animation on/off
 
 			CameraNode* camNode;
-			Fly* player;					// Player fly
-			SceneNode* target;				// Target for shooting
-			SceneNode* world;				// Dummy for root of the heirarchy
-			Human* human;					// human enemy
-			Spider* spider;                 // Spider enemy
-			DragonFly* dragonFly;			// Dragon fly enemy
-			Environment* room1;				// Environment
-			Environment* room2;
-			Environment* room3;
+			Fly* player;									// Player fly
+			SceneNode* target;								// Target for shooting
+			SceneNode* world;								// Dummy for root of the heirarchy
+			Human* human;									// human enemy
+			Spider* spider;									// Spider enemy
+			DragonFly* dragonFly;							// Dragon fly enemy
+			Environment* environment;						// Environment
+			std::vector<Rocket*> rockets;				// All Game projetiles
+			std::vector<DragonFly*> dragonFlies;			// All dragonflies
+			std::vector<Human*> humans;						// All humans
+			std::vector<Spider*> spiders;					// All Spiders
 			// STORE COLLIDABLES OR SMTHG
 
             // Methods to initialize the game
@@ -85,7 +87,7 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
-			Environment *createEnvironment(glm::vec3 position, std::string id);
+			Environment *createEnvironment();
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game

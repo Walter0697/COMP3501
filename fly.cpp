@@ -8,7 +8,7 @@ namespace game
 		wings = flyWings;				// Wings of the fly
 		legs = flyLegs;					// Legs of fly
 
-		speed = 2.0;					// hardcode speed
+		speed = 0.5;					// hardcode speed
 		maxFireRate = 30;				// maximum fire rate
 		fireRate = 0;					// fire rate handler
 		timer = 10;						// Timer for wing movement

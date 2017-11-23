@@ -5,8 +5,20 @@
 #include "game.h"
 #include "bin/path_config.h"
 
-// TARGET SHOULD BE ALWAYS AT THE TOP
-// MOVING THE ENEMY WITH THE PLAYER
+// EVEN AFTER COLLISION ENEMIES STILL SHOOT?????
+// CAN WE HARDCODE BOUNDING SPHERES???
+// HUD?????
+// HEMISPHERICAL LIGHTING ??????????
+// TARGET SHOULD BE ALWAYS AT THE TOP OF THE SCREEN ???
+// SETTING UP BOUNDING BOXES SHOULD I LOAD THE ENTIRE MESH JUST IN CASE ????
+// HOW TO DO COLLISION DETECTION THEN WITH BOUNDING BOXES ??????
+// IF NOT DO IT WITH SPHERES 
+// SHADOW MAPPING ????
+// SPLINE TRAJECTORIES MAYBE IN STARTUP MENU????
+// PARTICLE SYSTEMS FOR THE DEATH OR DESTRUCTION OF OBJS
+// MOVING THE ENEMY WITH THE PLAYER ????
+// HOW SOFISTICATED SHOULD OUR AI BE ???
+
 // A LITTLE DISTORTION IN PART OF THE LEFT WING OF THE FLY !!!!
 // STORE COLLIDABLES OR SMTHG (CHARACTERS)
 
@@ -209,16 +221,13 @@ namespace game
 	void Game::SetupScene(void) 
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
-		//CreateAsteroidField(100);															// For testing
 
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
-		room1 = createEnvironment(glm::vec3(0, 0, 0), "1");
-		room2 = createEnvironment(glm::vec3(500, 500, 0), "2");
-		room3 = createEnvironment(glm::vec3(-500, 500, 0), "3");
+		environment = createEnvironment();
 	}
 
 	void Game::MainLoop(void)
@@ -228,44 +237,116 @@ namespace game
 		{
 			checkInput(); // Check for input
 
+			/* Check collision with bullets and all characters (friendly fire is fine) */
+			// Bullets and all characters
+			// Webs and player
+			// Human attack with player
+			// 
 
+			/* Check collision with bullets and walls and environment */
+
+			bool collided = false;
+
+			for (int i = 0; i < rockets.size(); i++)
+			{
+				for (int j = 0; j < dragonFlies.size(); j++)
+				{
+					if (rockets[i]->collision(dragonFlies[j]->body))
+					{
+						rockets[i]->rocketNode->del = true;
+						rockets.erase(rockets.begin() + i);
+						i--;
+
+						dragonFlies[j]->body->del = true;			// Delete node from sceneGraph
+						dragonFlies[j]->leftWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[j]->rightWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[j]->legs->del = true;			// Delete node from sceneGraph
+						dragonFlies.erase(dragonFlies.begin() + j); // Delete from dragonfly vector
+						collided = true;
+						break;
+					}
+				}
+
+				// Should not be here
+				for (int k = 0 ; k < humans.size(); k++)
+				{
+					if (!collided && rockets[i]->collision(humans[k]->body))
+					{
+						rockets[i]->rocketNode->del = true;
+						rockets.erase(rockets.begin() + i);
+						i--;
+
+						humans[k]->body->del = true;				// Delete node from sceneGraph
+						humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
+						humans[k]->leftHand->del = true;			// Delete node from sceneGraph
+						humans[k]->rightHand->del = true;			// Delete node from sceneGraph
+						humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
+						humans.erase(humans.begin() + k);			// Delete from human vector
+						collided = true;
+						break;
+
+					}
+				}
+
+				for (int l = 0; l < spiders.size(); l++)
+				{
+					if (!collided && rockets[i]->collision(spiders[l]->body))
+					{
+						rockets[i]->rocketNode->del = true;
+						rockets.erase(rockets.begin() + i);
+						i--;
+
+						spiders[l]->body->del = true;			// Delete node from sceneGraph
+						spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
+						spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
+						spiders.erase(spiders.begin() + l);		// Delete from spiders vector
+						break;
+					}
+				}
+			}
+
+			/* Check collision with characters and other characters */
+
+
+			/* Check collision with characters and the environment */
+
+	
 			player->update();
 
-			//float angle = glm::dot(glm::normalize(human->body->getAbsolutePosition() - camera_.GetPosition()), glm::normalize(player->body->getAbsolutePosition() - camera_.GetPosition()));
-			//glm::vec3 axis = glm::cross(glm::normalize(human->body->getAbsolutePosition() - camera_.GetPosition()), glm::normalize(player->body->getAbsolutePosition() - camera_.GetPosition()));
-
-			human->updateTarget(player->body->getAbsolutePosition());
-			human->updateTargetOrientation(player->body->getAbsoluteOrientation());
-			human->update();
-
-			spider->updateTarget(player->body->getAbsolutePosition());
-			spider->updateTargetOrientation(player->body->getAbsoluteOrientation());
-			spider->update();
-
-			dragonFly->updateTarget(player->body->getAbsolutePosition());
-			dragonFly->updateTargetOrientation(player->body->getAbsoluteOrientation());
-			dragonFly->update();
-
-			//Human firing
-			//Create new function which fires the shots rather than just having them appear
-			if (human->getFiring()) {
-				human->fire(createRocket("Rocket2", player->body->getAbsolutePosition() - human->body->getAbsolutePosition(), human->body->getAbsolutePosition()));
+			if (human)
+			{
+				human->updateTarget(player->body->getAbsolutePosition());
+				human->updateTargetOrientation(player->body->getAbsoluteOrientation());
+				human->update();
 			}
 
-			//Spider firing
-			if (spider->getFiring()) {
-				spider->fire(createRocket("Rocket3", player->body->getAbsolutePosition() - spider->body->getAbsolutePosition(), spider->body->getAbsolutePosition()));
+			if (spider)
+			{
+				spider->updateTarget(player->body->getAbsolutePosition());
+				spider->updateTargetOrientation(player->body->getAbsoluteOrientation());
+				spider->update();
 			}
 
-			//Dragonfly firing
-			if (dragonFly->getFiring()) {
-				dragonFly->fire(createRocket("Rocket4", player->body->getAbsolutePosition() - dragonFly->body->getAbsolutePosition(), dragonFly->body->getAbsolutePosition()));
+			if (dragonFly)
+			{
+				dragonFly->updateTarget(player->body->getAbsolutePosition());
+				dragonFly->updateTargetOrientation(player->body->getAbsoluteOrientation());
+				dragonFly->update();
 			}
 
+			// Human firing
+			// Create new function which fires the shots rather than just having them appear
+			if (human->getFiring()) { human->fire(createRocket("Rocket2", player->body->getAbsolutePosition() - human->body->getAbsolutePosition(), human->body->getAbsolutePosition())); }
 
-			scene_.Draw(&camera_);	// Draw the scene
+			// Spider firing
+			if (spider->getFiring()) { spider->fire(createRocket("Rocket3", player->body->getAbsolutePosition() - spider->body->getAbsolutePosition(), spider->body->getAbsolutePosition())); }
+
+			// Dragonfly firing
+			if (dragonFly->getFiring()) { dragonFly->fire(createRocket("Rocket4", player->body->getAbsolutePosition() - dragonFly->body->getAbsolutePosition(), dragonFly->body->getAbsolutePosition())); }
+
+			scene_.Draw(&camera_);		// Draw the scene
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
-			glfwPollEvents();	// Update other events like input handling
+			glfwPollEvents();			// Update other events like input handling
 		}
 	}
 
@@ -304,7 +385,6 @@ namespace game
 	{
 		// View control
 		float rot_factor(glm::pi<float>() / 360);
-		float trans_factor = 0.1;
 
 		// Move camera up, down, and to the sides
 		if (glfwGetKey(window_, GLFW_KEY_UP)) { camera_.Pitch(rot_factor); }
@@ -313,18 +393,18 @@ namespace game
 		if (glfwGetKey(window_, GLFW_KEY_RIGHT)) { camera_.Yaw(-rot_factor); }
 
 		// Forward backward and side movements
-		if (glfwGetKey(window_, GLFW_KEY_W)) { camera_.Translate(camera_.GetForward() * trans_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_S)) { camera_.Translate(-camera_.GetForward() * trans_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_A)) { camera_.Translate(-camera_.GetSide() * trans_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_D)) { camera_.Translate(camera_.GetSide() * trans_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_W)) { camera_.Translate(camera_.GetForward() * player->speed); }
+		if (glfwGetKey(window_, GLFW_KEY_S)) { camera_.Translate(-camera_.GetForward() * player->speed); }
+		if (glfwGetKey(window_, GLFW_KEY_A)) { camera_.Translate(-camera_.GetSide() * player->speed); }
+		if (glfwGetKey(window_, GLFW_KEY_D)) { camera_.Translate(camera_.GetSide() * player->speed); }
 
 		// Roll camera
 		if (glfwGetKey(window_, GLFW_KEY_Z)) { camera_.Roll(-rot_factor); }
 		if (glfwGetKey(window_, GLFW_KEY_X)) { camera_.Roll(rot_factor); }
 
 		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
-		if (glfwGetKey(window_, GLFW_KEY_I)) { camera_.Translate(camera_.GetUp() * trans_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_K)) { camera_.Translate(-camera_.GetUp() * trans_factor); }
+		if (glfwGetKey(window_, GLFW_KEY_I)) { camera_.Translate(camera_.GetUp() * player->speed); }
+		if (glfwGetKey(window_, GLFW_KEY_K)) { camera_.Translate(-camera_.GetUp() * player->speed); }
 
 		// Shoot a rocket
 		if (glfwGetKey(window_ , GLFW_KEY_SPACE))
@@ -334,41 +414,6 @@ namespace game
 				player->rockets.push_back(createRocket("Rocket1", target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsolutePosition()));
 				player->fireRate = player->maxFireRate;
 			}
-		}
-	}
-
-	Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name)
-	{
-		// Get resources
-		Resource *geom = resman_.GetResource(object_name);
-		if (!geom) { throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\""))); }
-		Resource *mat = resman_.GetResource(material_name);
-		if (!mat) { throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\""))); }
-
-		// Create asteroid instance
-		Asteroid *ast = new Asteroid(entity_name, geom, mat);
-		world->AddChild(ast);
-		return ast;
-	}
-
-	void Game::CreateAsteroidField(int num_asteroids)
-	{
-		// Create a number of asteroid instances
-		for (int i = 0; i < num_asteroids; i++)
-		{
-			// Create instance name
-			std::stringstream ss;
-			ss << i;
-			std::string index = ss.str();
-			std::string name = "AsteroidInstance" + index;
-
-			// Create asteroid instance
-			Asteroid *ast = CreateAsteroidInstance(name, "simpleSphereMesh", "objectMaterial");
-
-			// Set attributes of asteroid: random position, orientation, and angular momentum
-			ast->SetPosition(glm::vec3(-300 + 400*((float)rand() / RAND_MAX), -300 + 400*((float)rand() / RAND_MAX), - 400*((float)rand() / RAND_MAX)));
-			ast->SetOrientation(glm::normalize(glm::angleAxis(glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
-			ast->SetAngM(glm::normalize(glm::angleAxis(0.05f*glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
 		}
 	}
 
@@ -421,7 +466,10 @@ namespace game
 		// Setup parts positions
 		spiderBody->SetPosition(glm::vec3(10, 0, -20));
 
-		return new Spider(spiderBody, spiderLeftLeg, spiderRightLeg);
+		Spider* spi = new Spider(spiderBody, spiderLeftLeg, spiderRightLeg);
+		spiders.push_back(spi);
+
+		return spi;
 	}
 
 	// Create a Dragonfly instance
@@ -448,7 +496,11 @@ namespace game
 		// Setup parts positions
 		dragonFlyBody->SetPosition(glm::vec3(-10, 0, -20));
 
-		return new DragonFly(dragonFlyBody, dragonFlyLeftWing, dragonFlyRightWing, dragonFlyLegs);
+		// Create dragon fly instance and add it to the character collidables
+		DragonFly* dragon = new DragonFly(dragonFlyBody, dragonFlyLeftWing, dragonFlyRightWing, dragonFlyLegs);
+		dragonFlies.push_back(dragon);
+
+		return dragon;
 	}
 
 	// CREATE HUMAN
@@ -477,7 +529,10 @@ namespace game
 		// Setup part Positions
 		humanBody->SetPosition(glm::vec3(0, 0, -200));
 
-		return new Human(humanBody, humanLeftHand, humanRightHand, humanLeftLeg, humanRightLeg);
+		Human* hum = new Human(humanBody, humanLeftHand, humanRightHand, humanLeftLeg, humanRightLeg);
+		humans.push_back(hum);
+
+		return hum;
 	}
 
 	// GENERALIZE TO RECEIVE DIRECTION INSTEAD OF CODING IT FOR ONLY THE FLY AND TEXTURE NAME FOR DIFFERENT TYPE OF ROCKETS
@@ -490,10 +545,14 @@ namespace game
 		rock->SetScale(glm::vec3(0.1, 0.1, 0.1));
 		rock->SetOrientation(player->body->getAbsoluteOrientation());
 		rock->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		rock->SetPosition(pos);
+		rock->SetPosition(pos + (float)2.0 * glm::normalize(direction));
 		
+		//add rockets for collision detection
+		Rocket* rocket = new Rocket(rock, direction);
+		rockets.push_back(rocket);
+
 		// Set the rocket node and the direction of the rocket
-		return new Rocket(rock, direction);
+		return rocket;
 	}
 	
 	// TARGET IS A CHILD OF CAMERA SINCE OUR TARGET IS BASED ON THE CAMERA POSITION AND MOVE WITH IT AND NOT THE PLAYER
@@ -510,41 +569,40 @@ namespace game
 		return Target;
 	}
 
-	Environment *Game::createEnvironment(glm::vec3 position, std::string id)
+	Environment *Game::createEnvironment()
 	{
-		SceneNode* floor = createSceneNode("floor" + id , "wallMesh", "textureMaterial", "floorTex");
+		SceneNode* floor = createSceneNode("floor", "wallMesh", "textureMaterial", "floorTex");
 		world->AddChild(floor);
 
 		floor->SetScale(glm::vec3(300, 300, 1));
 		floor->Translate(glm::vec3(0.0, -30.0, 0.0));
 		floor->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
 
-		SceneNode* wall = createSceneNode("wall1" + id, "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall);
 		wall->SetScale(glm::vec3(300, 300, 1));
 		wall->Translate(glm::vec3(0.0, 270.0, -300.0));
 
-		SceneNode* wall2 = createSceneNode("wall2" + id, "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall2 = createSceneNode("wall2", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall2);
 		wall2->SetScale(glm::vec3(300, 300, 1));
 		wall2->Translate(glm::vec3(300.0, 270.0, 0.0));
 		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
-		SceneNode* wall3 = createSceneNode("wall3" + id, "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall3 = createSceneNode("wall3", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall3);
 		wall3->SetScale(glm::vec3(300, 300, 1));
 		wall3->Translate(glm::vec3(-300.0, 270.0, 0.0));
 		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
-		SceneNode* wall4 = createSceneNode("wall4" + id, "wallMesh", "textureMaterial", "wallTex");
+		SceneNode* wall4 = createSceneNode("wall4", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall4);
 		wall4->SetScale(glm::vec3(300, 300, 1));
 		wall4->Translate(glm::vec3(0.0, 270.0, 300.0));
 
-		floor->Translate(position);
-
 		//SceneNode* table = createSceneNode("table", "tableMesh", "textureMaterial", "floorTex");
 		//wall->AddChild(table);
+
 		return new Environment(floor);
 	}
 

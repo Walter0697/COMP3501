@@ -6,7 +6,7 @@ namespace game
 	Rocket::Rocket(SceneNode* node , glm::vec3 dir)
 	{
 		this->direction = glm::normalize(dir);
-		this->speed = 3.0;				// Hardcode speed 
+		this->speed = 1.0;				// Hardcode speed 
 		this->timer = 200;				// Hardcoded timer to get rid of rocket
 		rocketNode = node;
 	}
@@ -39,11 +39,18 @@ namespace game
 			float test = tan(theta) * glm::length(rocketNode->GetPosition() - collidable->GetPosition());
 			if (test < 0.0 && test > -1.0) return true;
 		}
+
 		return false;
 	}
 
 	bool Rocket::collision(SceneNode* object)
 	{
-		return false;
+		//SPHERE SPHERE COLLISION DETECTION
+		glm::vec3 apos, mpos, dif;
+		apos = object->getAbsolutePosition();
+		mpos = rocketNode->getAbsolutePosition();
+		dif = mpos - apos;
+
+		return ((std::sqrt(std::pow(dif[0], 2) + std::pow(dif[1], 2) + std::pow(dif[2], 2))) <= 0.3);
 	}
 }

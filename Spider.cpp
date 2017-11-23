@@ -23,10 +23,6 @@ namespace game
 		firing = false;								//Controls if the enemy is shooting
 		shotTimer = -1.f;
 		fireRate = 1.0f;
-
-		timer = 5;
-		legMovement = true;
-		isMoving = true;
 	}
 
 	Spider::~Spider() {}
@@ -34,22 +30,6 @@ namespace game
 	/* Update */
 	void Spider::update()
 	{
-		if (isMoving)
-			if (legMovement)
-			{
-				timer--;
-				leftLeg->Translate(glm::vec3(0, 0, 0.005));
-				rightLeg->Translate(glm::vec3(0, 0, -0.005));
-				if (timer <= 0) { legMovement = false; }
-			}
-			else
-			{
-				timer++;
-				leftLeg->Translate(glm::vec3(0, 0, -0.005));
-				rightLeg->Translate(glm::vec3(0, 0, 0.005));
-				if (timer >= 10) { legMovement = true; }
-			}
-
 		time_t t = time(0);
 		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
 			state = int(rand() % 3);
@@ -62,12 +42,10 @@ namespace game
 
 		if (state == 0) { //Idle
 			body->Translate(glm::vec3(0, 0, 0));
-			isMoving = false;
 		}
 		else if (state == 1) { //Move to player
 			glEnable(GL_NORMALIZE);
 			body->Translate(glm::vec3(((targetPos.x - body->GetPosition().x) * 0.01), ((targetPos.y - body->GetPosition().y) * 0.01), ((targetPos.z - body->GetPosition().z) * 0.01)));
-			isMoving = true;
 		}
 		else if (state == 2) { //Attack
 			if (glfwGetTime() -  this->shotTimer >= this->fireRate) {
