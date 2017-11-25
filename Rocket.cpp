@@ -43,7 +43,7 @@ namespace game
 		return false;
 	}
 
-	bool Rocket::collision(SceneNode* object)
+	bool Rocket::collision(SceneNode* object , float boundRad)
 	{
 		//SPHERE SPHERE COLLISION DETECTION
 		glm::vec3 apos, mpos, dif;
@@ -51,6 +51,6 @@ namespace game
 		mpos = rocketNode->getAbsolutePosition();
 		dif = mpos - apos;
 
-		return ((std::sqrt(std::pow(dif[0], 2) + std::pow(dif[1], 2) + std::pow(dif[2], 2))) <= 0.3);
+		return ((std::sqrt(std::pow(dif[0], 2) + std::pow(dif[1], 2) + std::pow(dif[2], 2))) <= boundRad);
 	}
 }

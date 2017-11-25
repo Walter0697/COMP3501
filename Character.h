@@ -14,6 +14,7 @@ namespace game
 		int maxFireRate;
 		int health;
 		int maxHealth;
+		float boundingRadius;
 
 		virtual void update() = 0;
 

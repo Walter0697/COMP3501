@@ -28,6 +28,8 @@ namespace game
 
 		timer = 12;
 		upWingMovement = true;
+
+		boundingRadius = 0.7;
 	}
 
 	/* Destructor */
@@ -92,34 +94,15 @@ namespace game
 		for (int i = 0; i < rockets.size(); i++)
 		{
 			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0)
-			{
-				rockets[i]->rocketNode->del = true;
-				rockets.erase(rockets.begin() + i);
-			}
-			else { rockets[i]->Update(); }
-		}
-
-
-
-		// Check rockets 
-		for (int i = 0; i < rockets.size(); i++)
-		{
-			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0)
-			{
-				rockets[i]->rocketNode->del = true;
-				rockets.erase(rockets.begin() + i);
-			}
+			if (rockets[i]->timer <= 0) { rockets.erase(rockets.begin() + i); }
 			else { rockets[i]->Update(); }
 		}
 	}
 
-	
-
 	/* Collision */
-	bool DragonFly::collision(SceneNode* object)
+	bool DragonFly::collision(SceneNode* object, float boundRad)
 	{
-		return false;
+		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
 	}
 }

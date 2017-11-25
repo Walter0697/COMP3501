@@ -27,6 +27,10 @@ namespace game
 		timer = 5;
 		legMovement = true;
 		isMoving = false;
+
+		boundingRadius = 1.3;
+		onFloor = false;
+		gravity = -1.f;
 	}
 
 	Spider::~Spider() {}
@@ -34,6 +38,8 @@ namespace game
 	/* Update */
 	void Spider::update()
 	{
+		//if (!onFloor) { body->Translate(glm::vec3(0, gravity, 0)); }
+
 		if (isMoving)
 			if (legMovement)
 			{
@@ -52,38 +58,40 @@ namespace game
 
 
 		time_t t = time(0);
-		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
+		if (lastUpdate == -1 || t - lastUpdate > updateTime)
+		{
 			state = int(rand() % 3);
 			lastUpdate = t;
-			//std::cout << "************SWITCH TO " << state << std::endl;
 		}
-		else {
-			//std::cout << "no switch yet, t - lastUpdate = " << t << ",  " <<  lastUpdate << std::endl;
-		}
+		else {}
 
-		if (state == 0) { //Idle
+		if (state == 0) 
+		{ //Idle
 			body->Translate(glm::vec3(0, 0, 0));
 			isMoving = false;
 		}
-		else if (state == 1) { //Move to player
+		else if (state == 1) 
+		{ //Move to player
 			glEnable(GL_NORMALIZE);
 			body->Translate(glm::vec3(((targetPos.x - body->GetPosition().x) * 0.01), ((targetPos.y - body->GetPosition().y) * 0.01), ((targetPos.z - body->GetPosition().z) * 0.01)));
 			isMoving = true;
 		}
-		else if (state == 2) { //Attack
-			if (glfwGetTime() - this->shotTimer >= this->fireRate) {
+		else if (state == 2) 
+		{ //Attack
+			if (glfwGetTime() - this->shotTimer >= this->fireRate) 
+			{
 				this->firing = true;
 				this->shotTimer = glfwGetTime();
 			}
-			else {
-				state = 0;
-			}
+			else { state = 0; }
 			isMoving = true;
 		}
-		else if (state == 3) { //Patrol
+		else if (state == 3) 
+		{ //Patrol
 
 		}
-		else {
+		else 
+		{
 			std::cout << "Invalid state in Spider" << std::endl;
 		}
 
@@ -91,18 +99,14 @@ namespace game
 		for (int i = 0; i < rockets.size(); i++)
 		{
 			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0)
-			{
-				rockets[i]->rocketNode->del = true;
-				rockets.erase(rockets.begin() + i);
-			}
+			if (rockets[i]->timer <= 0) { rockets.erase(rockets.begin() + i); }
 			else { rockets[i]->Update(); }
 		}
-
 	}
 
-	bool Spider::collision(SceneNode* object)
+	bool Spider::collision(SceneNode* object, float boundRad)
 	{
-		return false;
+		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
 	}
 }

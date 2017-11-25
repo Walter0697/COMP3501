@@ -2,27 +2,21 @@
 #define ENVIRONMENT_H
 
 #include "scene_node.h"
+#include "Collidable.h"
 
 // SPIDERS ARE CHARACTERS COLLIDABLES 
 namespace game
 {
-	class Environment
+	class Environment : Collidable
 	{
 	public:
 		Environment(SceneNode*);
 		~Environment();
 
 		SceneNode* floor;
-	/*
-		Spider(SceneNode*, SceneNode*, SceneNode*);
-		~Spider();
 
-		SceneNode* body;		// Spider Body
-		SceneNode* leftLeg;		// Spider left leg
-		SceneNode* rightLeg;	// Spider right leg
+		bool collision(SceneNode* , float);
 
-		void update();
-		bool collision(SceneNode*);*/
 	private:
 	protected:
 	};

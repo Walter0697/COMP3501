@@ -15,6 +15,7 @@ namespace game
 		upWingMovement = true;			// Checking for upwards or downwards fly rotation
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
+		boundingRadius = 1.0;
 	}
 
 	Fly::~Fly(){}
@@ -22,7 +23,6 @@ namespace game
 	void Fly::update()
 	{
 		fireRate--;		
-		
 		
 		// wing animation
 		if (upWingMovement)
@@ -53,8 +53,9 @@ namespace game
 		}
 	}
 
-	bool Fly::collision(SceneNode * object)
+	bool Fly::collision(SceneNode * object, float boundRad)
 	{
-		return false;
+		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
 	}
 } // namespace game;

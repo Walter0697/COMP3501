@@ -25,8 +25,12 @@ namespace game
 		rightLeg = humanRightLeg;						// Right leg of the human node
 
 		firing = false;									//Controls if the enemy is shooting
-		shotTimer = -1.f;
+		shotTimer = -1.f;								
 		fireRate = 1.0f;
+
+		boundingRadius = 4.0;
+		onFloor = false;
+		gravity = -1.f;
 	}
 
 	/* Destructor */
@@ -35,6 +39,8 @@ namespace game
 	/* Update */
 	void Human::update() 
 	{
+		//if (!onFloor) { body->Translate(glm::vec3(0, gravity, 0)); }
+
 		time_t t = time(0);
 		if (lastUpdate == -1 || t - lastUpdate > updateTime) {
 			state = int(rand() % 3);
@@ -86,18 +92,13 @@ namespace game
 		for (int i = 0; i < rockets.size(); i++)
 		{
 			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0)
-			{
-				rockets[i]->rocketNode->del = true;
-				rockets.erase(rockets.begin() + i);
-			}
+			if (rockets[i]->timer <= 0) { rockets.erase(rockets.begin() + i); }
 			else { rockets[i]->Update(); }
 		}
-
 	}
 
 	/* Collision */
-	bool Human::collision(SceneNode * object)
+	bool Human::collision(SceneNode * object, float boundRad)
 	{
 		return false;
 	}

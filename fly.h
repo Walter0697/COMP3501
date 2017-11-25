@@ -37,9 +37,10 @@ namespace game
 
 		int timer;
 		bool upWingMovement;
+		bool moving;
 
 		void update();	//update fly and all things that are related to it
-		bool collision(SceneNode*);
+		bool collision(SceneNode*, float);
 
 	private:
 	protected:

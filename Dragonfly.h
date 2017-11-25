@@ -22,7 +22,7 @@ namespace game
 		bool upWingMovement;
 	
 		void update();
-		bool collision(SceneNode*);
+		bool collision(SceneNode*, float);
 
 	private:
 	protected:

@@ -1,4 +1,3 @@
-
 #version 130
 
 // Attributes passed from the vertex shader
@@ -8,6 +7,7 @@ in vec4 color_interp;
 in vec2 uv_interp;
 in vec3 light_pos;
 
+
 // Uniform (global) buffer
 uniform sampler2D texture_map;
 
@@ -15,7 +15,7 @@ uniform sampler2D texture_map;
 vec4 ambient_color = vec4(0.1, 0.1, 0.1, 1.0);
 vec4 diffuse_color = vec4(0.5, 0.5, 0.5, 1.0);
 vec4 specular_color = vec4(0.8, 0.5, 0.9, 1.0);
-vec4 hemispherical = vec4 (0.9, 0.9, 0.9, 1.0);
+vec4 hemispherical = vec4 (0.15, 0.15, 0.15, 1.0);
 float phong_exponent = 128.0;
 float ambient_amount = 0.1;
 
@@ -47,11 +47,12 @@ void main()
     float spec_angle_cos = max(dot(N, H), 0.0);
     float specular_amount = pow(spec_angle_cos, phong_exponent);
         
-	hemispherical = ( (dot(N , vec3(0 , 1 , 0)) + 1) / 2) * hemispherical;
+	hemispherical = ((dot(N , vec3(0 , 1 , 0)) + 1) / 2) * hemispherical;
 
     // Retrieve texture value
     vec4 pixel = texture(texture_map, uv_interp);
 
     // Use texture in determining fragment colour
-    gl_FragColor = pixel + hemispherical * (lambertian_amount * specular_amount);
+    //gl_FragColor = pixel + hemispherical;
+	gl_FragColor = pixel + hemispherical +  (lambertian_amount + specular_amount) * vec4(0.1 , 0.1, 0.1, 1.0);
 }

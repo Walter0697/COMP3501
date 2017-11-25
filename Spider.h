@@ -20,9 +20,11 @@ namespace game
 		bool isMoving;
 		bool legMovement;
 		int timer;
+		float gravity;
+		bool onFloor;
 
 		void update();
-		bool collision(SceneNode*);
+		bool collision(SceneNode*, float);
 	private:
 	protected:
 	};

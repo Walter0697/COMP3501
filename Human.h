@@ -19,10 +19,11 @@ namespace game
 		SceneNode* rightHand;	// right hand
 		SceneNode* leftLeg;		// left leg
 		SceneNode* rightLeg;	// right leg
+		float gravity;
+		bool onFloor;
 
 		void update();
-		bool collision(SceneNode*);
-
+		bool collision(SceneNode*, float);
 	private:
 	protected:
 	};

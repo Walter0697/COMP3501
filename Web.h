@@ -1,5 +1,5 @@
-#ifndef ROCKET_H
-#define ROCKET_H
+#ifndef WEB_H
+#define WEB_H
 
 #include <string>
 #include <vector>
@@ -11,30 +11,28 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "scene_node.h"
-#include "camera.h"
 #include "Collidable.h"
-
 
 // Rockets 
 namespace game
 {
-	class Rocket : public Collidable 
+	class Web : public Collidable
 	{
 	public:
-		Rocket(SceneNode*, glm::vec3);
-		~Rocket();
+		Web(SceneNode*, glm::vec3);
+		~Web();
 
 		glm::vec3 direction;	// direction of the rocket
 		float speed;			// speed of the rocket
 		int timer;				// time after which rocket gets deleted 
-		SceneNode* rocketNode;	// rocket node
+		SceneNode* webNode;	// rocket node
 
-		virtual void Update();	// update the position of the rocket
-		bool collision(SceneNode* , Camera*);	// collision detection between rocket and other collidables
+		virtual void update();	// update the position of the rocket
+		//bool collision(SceneNode*, Camera*);	// collision detection between rocket and other collidables
 		bool collision(SceneNode*, float);
 
 	private:
 	protected:
 	};
 }
-#endif // !ROCKET_H
+#endif // WEB_H
