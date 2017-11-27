@@ -10,7 +10,7 @@
 #include <iostream>
 #include <ctime>
 #include "Character.h"
-#include "Rocket.h"
+#include "Projectile.h"
 
 // CREATE A GENERAL CHARACTER WHICH WILL BE INHERITED BY ALL CHARACTER TYPES 
 namespace game
@@ -18,7 +18,13 @@ namespace game
 	class Enemy : public Character
 	{
 	public:
-		virtual void updateTarget(glm::vec3 targPos) { targetPos = targPos; }
+		
+		glm::vec3 getDirection() { return direction; }
+
+		virtual void updateTarget(glm::vec3 targPos) 
+		{
+			targetPos = targPos; 
+		}
 
 		virtual	void updateTargetOrientation(glm::quat orient)
 		{
@@ -26,27 +32,30 @@ namespace game
 			glm::quat rotation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
 			targetOrientation = rotation * targetOrientation;
 		}
+
 		virtual bool getFiring() { return firing; }
-		virtual void fire(Rocket* r) {
+
+		virtual void fire(Projectile* p) {
 			if (firing) {
 				firing = false;
-				rockets.push_back(r);
+				projectiles.push_back(p);
 			}
 		}
 
+
 	private:
 	protected:
+		glm::vec3 direction;
+		glm::vec3 prevDirection;
 		glm::vec3 targetPos;
 		glm::quat targetOrientation;
 		time_t lastUpdate;
 		time_t updateTime;
 		int state;
-		std::vector<Rocket*> rockets; //store the rockets
+		std::vector<Projectile*> projectiles;   //store the projectiles
 		bool firing;
 		float shotTimer;
 		float fireRate;
-
-
 	};
 }
 #endif // ENEMY_H

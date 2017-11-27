@@ -15,13 +15,14 @@ namespace game
 		upWingMovement = true;			// Checking for upwards or downwards fly rotation
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
-		boundingRadius = 1.0;
+		boundingRadius = 0.7;
 	}
 
 	Fly::~Fly(){}
 
 	void Fly::update()
 	{
+		prevPosition = body->getAbsolutePosition();
 		fireRate--;		
 		
 		// wing animation
@@ -46,10 +47,10 @@ namespace game
 			// when timer is 0 delete the rocket
 			if (rockets[i]->timer <= 0) 
 			{ 
-				rockets[i]->rocketNode->del = true;
+				rockets[i]->node->del = true;
 				rockets.erase(rockets.begin() + i); 
 			}
-			else { rockets[i]->Update(); }
+			else { rockets[i]->update(); }
 		}
 	}
 

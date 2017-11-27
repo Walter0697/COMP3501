@@ -15,7 +15,9 @@ namespace game
 
 		SceneNode* floor;
 
+		glm::vec3 normals;
 		bool collision(SceneNode* , float);
+		bool collision(SceneNode*, float, glm::vec3);
 
 	private:
 	protected:

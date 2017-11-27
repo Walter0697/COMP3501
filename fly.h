@@ -39,6 +39,7 @@ namespace game
 		bool upWingMovement;
 		bool moving;
 
+		glm::vec3 prevPosition;
 		void update();	//update fly and all things that are related to it
 		bool collision(SceneNode*, float);
 

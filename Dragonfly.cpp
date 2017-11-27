@@ -18,18 +18,20 @@ namespace game
 
 		speed = 0.2;									// Speed of dragon fly
 		fireRate = 0;									// Fire rate of dragonfly shots 
-		maxFireRate = 90;								// maxFireRate of dragonfly
+		maxFireRate = 150;								// maxFireRate of dragonfly
 		maxHealth = 20;									// Max health 
 		health = maxHealth;								// Health
 
 		firing = false;									//Controls if the enemy is shooting
 		shotTimer = -1.f;
-		fireRate = 20.0f;
 
 		timer = 12;
 		upWingMovement = true;
 
 		boundingRadius = 0.7;
+
+		direction = glm::vec3(0, 0, 0);
+		prevDirection = glm::vec3(0, 0, 0);
 	}
 
 	/* Destructor */
@@ -39,6 +41,18 @@ namespace game
 	/* Update */
 	void DragonFly::update()
 	{
+		fireRate--;
+		// Set forward direction and store previous one
+		prevDirection = direction;
+		direction = glm::normalize(targetPos - body->getAbsolutePosition());
+
+		//body->SetOrientation(targetOrientation);
+		if (prevDirection != direction)
+		{
+			glm::quat rotation = glm::normalize(glm::angleAxis(glm::dot(prevDirection, direction), glm::normalize(glm::cross(prevDirection, direction))));
+			//body->Rotate(targetOrientation);
+		}
+
 		//wing animation
 		if (upWingMovement)
 		{
@@ -61,41 +75,41 @@ namespace game
 
 		state = rand() % 3;
 
-		if (state == 0) { //Idle
-			body->Translate(glm::vec3(0, 0, 0));
-		}
-		else if (state == 1) {
+		if (state == 0) {}  //Idle
+		else if (state == 1) 
+		{
 			//Move to player
-
 			body->SetOrientation(targetOrientation);
 
 			glEnable(GL_NORMALIZE);
-			body->Translate(glm::vec3(((targetPos.x - body->getAbsolutePosition().x) * 0.01),
-				((targetPos.y - body->getAbsolutePosition().y) * 0.01),
-				((targetPos.z - body->getAbsolutePosition().z) * 0.01)));
+			body->Translate(direction * speed);
 		}
-		else if (state == 2) { //Attack
+		else if (state == 2) 
+		{ 
+			//Attack
+			/*
 			if (glfwGetTime() - this->shotTimer >= this->fireRate) {
 				this->firing = true;
 				this->shotTimer = glfwGetTime();
 			}
-			else {
-				state = 0;
-			}
-		}
-		else if (state == 3) { //Patrol
+			*/
 
+			if (fireRate <= 0)
+			{
+				this->firing = true;
+				fireRate = maxFireRate;
+			}
+			else { state = 0; }
 		}
-		else {
-			std::cout << "Invalid state in Dragonfly" << std::endl;
-		}
+		else if (state == 3) { } //Patrol
+		else { std::cout << "Invalid state in Dragonfly" << std::endl; }
 
 		// Check rockets 
-		for (int i = 0; i < rockets.size(); i++)
+		for (int i = 0; i < projectiles.size(); i++)
 		{
 			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0) { rockets.erase(rockets.begin() + i); }
-			else { rockets[i]->Update(); }
+			if (projectiles[i]->timer <= 0) { projectiles.erase(projectiles.begin() + i); }
+			else { projectiles[i]->update(); }
 		}
 	}
 

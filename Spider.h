@@ -24,6 +24,7 @@ namespace game
 		bool onFloor;
 
 		void update();
+		virtual	void updateTargetOrientation(glm::quat orient);
 		bool collision(SceneNode*, float);
 	private:
 	protected:

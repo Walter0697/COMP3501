@@ -11,25 +11,21 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "scene_node.h"
-#include "Collidable.h"
+#include "Projectile.h"
 
-// Rockets 
+// Web 
 namespace game
 {
-	class Web : public Collidable
+	class Web : public Projectile
 	{
 	public:
 		Web(SceneNode*, glm::vec3);
 		~Web();
 
-		glm::vec3 direction;	// direction of the rocket
-		float speed;			// speed of the rocket
-		int timer;				// time after which rocket gets deleted 
-		SceneNode* webNode;	// rocket node
+		float boundingRadius;
 
-		virtual void update();	// update the position of the rocket
-		//bool collision(SceneNode*, Camera*);	// collision detection between rocket and other collidables
-		bool collision(SceneNode*, float);
+		void update();							// update the position of the rocket
+		bool collision(SceneNode*, float);		// collision Detection
 
 	private:
 	protected:

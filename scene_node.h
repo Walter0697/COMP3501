@@ -29,6 +29,7 @@ namespace game {
             const std::string GetName(void) const;		// Get name of node
             virtual glm::vec3 GetPosition(void) const;
 			virtual glm::vec3 getAbsolutePosition(void) const;
+			virtual glm::vec3 getPrevAbsolutePosition(void) const;
             virtual glm::quat GetOrientation(void) const;
 			virtual glm::quat getAbsoluteOrientation(void) const;
             glm::vec3 GetScale(void) const;
@@ -51,7 +52,7 @@ namespace game {
             void Scale(glm::vec3 scale);
 
             virtual glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf);	 // Draw the node according to scene parameters in 'camera'
-            virtual void Update(void);		// Update the node
+            virtual void update(void);		// Update the node
 
             // Hierarchy-related methods
             void AddChild(SceneNode *node);
@@ -68,6 +69,7 @@ namespace game {
 			GLuint texture_; // Reference to texture
             glm::vec3 position_; // Relative Position of node
 			glm::vec3 absolutePosition; // Absolute position of node 
+			glm::vec3 prevAbsolutePosition; // Absolute position of node 
             glm::quat orientation_; // Orientation of node
 			glm::quat absoluteOrientation; // Absolute orientation
             glm::vec3 scale_; // Scale of node
