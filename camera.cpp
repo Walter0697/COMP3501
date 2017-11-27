@@ -12,7 +12,7 @@ namespace game
 	Camera::Camera(void)
 	{
 		firstPerson = false;
-		distance = 3;
+		distance = 0.6f;
 	}
 
 	Camera::~Camera() {}

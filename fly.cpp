@@ -2,12 +2,9 @@
 
 namespace game 
 {
+	/* Constructor */
 	Fly::Fly(SceneNode* flyBody, SceneNode* flyWings, SceneNode* flyLegs)
 	{
-		body = flyBody;					// Body of fly
-		wings = flyWings;				// Wings of the fly
-		legs = flyLegs;					// Legs of fly
-
 		speed = 0.5;					// hardcode speed
 		maxFireRate = 30;				// maximum fire rate
 		fireRate = 0;					// fire rate handler
@@ -15,14 +12,19 @@ namespace game
 		upWingMovement = true;			// Checking for upwards or downwards fly rotation
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
-		boundingRadius = 0.7;
+		boundingRadius = 0.7;			// Radius of bounds
+		body = flyBody;					// Body of fly
+		wings = flyWings;				// Wings of the fly
+		legs = flyLegs;					// Legs of fly
 	}
 
+	/* Destructor */
 	Fly::~Fly(){}
 
+	/* Update */
 	void Fly::update()
 	{
-		prevPosition = body->getAbsolutePosition();
+		//prevPosition = body->getAbsolutePosition();
 		fireRate--;		
 		
 		// wing animation
@@ -54,9 +56,10 @@ namespace game
 		}
 	}
 
+	/* Collision */
 	bool Fly::collision(SceneNode * object, float boundRad)
 	{
 		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
 	}
-} // namespace game;
+} // namespace game

@@ -6,8 +6,9 @@
 #include "bin/path_config.h"
 
 // TO DO:
-// RESETTING TO PREV POSITION IS NOT WORKING COLLISION ON ENVIRONMENT???????
 // REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// HAVE EACH ROOM CONNECTED TO ONE ANOTHER AND ETC...
+// RESETTING TO PREV POSITION IS NOT WORKING COLLISION ON ENVIRONMENT???????
 // SPLINE TRAJECTORIES WITH SPIDER WEB ATTACK
 // PARTICLE SYSTEMS ???????
 // COLLISION BETWEEN CHARACTERS 
@@ -256,17 +257,11 @@ namespace game
 
 				// Human attack with player
 				// WE MIGHT NEED A SEPERATE COLLISION DETECTION FOR THE HUMANS!!!!
-				/* Check collision with bullets and environment */
-				/* Check collision with characters and the environment */
-				// NEED A SEPARATE WALLS COLLISION AND A FLOOR COLLISION 
-
 
 
 				/* UPDATE */
 				// Check distances
 				// redo locking on to player
-
-
 				if (player) { player->update(); }
 
 				for (int i = 0; i < dragonFlies.size(); i++)
@@ -290,8 +285,8 @@ namespace game
 				for (int k = 0; k < humans.size(); k++)
 				{
 					humans[k]->updateTarget(player->body->getAbsolutePosition());
-
 					humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+
 					humans[k]->update();
 					//if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition(), humans[k]->body->getAbsolutePosition())); }
 				}
@@ -869,14 +864,11 @@ namespace game
 						delete spiders[l];
 						spiders.erase(spiders.begin() + l);		// Delete from spiders vector
 					}
-
 					break;
 				}
 			}
 		}
 	}
-
-
 
 	void Game::environmentCollision()
 	{
@@ -885,9 +877,7 @@ namespace game
 		if (room->collision(player->body, player->boundingRadius, &norm))
 		{
 			// move it to previous position not working
-			std::cout << "before: " << camNode->getPrevAbsolutePosition().x << std::endl;
-			std::cout << "after: " << camNode->getAbsolutePosition().x << std::endl;
-			//camera_.SetPosition(camNode->getPrevAbsolutePosition());
+			// camera_.SetPosition(camNode->getPrevAbsolutePosition());
 			camera_.Translate(norm * 2.f * player->speed);
 		}
 		
@@ -939,7 +929,6 @@ namespace game
 				humans[h]->body->Translate(norm * 2.f * humans[h]->speed);
 			}
 		}
-		
 	}
 
 	/* ENEMY COLLISION DETECTION */

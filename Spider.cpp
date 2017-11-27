@@ -1,5 +1,6 @@
 #include "Spider.h"
 
+//Spider is fixed
 namespace game
 {
 	Spider::Spider(SceneNode* spiderBody, SceneNode* spiderLeftLeg, SceneNode* spiderRightLeg)
@@ -9,27 +10,22 @@ namespace game
 		lastUpdate = -1;							// Last update time
 		updateTime = 0.5;							// Update time
 		state = 0;									// Machine state
-
-		body = spiderBody;							// Body of the spider node
-		leftLeg = spiderLeftLeg;					// Left leg of the spider node
-		rightLeg = spiderRightLeg;					// Right leg of the spider node
-			
 		speed = 1.0;								// Speed of movement the spider
 		fireRate = 0;								// FireRate of the shooting webs
 		maxFireRate = 120;							// Maximum fire rate of shooting
 		maxHealth = 30;								// Maximum health
 		health = maxHealth;							// Health
-
-		firing = false;								//Controls if the enemy is shooting
+		firing = false;								// Controls if the enemy is shooting
 		shotTimer = -1.f;
-
-		timer = 5;
-		legMovement = true;
-		isMoving = false;
-
-		boundingRadius = 1.3;
-		onFloor = false;
-		gravity = -0.2f;
+		timer = 5;									// Timer for leg movement
+		legMovement = true;							// Check for leg movement
+		isMoving = false;							// Check for movement
+		boundingRadius = 1.3;						// Radius bounding
+		onFloor = false;							// Check whether on floor or not
+		gravity = -0.2f;							// Gravity
+		body = spiderBody;							// Body of the spider node
+		leftLeg = spiderLeftLeg;					// Left leg of the spider node
+		rightLeg = spiderRightLeg;					// Right leg of the spider node
 	}
 
 	Spider::~Spider() {}

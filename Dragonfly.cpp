@@ -5,33 +5,27 @@ namespace game
 	/* Constructor */
 	DragonFly::DragonFly(SceneNode* dragonFlyBody, SceneNode* dragonFlyLeftWing, SceneNode* dragonFlyRightWing, SceneNode* dragonFlyLegs)
 	{
-		body = dragonFlyBody;							// Body of the dragonfly node
-		leftWing = dragonFlyLeftWing;					// Left wing of the dragonfly node
-		rightWing = dragonFlyRightWing;					// Right wing of the dragonfly node
-		legs = dragonFlyLegs;							// Legs of the dragonfly node
-
 		targetPos = glm::vec3(0, 0, 0);					// Store target position
 		targetOrientation = glm::quat(0, 0, 0, 0);		// Store target orientation
 		lastUpdate = -1;								// Previous update time
 		updateTime = 0.5;								// Update time
 		state = 0;										// State in game Machine 
-
 		speed = 0.2;									// Speed of dragon fly
 		fireRate = 0;									// Fire rate of dragonfly shots 
 		maxFireRate = 150;								// maxFireRate of dragonfly
 		maxHealth = 20;									// Max health 
 		health = maxHealth;								// Health
-
 		firing = false;									//Controls if the enemy is shooting
 		shotTimer = -1.f;
-
-		timer = 12;
-		upWingMovement = true;
-
-		boundingRadius = 0.7;
-
-		direction = glm::vec3(0, 0, 0);
-		prevDirection = glm::vec3(0, 0, 0);
+		timer = 12;										// Timer for wing animation
+		upWingMovement = true;							// Check for wing movement
+		boundingRadius = 0.7;							// radius bound
+		direction = glm::vec3(0, 0, 0);					// Direction of movement
+		prevDirection = glm::vec3(0, 0, 0);				// Previous direction for setting up orientation
+		body = dragonFlyBody;							// Body of the dragonfly node
+		leftWing = dragonFlyLeftWing;					// Left wing of the dragonfly node
+		rightWing = dragonFlyRightWing;					// Right wing of the dragonfly node
+		legs = dragonFlyLegs;							// Legs of the dragonfly node
 	}
 
 	/* Destructor */
@@ -46,12 +40,9 @@ namespace game
 		prevDirection = direction;
 		direction = glm::normalize(targetPos - body->getAbsolutePosition());
 
-		//body->SetOrientation(targetOrientation);
-		if (prevDirection != direction)
-		{
-			glm::quat rotation = glm::normalize(glm::angleAxis(glm::dot(prevDirection, direction), glm::normalize(glm::cross(prevDirection, direction))));
-			//body->Rotate(targetOrientation);
-		}
+		body->SetOrientation(targetOrientation);
+		//glm::quat rotation = glm::normalize(glm::angleAxis(glm::dot(prevDirection, direction), glm::normalize(glm::cross(prevDirection, direction))));
+		//body->Rotate(targetOrientation);
 
 		//wing animation
 		if (upWingMovement)
@@ -73,27 +64,19 @@ namespace game
 			if (timer >= 12) { upWingMovement = true; }
 		}
 
+		//setup state machine
 		state = rand() % 3;
 
 		if (state == 0) {}  //Idle
 		else if (state == 1) 
 		{
 			//Move to player
-			body->SetOrientation(targetOrientation);
-
 			glEnable(GL_NORMALIZE);
 			body->Translate(direction * speed);
 		}
 		else if (state == 2) 
 		{ 
 			//Attack
-			/*
-			if (glfwGetTime() - this->shotTimer >= this->fireRate) {
-				this->firing = true;
-				this->shotTimer = glfwGetTime();
-			}
-			*/
-
 			if (fireRate <= 0)
 			{
 				this->firing = true;
@@ -104,10 +87,9 @@ namespace game
 		else if (state == 3) { } //Patrol
 		else { std::cout << "Invalid state in Dragonfly" << std::endl; }
 
-		// Check rockets 
+		// Check rockets when timer is 0 delete the rocket
 		for (int i = 0; i < projectiles.size(); i++)
 		{
-			// when timer is 0 delete the rocket
 			if (projectiles[i]->timer <= 0) { projectiles.erase(projectiles.begin() + i); }
 			else { projectiles[i]->update(); }
 		}
