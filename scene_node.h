@@ -55,6 +55,7 @@ namespace game {
 
             // Hierarchy-related methods
             void AddChild(SceneNode *node);
+			void RemoveChild(SceneNode *node);
             std::vector<SceneNode *>::const_iterator children_begin() const;
             std::vector<SceneNode *>::const_iterator children_end() const;
 

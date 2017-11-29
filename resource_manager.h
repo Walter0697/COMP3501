@@ -32,7 +32,7 @@ namespace game
 		void CreateSphere(std::string object_name, float radius = 0.6, int num_samples_theta = 90, int num_samples_phi = 45);
 		void CreateWall(std::string object_name);
 		void CreateCylinder(std::string object_name, float height = 0.1, float loop_radius = 0.6, float circle_radius = 0.35, int num_loop_samples = 90, int num_circle_samples = 30, glm::vec3 color = glm::vec3(0, 1, 0));
-
+		void CreateCube(std::string object_name);
 	private:
 		std::vector<Resource*> resource_;	// List storing all resources
  

@@ -19,6 +19,7 @@
 #include "scene_node.h"
 #include "Rocket.h"
 #include "Character.h"
+#include "Block.h"
 
 // FLIES ARE COLLIDABLES AND CHARACTERS
 namespace game 
@@ -34,6 +35,10 @@ namespace game
 		SceneNode* body;
 		SceneNode* wings;
 		SceneNode* legs;
+
+		Block* dragging;
+		int dragtimer;
+		int dragwait;
 
 		int timer;
 		bool upWingMovement;

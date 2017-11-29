@@ -477,6 +477,76 @@ void ResourceManager::CreateTorus(std::string object_name, float loop_radius, fl
 }
 
 
+// Create the geometry for a cube centered at (0, 0, 0) with sides of length 1
+// Return the number of array elements that form the cube
+void ResourceManager::CreateCube(std::string object_name) {
+
+	// The construction does not use shared vertices, since we need to assign appropriate normals to each face 
+	// Each face of the cube is defined by four vertices (with the same normal) and two triangles
+
+	// Vertices used to build the cube
+	// 9 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3)
+	GLfloat vertex[] = {
+		// First cube face (two triangles)
+		-0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 0.0, 1.0, 0, 0,
+		0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 0.0, 1.0, 1, 0,
+		0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 1.0, 1.0, 1, 1,
+		0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 1.0, 1.0, 1, 1,
+		-0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 1.0, 0.0, 0, 1,
+		-0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 0.0, 1.0, 0, 0,
+		// Second cube face
+		0.5, -0.5,  0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 1.0, 0, 1,
+		0.5, -0.5, -0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 0.0, 0, 0,
+		0.5,  0.5, -0.5,    1.0,  0.0,  0.0,    1.0, 1.0, 0.0, 1, 0,
+		0.5,  0.5, -0.5,    1.0,  0.0,  0.0,    1.0, 1.0, 0.0, 1, 0,
+		0.5,  0.5,  0.5,    1.0,  0.0,  0.0,    1.0, 1.0, 1.0, 1, 1,
+		0.5, -0.5,  0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 1.0, 0, 1,
+		// Third cube face
+		0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 0.0, 0.0, 1, 0,
+		-0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 0.0, 1.0, 0, 0,
+		-0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 1.0, 0.0, 0, 1,
+		-0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 1.0, 0.0, 0, 1,
+		0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 1.0, 0.0, 1, 1,
+		0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 0.0, 0.0, 1, 0,
+		// Fourth cube face
+		-0.5, -0.5, -0.5,   -1.0,  0.0,  0.0,    0.0, 0.0, 1.0, 0, 0,
+		-0.5, -0.5,  0.5,   -1.0,  0.0,  0.0,    0.0, 0.0, 1.0, 0, 1,
+		-0.5,  0.5,  0.5,   -1.0,  0.0,  0.0,    0.0, 1.0, 0.0, 1, 1,
+		-0.5,  0.5,  0.5,   -1.0,  0.0,  0.0,    0.0, 1.0, 0.0, 1, 1,
+		-0.5,  0.5, -0.5,   -1.0,  0.0,  0.0,    0.0, 1.0, 0.0, 1, 0,
+		-0.5, -0.5, -0.5,   -1.0,  0.0,  0.0,    0.0, 0.0, 1.0, 0, 0,
+		// Fifth cube face
+		-0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    0.0, 1.0, 0.0, 0, 1,
+		0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    1.0, 1.0, 1.0, 1, 1,
+		0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    1.0, 1.0, 0.0, 1, 0,
+		0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    1.0, 1.0, 0.0, 1, 0,
+		-0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    0.0, 1.0, 0.0, 0, 0,
+		-0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    0.0, 1.0, 0.0, 0, 1,
+		// Sixth cube face
+		0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 1.0, 1, 1,
+		-0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    0.0, 0.0, 1.0, 0, 1,
+		-0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    0.0, 0.0, 1.0, 0, 0,
+		-0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    0.0, 0.0, 1.0, 0, 0,
+		0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 0.0, 1, 0,
+		0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 1.0, 1, 1,
+	};
+
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+
+	// Create buffer for vertices
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
+
+
+	// Create resource
+	AddResource(Mesh, object_name, vbo, sizeof(vertex) / (sizeof(GLfloat) * 11));
+}
+
+
+
 void ResourceManager::CreateSphere(std::string object_name, float radius, int num_samples_theta, int num_samples_phi){
 
     // Create a sphere using a well-known parameterization

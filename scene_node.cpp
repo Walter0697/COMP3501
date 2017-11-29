@@ -92,6 +92,15 @@ namespace game
 		node->parent_ = this;
 	}
 
+	/* Removing a child */
+	void SceneNode::RemoveChild(SceneNode *node)
+	{
+		//children_.erase(std::remove(children_.begin(), children_.end(), node), children_.end());
+
+		children_.pop_back();
+		node->parent_ = NULL;
+	}
+
 	/* Maintain children if a child needs to be deleted, delete it */
 	void SceneNode::maintainChildren()
 	{

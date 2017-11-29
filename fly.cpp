@@ -16,12 +16,18 @@ namespace game
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
 		boundingRadius = 1.0;
+
+		dragging = NULL;
+		dragwait = 1;
+		dragtimer = -1;
+
 	}
 
 	Fly::~Fly(){}
 
 	void Fly::update()
 	{
+
 		fireRate--;		
 		
 		// wing animation

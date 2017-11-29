@@ -123,6 +123,7 @@ namespace game
 		resman_.CreateWall("wallMesh");
 		resman_.CreateSphere("simpleSphereMesh");
 		resman_.CreateCylinder("targetMesh", 0.1, 0.6, 0.35, 4, 4, glm::vec3(1,0,0));
+		resman_.CreateCube("CubeMesh");
 
 		/* Create Resources */
 
@@ -167,6 +168,10 @@ namespace game
 		resman_.LoadResource(Texture, "floorTex", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wall-texture.png");
 		resman_.LoadResource(Texture, "wallTex", filename.c_str());
+
+		// BLOCK TEXTURE
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
+		resman_.LoadResource(Texture, "blockTex", filename.c_str());
 
 		/* GEOMETRIES */
 		// HUMAN BODY LEFT AND RIGHT HANDS AND LEGS
@@ -222,6 +227,7 @@ namespace game
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
+		block = createBlock("block1");
 		environment = createEnvironment();
 	}
 
@@ -247,6 +253,7 @@ namespace game
 
 			/* DRAW */
 			scene_.Draw(&camera_);		// Draw the scene
+
 
 			/* Check collision with bullets and all characters (friendly fire is fine) */
 			/* Rockets Collision Detection */
@@ -486,6 +493,13 @@ namespace game
 				//if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition(), humans[k]->body->getAbsolutePosition())); }
 			}
 
+			//UPDATE BLOCK
+			if (block->getDrag()) {
+				block->setDragger(camera_.GetPosition());
+			}
+			block->update();
+
+
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
 			glfwPollEvents();			// Update other events like input handling
 		}
@@ -547,6 +561,30 @@ namespace game
 		if (glfwGetKey(window_, GLFW_KEY_Q)) { camera_.Translate(camera_.GetUp() * player->speed); }
 		if (glfwGetKey(window_, GLFW_KEY_E)) { camera_.Translate(-camera_.GetUp() * player->speed); }
 
+		// Drag
+		if (glfwGetKey(window_, GLFW_KEY_G)) { 
+			if (player->dragtimer == -1 || player->dragtimer + player->dragwait <= glfwGetTime()) {
+				if (player->dragging == NULL) {
+					if (player->collision(block->object, 10.0f)) {
+						player->dragging = block;
+						player->dragging->setDrag(true);
+						player->dragging->setDragger(camera_.GetPosition());
+						block->object->SetPosition(camera_.GetPosition());
+						//player->legs->AddChild(block->object);
+						player->dragtimer = glfwGetTime();
+					}
+				}
+				else {
+					player->dragging->setDrag(false);
+					player->dragging = NULL;
+					//player->legs->RemoveChild(block->object);
+					player->dragtimer = glfwGetTime();
+					block->object->SetPosition(block->object->GetPosition() + glm::vec3(1,1,1));
+					block->speed = 1;
+				}
+			}
+		}
+
 		// Shoot a rocket
 		if (glfwGetKey(window_ , GLFW_KEY_SPACE))
 		{
@@ -585,6 +623,27 @@ namespace game
 
 		return new Fly(flyBody, flyWings, flyLegs);
 	}
+
+
+	Block* Game::createBlock(std::string entity_name)
+	{
+		// Setup fly parts
+		SceneNode* object = createSceneNode(entity_name, "simpleSphereMesh", "textureMaterial", "blockTex");
+
+		world->AddChild(object);
+
+		// Setup parts Scales
+		object->SetScale(glm::vec3(10, 10, 10));
+
+		// Setup fly Rotations
+		//flyBody->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0)));
+
+		// Setup parts Positions
+		object->SetPosition(glm::vec3(0, -0.3, -0.6));
+
+		return new Block(object);
+	}
+
 
 	// Create a Spider instance
 	Spider* Game::createSpider(std::string entity_name)

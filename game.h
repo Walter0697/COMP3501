@@ -18,6 +18,7 @@
 #include "Spider.h"
 #include "Dragonfly.h"
 #include "Environment.h"
+#include "Block.h"
 
 namespace game 
 {
@@ -59,6 +60,9 @@ namespace game
 			Human* human;									// human enemy
 			Spider* spider;									// Spider enemy
 			DragonFly* dragonFly;							// Dragon fly enemy
+			Block* block;									// Draggable block
+
+
 			Environment* environment;						// Environment
 			std::vector<Rocket*> rockets;				// All Game projetiles
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
@@ -87,6 +91,7 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
+			Block* createBlock(std::string entity_name);
 			Environment *createEnvironment();
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
