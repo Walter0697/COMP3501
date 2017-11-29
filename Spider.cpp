@@ -1,6 +1,6 @@
 #include "Spider.h"
 
-//Spider is fixed
+// Spider is fixed
 namespace game
 {
 	Spider::Spider(SceneNode* spiderBody, SceneNode* spiderLeftLeg, SceneNode* spiderRightLeg)
@@ -70,8 +70,6 @@ namespace game
 	    else if (state == 1) 
 		{ 
 			//Move to player
-			glEnable(GL_NORMALIZE);
-
 			//body->SetOrientation(targetOrientation);
 
 			//body->Translate(glm::vec3(((targetPos.x - body->GetPosition().x) * 0.01), ((targetPos.y - body->GetPosition().y) * 0.01), ((targetPos.z - body->GetPosition().z) * 0.01)));
@@ -112,6 +110,6 @@ namespace game
 	bool Spider::collision(SceneNode* object, float boundRad)
 	{
 		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
-		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

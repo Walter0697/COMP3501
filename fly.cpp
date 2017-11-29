@@ -60,6 +60,6 @@ namespace game
 	bool Fly::collision(SceneNode * object, float boundRad)
 	{
 		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
-		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 } // namespace game

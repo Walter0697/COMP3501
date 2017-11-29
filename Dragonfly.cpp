@@ -40,9 +40,8 @@ namespace game
 		prevDirection = direction;
 		direction = glm::normalize(targetPos - body->getAbsolutePosition());
 
-		body->SetOrientation(targetOrientation);
-		//glm::quat rotation = glm::normalize(glm::angleAxis(glm::dot(prevDirection, direction), glm::normalize(glm::cross(prevDirection, direction))));
-		//body->Rotate(targetOrientation);
+		glm::quat rotation(prevDirection,direction);
+		body->Rotate(rotation);
 
 		//wing animation
 		if (upWingMovement)
@@ -71,7 +70,6 @@ namespace game
 		else if (state == 1) 
 		{
 			//Move to player
-			glEnable(GL_NORMALIZE);
 			body->Translate(direction * speed);
 		}
 		else if (state == 2) 
@@ -99,6 +97,6 @@ namespace game
 	bool DragonFly::collision(SceneNode* object, float boundRad)
 	{
 		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
-		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

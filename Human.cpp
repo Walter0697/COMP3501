@@ -78,6 +78,7 @@ namespace game
 	/* Collision */
 	bool Human::collision(SceneNode * object, float boundRad)
 	{
-		return false;
+		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

@@ -7,7 +7,7 @@ namespace game
 	Rocket::Rocket(SceneNode* node , glm::vec3 dir)
 	{
 		this->direction = glm::normalize(dir);
-		this->speed = 0.7;				// Hardcode speed 
+		this->speed = 0.8;				// Hardcode speed 
 		this->timer = 200;				// Hardcoded timer to get rid of rocket
 		this->node = node;
 		boundingRadius = 0.1;
@@ -50,6 +50,6 @@ namespace game
 	bool Rocket::collision(SceneNode* object , float boundRad)
 	{
 		glm::vec3 difference = node->getAbsolutePosition() - object->getAbsolutePosition();
-		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad);
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

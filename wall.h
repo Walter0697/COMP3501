@@ -9,15 +9,13 @@ namespace game
 	class Wall : public Collidable
 	{
 	public:
-		Wall(SceneNode*, glm::vec3, float, float, float, float);
+		Wall(SceneNode*, glm::vec3, float, float);
 		~Wall();
 
 		SceneNode* node;
 		glm::vec3 normal;
-		float minX;
-		float minY;
-		float maxX;
-		float maxY;
+		float length;
+		float width;
 		bool collision(SceneNode*, float);
 		bool collision(SceneNode*, float, glm::vec3*);
 	};
