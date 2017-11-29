@@ -89,7 +89,7 @@ namespace game
 		{
 			SceneNode *current = stck.top();
 			stck.pop();
-			current->Update();
+			current->update();
 			for (std::vector<SceneNode *>::const_iterator it = current->children_begin(); it != current->children_end(); it++) 
 			{
 				stck.push(*it);

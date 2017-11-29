@@ -6,14 +6,13 @@
 #include "bin/path_config.h"
 
 // TO DO:
+// REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// HAVE EACH ROOM CONNECTED TO ONE ANOTHER AND ETC...
+// RESETTING TO PREV POSITION IS NOT WORKING COLLISION ON ENVIRONMENT???????
 // SPLINE TRAJECTORIES WITH SPIDER WEB ATTACK
-// COLLISION BETWEEN CHARACTERS 
-// COLLISION DETECTION BETWEEN EVERYTHING AND THE ENVIRONMENT
+// PARTICLE SYSTEMS ???????
 
-// HUD?????
 // PARTICLE SYSTEMS FOR THE DEATH OR DESTRUCTION OF OBJS
-// MOVING THE ENEMY WITH THE PLAYER ????
-// HOW SOFISTICATED SHOULD OUR AI BE ???
 // SHADOW MAPPING (OPTIONAL)
 
 // Spacebar to shoot rocket
@@ -30,8 +29,8 @@ namespace game
 
 	// Main window settings
 	const std::string window_title_g = "FLYING UNDERSIZED CONTROLLED KILLER";
-	const unsigned int window_width_g = 1920;
-	const unsigned int window_height_g = 1080;
+	const unsigned int window_width_g = 1024;
+	const unsigned int window_height_g = 768;
 	const bool window_full_screen_g = false;
 
 	// Viewport and camera settings
@@ -119,6 +118,7 @@ namespace game
 	void Game::SetupResources(void)
 	{
 		/* Create Built-In Geometries */
+
 		resman_.CreateCylinder("rocketMesh");
 		resman_.CreateWall("wallMesh");
 		resman_.CreateSphere("simpleSphereMesh");
@@ -137,6 +137,11 @@ namespace game
 		resman_.LoadResource(Material, "textureMaterial", filename.c_str());
 
 		/* TEXTURES */
+
+		// WEB TEXTURE
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/webTexture.png");
+		resman_.LoadResource(Texture, "webTex", filename.c_str());
+
 		// ROCKET TEXTURE
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/rocketTexture.png");
 		resman_.LoadResource(Texture, "rocketTex", filename.c_str());
@@ -164,9 +169,9 @@ namespace game
 		resman_.LoadResource(Texture, "dragonFlyLegsTex", filename.c_str());
 
 		// ENVIRONMENT TEXTURES
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/floor-texture.jpg");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/floorTexture.png");
 		resman_.LoadResource(Texture, "floorTex", filename.c_str());
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wall-texture.png");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wallTexture.png");
 		resman_.LoadResource(Texture, "wallTex", filename.c_str());
 
 		// BLOCK TEXTURE
@@ -174,6 +179,7 @@ namespace game
 		resman_.LoadResource(Texture, "blockTex", filename.c_str());
 
 		/* GEOMETRIES */
+
 		// HUMAN BODY LEFT AND RIGHT HANDS AND LEGS
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
 		resman_.LoadResource(Mesh, "humanBodyMesh", filename.c_str());
@@ -227,8 +233,12 @@ namespace game
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
+<<<<<<< HEAD
 		block = createBlock("block1");
 		environment = createEnvironment();
+=======
+		room = createRoom();
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 	}
 
 	void Game::MainLoop(void)
@@ -237,260 +247,64 @@ namespace game
 		while (!glfwWindowShouldClose(window_)) 
 		{
 			/* INPUT */
-			checkInput(); // Check for input
+			checkInput(); 
 
-			/* COLLISION DETECTION */
-
-			// Bullets and all characters
-			
-			// Webs and player
-			
-			// Human attack with player
-
-			// WE MIGHT NEED A SEPERATE COLLISION DETECTION FOR THE HUMANS!!!!
-
-			/* Check collision with bullets and environment */
-
-			/* DRAW */
-			scene_.Draw(&camera_);		// Draw the scene
-
+<<<<<<< HEAD
 
 			/* Check collision with bullets and all characters (friendly fire is fine) */
 			/* Rockets Collision Detection */
 			bool collided = false;
 			for (int i = 0; i < rockets.size(); i++)
+=======
+			//check if player health > 0 
+			if (player->health > 0)
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 			{
-				/* DRAGONFLY COLLISION DETECTION WITH ROCKETS */
-				for (int j = 0; j < dragonFlies.size(); j++)
+				/* DRAW */
+				scene_.Draw(&camera_);		// Draw the scene
+
+				/* COLLISION DETECTION */
+				gameCollisionDetection();
+
+				/* Check collision with bullets and all characters (friendly fire is fine) */
+				// Webs and player
+				/* Check collision with characters and other characters */
+
+				// Human attack with player
+				// WE MIGHT NEED A SEPERATE COLLISION DETECTION FOR THE HUMANS!!!!
+
+
+				/* UPDATE */
+				// Check distances
+				// redo locking on to player
+				if (player) { player->update(); }
+
+				for (int i = 0; i < dragonFlies.size(); i++)
 				{
-					if (rockets[i]->collision(dragonFlies[j]->body , dragonFlies[j]->boundingRadius))
-					{
-						rockets[i]->rocketNode->del = true;
-						rockets.erase(rockets.begin() + i);
-						i--;
+					dragonFlies[i]->updateTarget(player->body->getAbsolutePosition());
+					dragonFlies[i]->updateTargetOrientation(player->body->getAbsoluteOrientation());
 
-						dragonFlies[j]->health -= 10;
-
-						if (dragonFlies[j]->health <= 0)
-						{
-							dragonFlies[j]->body->del = true;			// Delete node from sceneGraph
-							dragonFlies[j]->leftWing->del = true;		// Delete node from sceneGraph
-							dragonFlies[j]->rightWing->del = true;		// Delete node from sceneGraph
-							dragonFlies[j]->legs->del = true;			// Delete node from sceneGraph
-							delete dragonFlies[j];
-							dragonFlies.erase(dragonFlies.begin() + j); // Delete from dragonfly vector
-						}
-						collided = true;
-						break;
-					}
+					dragonFlies[i]->update();
+					if (dragonFlies[i]->getFiring()) { dragonFlies[i]->fire(createRocket("Rocket4", dragonFlies[i]->getDirection(), dragonFlies[i]->body->getAbsolutePosition())); }
 				}
 
-				
-				/* HUMAN COLLISION DETECTION WITH ROCKETS */
-				/*
-				// Should not be here
-				for (int k = 0 ; k < humans.size(); k++)
+				for (int j = 0; j < spiders.size(); j++)
 				{
-					if (!collided && rockets[i]->collision(humans[k]->body, humans[k]->boundingRadius))
-					{
-						rockets[i]->rocketNode->del = true;
-						rockets.erase(rockets.begin() + i);
-						i--;
+					spiders[j]->updateTarget(player->body->getAbsolutePosition());
+					spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
 
-						humans[k]->health -= 10;
-
-						if (humans[k]->health <= 0)
-						{
-							humans[k]->body->del = true;				// Delete node from sceneGraph
-							humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
-							humans[k]->leftHand->del = true;			// Delete node from sceneGraph
-							humans[k]->rightHand->del = true;			// Delete node from sceneGraph
-							humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
-							delete humans[k];
-							humans.erase(humans.begin() + k);			// Delete from human vector
-						}
-						collided = true;
-						break;
-
-					}
+					spiders[j]->update();
+					if (spiders[j]->getFiring()) { spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition())); }
 				}
-				*/
 
-				/* SPIDERS COLLISION DETECTION WITH ROCKETS */
-				for (int l = 0; l < spiders.size(); l++)
+				for (int k = 0; k < humans.size(); k++)
 				{
-					if (!collided && rockets[i]->collision(spiders[l]->body, spiders[l]->boundingRadius))
-					{
-						rockets[i]->rocketNode->del = true;
-						rockets.erase(rockets.begin() + i);
-						i--;
+					humans[k]->updateTarget(player->body->getAbsolutePosition());
+					humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
 
-						spiders[l]->health -= 10;
-
-						if (spiders[l]->health <= 0)
-						{
-							spiders[l]->body->del = true;			// Delete node from sceneGraph
-							spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
-							spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
-							delete spiders[l];
-							spiders.erase(spiders.begin() + l);		// Delete from spiders vector
-						}
-
-						break;
-					}
+					humans[k]->update();
+					if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", humans[k]->getDirection(), humans[k]->body->getAbsolutePosition())); }
 				}
-			}
-
-			/* Check collision with characters and other characters */
-
-			/* DragonFlies collision detection */
-			for (int i = 0; i < dragonFlies.size(); i++)
-			{
-				//player collision
-				if (player->collision(dragonFlies[i]->body, dragonFlies[i]->boundingRadius)) 
-				{ 
-					camera_.Translate((float)player->speed * (float)2 * -camera_.GetForward()); 
-				}
-				
-				//Other dragonflies collision
-				for (int m = 0; m < dragonFlies.size(); m++)
-				{
-					if (i != m && dragonFlies[i]->collision(dragonFlies[m]->body, dragonFlies[m]->boundingRadius))
-					{
-						dragonFlies[i]->body->Translate(glm::normalize(dragonFlies[i]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * (float)3 * dragonFlies[i]->speed);
-					}
-				}
-				
-				//spiders collision
-				for (int w = 0; w < spiders.size(); w++)
-				{
-					if (dragonFlies[i]->collision(spiders[w]->body, spiders[w]->boundingRadius))
-					{
-						dragonFlies[i]->body->Translate(glm::normalize(dragonFlies[i]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * (float)3 * dragonFlies[i]->speed);
-					}
-				}
-				
-				/*
-				//humans collision 
-				for (int q = 0; q < humans.size(); q++)
-				{
-					if (dragonFlies[i]->collision(humans[q]->body, humans[q]->boundingRadius))
-					{
-						dragonFlies[i]->body->Translate(glm::normalize(dragonFlies[i]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * dragonFlies[i]->speed);
-					}
-				}
-				*/
-			}
-
-			/* Spiders collision detection */
-			for (int j = 0; j < spiders.size(); j++)
-			{
-				//player collision
-				if (player->collision(spiders[j]->body, spiders[j]->boundingRadius))
-				{
-					camera_.Translate((float)player->speed * (float)2 * -camera_.GetForward());
-				}
-
-				//spider collision
-				for (int m = 0; m < spiders.size(); m++)
-				{
-					if (j != m &&  spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
-					{
-						spiders[j]->body->Translate(glm::normalize(spiders[j]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * (float)3 * spiders[j]->speed);
-					}
-				}
-
-				//dragonfly collision
-				for (int  n = 0; n < dragonFlies.size(); n++)
-				{
-					if (spiders[j]->collision(dragonFlies[n]->body, dragonFlies[n]->boundingRadius))
-					{
-						spiders[j]->body->Translate(glm::normalize(spiders[j]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * (float)3 * spiders[j]->speed);
-					}
-				}
-
-				/*
-				//human collision
-				for (int m = 0; m < humans.size(); m++)
-				{
-					if (spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
-					{
-						spiders[j]->body->Translate(glm::normalize(spiders[j]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * (float)3 * spiders[j]->speed);
-					}
-				}
-				*/
-			}
-
-			/* Humans collision detection */
-			for (int k = 0; k < humans.size(); k++)
-			{
-				if (player->collision(humans[k]->body, humans[k]->boundingRadius))
-				{
-					camera_.Translate((float)player->speed * (float)2 * -camera_.GetForward());
-				}
-
-				/*
-				for (int m = 0; m < dragonFlies.size(); m++)
-				{
-					if (humans[k]->collision(humans[m]->body, humans[m]->boundingRadius))
-					{
-						std::cout << "hello!!!" << std::endl;
-					}
-				}
-
-				
-				for (int m = 0; m < dragonFlies.size(); m++)
-				{
-					if (spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
-					{
-						std::cout << "hello!!!" << std::endl;
-					}
-				}
-
-
-				for (int m = 0; m < dragonFlies.size(); m++)
-				{
-					if (spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
-					{
-						std::cout << "hello!!!" << std::endl;
-					}
-				}
-				*/
-			}
-
-			/* Check collision with characters and the environment */
-			// PLAYER ENVIRONMENT COLLISION 
-			// NEED A SEPARATE WALLS COLLISION AND A FLOOR COLLISION 
-
-			//environment->collision(player->body, player->boundingRadius;
-
-			/* UPDATE */ 
-			// Check distances
-			if (player) { player->update(); }
-
-			for (int i = 0; i < dragonFlies.size(); i++)
-			{
-				dragonFlies[i]->updateTarget(player->body->getAbsolutePosition());
-				dragonFlies[i]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-				dragonFlies[i]->update();
-				if (dragonFlies[i]->getFiring()) { dragonFlies[i]->fire(createRocket("Rocket4", player->body->getAbsolutePosition() - dragonFlies[i]->body->getAbsolutePosition(), dragonFlies[i]->body->getAbsolutePosition()));
-			}
-			}
-
-			for (int j = 0; j < spiders.size(); j++)
-			{
-				spiders[j]->updateTarget(player->body->getAbsolutePosition());
-				spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-				spiders[j]->update();
-				if (spiders[j]->getFiring()) { spiders[j]->fire(createRocket("Rocket3", player->body->getAbsolutePosition() - spiders[j]->body->getAbsolutePosition(), spiders[j]->body->getAbsolutePosition())); }
-			}
-
-			for (int k = 0; k < humans.size(); k++)
-			{
-				humans[k]->updateTarget(player->body->getAbsolutePosition());
-				humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-				humans[k]->update();
-				//if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition(), humans[k]->body->getAbsolutePosition())); }
 			}
 
 			//UPDATE BLOCK
@@ -619,6 +433,7 @@ namespace game
 		flyBody->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0)));
 
 		// Setup parts Positions
+		//flyWings->SetPosition(glm::vec3(0, 0.07, 0));
 		flyBody->SetPosition(glm::vec3(0, -0.3, -0.6));
 
 		return new Fly(flyBody, flyWings, flyLegs);
@@ -746,7 +561,7 @@ namespace game
 		rock->SetScale(glm::vec3(0.1, 0.1, 0.1));
 		rock->SetOrientation(player->body->getAbsoluteOrientation());
 		rock->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		rock->SetPosition(pos + (float)2.0 * glm::normalize(direction));
+		rock->SetPosition(pos + 2.f * glm::normalize(direction));
 		
 		//add rockets for collision detection
 		Rocket* rocket = new Rocket(rock, direction);
@@ -754,6 +569,26 @@ namespace game
 
 		// Set the rocket node and the direction of the rocket
 		return rocket;
+	}
+
+	// GENERALIZE TO RECEIVE DIRECTION INSTEAD OF CODING IT FOR ONLY THE FLY AND TEXTURE NAME FOR DIFFERENT TYPE OF ROCKETS
+	Web* Game::createWeb(std::string entity_name, glm::vec3 direction, glm::vec3 pos)
+	{
+		SceneNode* webNode = createSceneNode(entity_name, "simpleSphereMesh", "textureMaterial", "webTex");
+		world->AddChild(webNode);
+
+		// Set initial values
+		webNode->SetScale(glm::vec3(0.1, 0.1, 0.1));
+		webNode->SetOrientation(player->body->getAbsoluteOrientation());
+		webNode->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
+		webNode->SetPosition(pos + 2.f * glm::normalize(direction));
+
+		//add rockets for collision detection
+		Web* web = new Web(webNode, direction);
+		webs.push_back(web);
+
+		// Set the rocket node and the direction of the rocket
+		return web;
 	}
 	
 	// TARGET IS A CHILD OF CAMERA SINCE OUR TARGET IS BASED ON THE CAMERA POSITION AND MOVE WITH IT AND NOT THE PLAYER
@@ -770,41 +605,76 @@ namespace game
 		return Target;
 	}
 
-	Environment *Game::createEnvironment()
+	//GENERALIZE THIS FUNCTION
+	Room* Game::createRoom()
 	{
+		Room* myRoom = new Room();
+		float dimensionsWalls = 300; // wall dimensions
+
 		SceneNode* floor = createSceneNode("floor", "wallMesh", "textureMaterial", "floorTex");
 		world->AddChild(floor);
-
 		floor->SetScale(glm::vec3(300, 300, 1));
 		floor->Translate(glm::vec3(0.0, -30.0, 0.0));
 		floor->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
 
+		glm::vec3 pos = floor->GetPosition();
+
+		// y-axis is the normal of the floor and size is 600x600
+		Wall* floorWall = new Wall(floor, glm::vec3(0, 1, 0), 600, 600);
+		myRoom->addWall(floorWall);
+
 		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall);
-		wall->SetScale(glm::vec3(300, 300, 1));
-		wall->Translate(glm::vec3(0.0, 270.0, -300.0));
+		wall->SetScale(glm::vec3(200, 300, 1));
+		//wall->Translate(glm::vec3(0.0, 270.0, -300.0));
+		wall->Translate(glm::vec3(-100.0, 270.0, -300.0));
 
+		glm::vec3 pos1 = wall->GetPosition();
+
+		//z-axis is the normal of this plane and size is 600x400
+		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 400);
+		myRoom->addWall(myWall1);
+		
+		
 		SceneNode* wall2 = createSceneNode("wall2", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall2);
 		wall2->SetScale(glm::vec3(300, 300, 1));
 		wall2->Translate(glm::vec3(300.0, 270.0, 0.0));
 		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
+		glm::vec3 pos2 = wall2->GetPosition();
+
+		//-x-axis is the normal of this plane size is 600x600
+		Wall* myWall2 = new Wall(wall2, glm::vec3(-1, 0, 0), 600, 600);
+		myRoom->addWall(myWall2);
+		
 		SceneNode* wall3 = createSceneNode("wall3", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall3);
 		wall3->SetScale(glm::vec3(300, 300, 1));
 		wall3->Translate(glm::vec3(-300.0, 270.0, 0.0));
 		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
+		glm::vec3 pos3 = wall3->GetPosition();
+
+		//x-axis is the normal of this plane and size 600x600
+		Wall* myWall3 = new Wall(wall3, glm::vec3(1, 0, 0), 600, 600);
+		myRoom->addWall(myWall3);
+		
 		SceneNode* wall4 = createSceneNode("wall4", "wallMesh", "textureMaterial", "wallTex");
 		world->AddChild(wall4);
 		wall4->SetScale(glm::vec3(300, 300, 1));
 		wall4->Translate(glm::vec3(0.0, 270.0, 300.0));
 
+		glm::vec3 pos4 = wall4->GetPosition();
+
+		//-z-axis is the normal of this plane and size is 600x600
+		Wall* myWall4 = new Wall(wall4, glm::vec3(0, 0, -1), 600, 600);
+		myRoom->addWall(myWall4);
+
 		//SceneNode* table = createSceneNode("table", "tableMesh", "textureMaterial", "floorTex");
 		//wall->AddChild(table);
 
-		return new Environment(floor);
+		return myRoom;
 	}
 
 	// Function to create a new SceneNode
@@ -837,4 +707,415 @@ namespace game
 
 		return resources;
 	}
-} // namespace game
+
+	void Game::gameCollisionDetection()
+	{
+		projectileCollision();
+		environmentCollision();
+		EnemiesCollision();
+	}
+
+	void Game::projectileCollision()
+	{
+		/* Rocket Collision detection */
+
+		/* PLAYER ROCKET COLLISION DETECTION */
+		bool collided = false;
+		for (int i = 0; i < rockets.size(); i++)
+		{
+
+			if (rockets[i]->collision(player->body, player->boundingRadius))
+			{
+				rockets[i]->node->del = true;
+				rockets.erase(rockets.begin() + i);
+				i--;
+
+				//player->health -= 10;
+
+				if (player->health <= 0)
+				{
+					player->body->del = true;					// Delete node from sceneGraph
+					player->wings->del = true;					// Delete node from sceneGraph
+					player->legs->del = true;					// Delete node from sceneGraph
+					std::cout << "You are Dead" << std::endl;
+					//delete player;
+				}
+				collided = true;
+				break;
+			}
+
+			if (collided) { continue; }
+
+			/* DRAGONFLY COLLISION DETECTION WITH ROCKETS */
+			for (int j = 0; j < dragonFlies.size(); j++)
+			{
+				if (rockets[i]->collision(dragonFlies[j]->body, dragonFlies[j]->boundingRadius))
+				{
+					rockets[i]->node->del = true;
+					rockets.erase(rockets.begin() + i);
+					i--;
+
+					dragonFlies[j]->health -= 10;
+
+					if (dragonFlies[j]->health <= 0)
+					{
+						dragonFlies[j]->body->del = true;			// Delete node from sceneGraph
+						dragonFlies[j]->leftWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[j]->rightWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[j]->legs->del = true;			// Delete node from sceneGraph
+						delete dragonFlies[j];
+						dragonFlies.erase(dragonFlies.begin() + j); // Delete from dragonfly vector
+					}
+					collided = true;
+					break;
+				}
+			}
+
+			if (collided) { continue; }
+
+			/* HUMAN COLLISION DETECTION WITH ROCKETS */
+			/*
+			// Should not be here
+			for (int k = 0 ; k < humans.size(); k++)
+			{
+			if (!collided && rockets[i]->collision(humans[k]->body, humans[k]->boundingRadius))
+			{
+			rockets[i]->rocketNode->del = true;
+			rockets.erase(rockets.begin() + i);
+			i--;
+
+			humans[k]->health -= 10;
+
+			if (humans[k]->health <= 0)
+			{
+			humans[k]->body->del = true;				// Delete node from sceneGraph
+			humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
+			humans[k]->leftHand->del = true;			// Delete node from sceneGraph
+			humans[k]->rightHand->del = true;			// Delete node from sceneGraph
+			humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
+			delete humans[k];
+			humans.erase(humans.begin() + k);			// Delete from human vector
+			}
+			collided = true;
+			break;
+
+			}
+			}
+			*/
+
+			/* SPIDERS COLLISION DETECTION WITH ROCKETS */
+			for (int l = 0; l < spiders.size(); l++)
+			{
+				if (rockets[i]->collision(spiders[l]->body, spiders[l]->boundingRadius))
+				{
+					rockets[i]->node->del = true;
+					rockets.erase(rockets.begin() + i);
+					i--;
+
+					spiders[l]->health -= 10;
+
+					if (spiders[l]->health <= 0)
+					{
+						spiders[l]->body->del = true;			// Delete node from sceneGraph
+						spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
+						spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
+						delete spiders[l];
+						spiders.erase(spiders.begin() + l);		// Delete from spiders vector
+					}
+
+					break;
+				}
+			}
+		}
+
+
+		collided = false;
+
+		/* PLAYER WEBS COLLISION */
+		for (int i = 0; i < webs.size(); i++)
+		{
+			/* PLAYER COLLISION WITH WEBS */
+			if (webs[i]->collision(player->body, player->boundingRadius))
+			{
+				webs[i]->node->del = true;
+				webs.erase(webs.begin() + i);
+				i--;
+
+				//player->health -= 10;
+
+				if (player->health <= 0)
+				{
+					player->body->del = true;					// Delete node from sceneGraph
+					player->wings->del = true;					// Delete node from sceneGraph
+					player->legs->del = true;					// Delete node from sceneGraph
+					std::cout << "You are Dead" << std::endl;
+					//delete player;
+				}
+				collided = true;
+				break;
+			}
+
+			/* DRAGONFLY COLLISION DETECTION WITH WEBS */
+			for (int j = 0; j < dragonFlies.size(); j++)
+			{
+				if (webs[i]->collision(dragonFlies[j]->body, dragonFlies[j]->boundingRadius))
+				{
+					webs[i]->node->del = true;
+					webs.erase(webs.begin() + i);
+					i--;
+
+					dragonFlies[j]->health -= 10;
+
+					if (dragonFlies[j]->health <= 0)
+					{
+						dragonFlies[j]->body->del = true;			// Delete node from sceneGraph
+						dragonFlies[j]->leftWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[j]->rightWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[j]->legs->del = true;			// Delete node from sceneGraph
+						delete dragonFlies[j];
+						dragonFlies.erase(dragonFlies.begin() + j); // Delete from dragonfly vector
+					}
+					collided = true;
+					break;
+				}
+			}
+
+
+			/* HUMAN COLLISION DETECTION WITH WEBS */
+			/*
+			// Should not be here
+			for (int k = 0 ; k < humans.size(); k++)
+			{
+			if (!collided && webs[i]->collision(humans[k]->body, humans[k]->boundingRadius))
+			{
+			webs[i]->rocketNode->del = true;
+			webs.erase(webs.begin() + i);
+			i--;
+
+			humans[k]->health -= 10;
+
+			if (humans[k]->health <= 0)
+			{
+			humans[k]->body->del = true;				// Delete node from sceneGraph
+			humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
+			humans[k]->leftHand->del = true;			// Delete node from sceneGraph
+			humans[k]->rightHand->del = true;			// Delete node from sceneGraph
+			humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
+			delete humans[k];
+			humans.erase(humans.begin() + k);			// Delete from human vector
+			}
+			collided = true;
+			break;
+
+			}
+			}
+			*/
+
+			/* SPIDERS COLLISION DETECTION WITH WEBS */
+			for (int l = 0; l < spiders.size(); l++)
+			{
+				if (!collided && webs[i]->collision(spiders[l]->body, spiders[l]->boundingRadius))
+				{
+					webs[i]->node->del = true;
+					webs.erase(webs.begin() + i);
+					i--;
+
+					spiders[l]->health -= 10;
+
+					if (spiders[l]->health <= 0)
+					{
+						spiders[l]->body->del = true;			// Delete node from sceneGraph
+						spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
+						spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
+						delete spiders[l];
+						spiders.erase(spiders.begin() + l);		// Delete from spiders vector
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	void Game::environmentCollision()
+	{
+		/* PLAYER ROOM COLLISION */
+		glm::vec3 norm;
+		if (room->collision(player->body, player->boundingRadius, &norm))
+		{
+			// move it to previous position not working
+			// camera_.SetPosition(camNode->getPrevAbsolutePosition());
+			camera_.Translate(norm * 2.f * player->speed);
+		}
+		
+		/* PROJECTILES ROOM COLLISION DETECTION */
+		for (int k = 0; k < rockets.size(); k++)
+		{
+			if (room->collision(rockets[k]->node, rockets[k]->boundingRadius, &norm))
+			{
+				rockets.erase(rockets.begin() + k);
+				k--;
+			}
+		}
+
+		/* WEBS ROOM COLLISION */
+		for (int w = 0; w < webs.size(); w++)
+		{
+			if (room->collision(webs[w]->node, webs[w]->boundingRadius, &norm))
+			{
+				webs.erase(webs.begin() + w);
+				w--;
+			}
+		}
+
+		/* DRAGONFLIES AND WALLS COLLISION */
+		for (int i = 0; i < dragonFlies.size(); i++)
+		{
+			if (room->collision(dragonFlies[i]->body, dragonFlies[i]->boundingRadius, &norm))
+			{
+				dragonFlies[i]->body->Translate(norm * 2.f * dragonFlies[i]->speed);
+			}
+		}
+
+		/* SPIDERS WALL COLLISION */
+		for (int j = 0; j < spiders.size(); j++)
+		{
+			if (room->collision(spiders[j]->body, spiders[j]->boundingRadius, &norm))
+			{
+				if (norm == glm::vec3(0, 1, 0)) { spiders[j]->onFloor = true; }
+				else { spiders[j]->onFloor = false; }
+				spiders[j]->body->Translate(norm * 2.f * spiders[j]->speed);
+			}
+		}
+		
+		/* HUMANS WALL COLLISION */
+		for (int h = 0; h < humans.size(); h++)
+		{
+			if (room->collision(humans[h]->body, humans[h]->boundingRadius, &norm))
+			{
+				if (norm == glm::vec3(0, 1, 0)) { humans[h]->onFloor = true; }
+				else { humans[h]->onFloor = false; }
+				humans[h]->body->Translate(norm * 2.f * humans[h]->speed);
+			}
+		}
+	}
+
+	/* ENEMY COLLISION DETECTION */
+	void Game::EnemiesCollision()
+	{
+		/* DRAGONFLIES ENEMIES AND PLAYER COLLISION  */
+		for (int i = 0; i < dragonFlies.size(); i++)
+		{
+			//player collision
+			if (player->collision(dragonFlies[i]->body, dragonFlies[i]->boundingRadius))
+			{
+				camera_.Translate((float)player->speed * 2.f * -camera_.GetForward());
+			}
+
+			//Other dragonflies collision
+			for (int m = 0; m < dragonFlies.size(); m++)
+			{
+				if (i != m && dragonFlies[i]->collision(dragonFlies[m]->body, dragonFlies[m]->boundingRadius))
+				{
+					dragonFlies[i]->body->Translate(-dragonFlies[i]->getDirection() * 3.f * dragonFlies[i]->speed);
+				}
+			}
+
+			//spiders collision
+			for (int w = 0; w < spiders.size(); w++)
+			{
+				if (dragonFlies[i]->collision(spiders[w]->body, spiders[w]->boundingRadius))
+				{
+					dragonFlies[i]->body->Translate(-dragonFlies[i]->getDirection() * 3.f * dragonFlies[i]->speed);
+				}
+			}
+
+			/*
+			//humans collision
+			for (int q = 0; q < humans.size(); q++)
+			{
+				if (dragonFlies[i]->collision(humans[q]->body, humans[q]->boundingRadius))
+				{
+					dragonFlies[i]->body->Translate(glm::normalize(dragonFlies[i]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * 2.f * dragonFlies[i]->speed);
+				}
+			}
+			*/
+		}
+
+		/* SPIDERS PLAYER AND ENEMIES COLLISION */
+		for (int j = 0; j < spiders.size(); j++)
+		{
+			//player collision
+			if (player->collision(spiders[j]->body, spiders[j]->boundingRadius))
+			{
+				camera_.Translate((float)player->speed * 2.f * -camera_.GetForward());
+			}
+
+			//other spiders collision
+			for (int m = 0; m < spiders.size(); m++)
+			{
+				if (j != m &&  spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
+				{
+					spiders[j]->body->Translate(-spiders[j]->getDirection() * 2.f * spiders[j]->speed);
+				}
+			}
+
+			//dragonfly collision
+			for (int n = 0; n < dragonFlies.size(); n++)
+			{
+				if (spiders[j]->collision(dragonFlies[n]->body, dragonFlies[n]->boundingRadius))
+				{
+					spiders[j]->body->Translate(-spiders[j]->getDirection() * 2.f * spiders[j]->speed);
+				}
+			}
+
+			/*
+			//human collision
+			for (int m = 0; m < humans.size(); m++)
+			{
+				if (spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
+				{
+					spiders[j]->body->Translate(glm::normalize(spiders[j]->body->getAbsolutePosition() - player->body->getAbsolutePosition()) * 3.f * spiders[j]->speed);
+				}
+			}
+			*/
+		}
+
+		/* HUMANS PLAYER AND ENEMIES COLLISION */
+		for (int k = 0; k < humans.size(); k++)
+		{
+			if (player->collision(humans[k]->body, humans[k]->boundingRadius))
+			{
+				camera_.Translate((float)player->speed * 2.f * -camera_.GetForward());
+			}
+
+			/*
+			for (int m = 0; m < dragonFlies.size(); m++)
+			{
+			if (humans[k]->collision(humans[m]->body, humans[m]->boundingRadius))
+			{
+			std::cout << "hello!!!" << std::endl;
+			}
+			}
+
+
+			for (int m = 0; m < dragonFlies.size(); m++)
+			{
+			if (spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
+			{
+			std::cout << "hello!!!" << std::endl;
+			}
+			}
+
+
+			for (int m = 0; m < dragonFlies.size(); m++)
+			{
+			if (spiders[j]->collision(spiders[m]->body, spiders[m]->boundingRadius))
+			{
+			std::cout << "hello!!!" << std::endl;
+			}
+			}
+			*/
+		}
+	}
+} 
+// namespace game

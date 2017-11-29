@@ -10,15 +10,20 @@
 #include "scene_graph.h"
 #include "resource_manager.h"
 #include "camera.h"
-#include "asteroid.h"
-#include "Rocket.h"
+#include "rocket.h"
+#include "Web.h"
 #include "CameraNode.h"
 #include "fly.h"
 #include "Human.h"
 #include "Spider.h"
 #include "Dragonfly.h"
 #include "Environment.h"
+<<<<<<< HEAD
 #include "Block.h"
+=======
+#include "Room.h"
+#include "wall.h"
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 
 namespace game 
 {
@@ -60,11 +65,18 @@ namespace game
 			Human* human;									// human enemy
 			Spider* spider;									// Spider enemy
 			DragonFly* dragonFly;							// Dragon fly enemy
+<<<<<<< HEAD
 			Block* block;									// Draggable block
 
 
 			Environment* environment;						// Environment
 			std::vector<Rocket*> rockets;				// All Game projetiles
+=======
+			//Environment* environment;						// Environment
+			Room* room;										// A room
+			std::vector<Rocket*> rockets;					// All Rockets
+			std::vector<Web*> webs;							// All webs
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans
 			std::vector<Spider*> spiders;					// All Spiders
@@ -81,18 +93,25 @@ namespace game
             static void ResizeCallback(GLFWwindow* window, int width, int height);
 			
 			void checkInput();
-			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
-            Asteroid* CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name);							// Create instance of one asteroid																// Asteroid field
-            void CreateAsteroidField(int num_asteroids = 1500);																						// Create entire random asteroid field
+			void gameCollisionDetection();																	// All game collision detection
+			void projectileCollision();																		// All Projectile Collision detection
+			void environmentCollision();																	// All Environment Collision detection
+			void EnemiesCollision();																			// Player collisions
 
-			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);
+			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
+			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);							// Create a rocket instance
+			Web* createWeb(std::string, glm::vec3 direction, glm::vec3 pos);								// Create a web instance
 			Fly* createFly(std::string entity_name);														// Create a fly instance
 			Human* createHuman(std::string entity_name);													// Create a human instance
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
+<<<<<<< HEAD
 			Block* createBlock(std::string entity_name);
 			Environment *createEnvironment();
+=======
+			Room* createRoom();
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game

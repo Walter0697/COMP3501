@@ -5,11 +5,19 @@ project(FlyingUndersizedControlledKiller)
 
 # Specify project files: header files and source files
 set(HDRS
+<<<<<<< HEAD
     asteroid.h camera.h CameraNode.h game.h resource.h resource_manager.h scene_graph.h scene_node.h Rocket.h fly.h Human.h Character.h Collidable.h Spider.h DragonFly.h Enemy.h Environment.h Draggable.h Web.h Block.h
 )
  
 set(SRCS
-    asteroid.cpp camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp Block.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl
+    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp Block.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl
+=======
+    camera.h CameraNode.h game.h resource.h resource_manager.h scene_graph.h scene_node.h Rocket.h fly.h Human.h Character.h Collidable.h Spider.h DragonFly.h Enemy.h Environment.h Draggable.h Web.h Projectile.h wall.h room.h 
+)
+ 
+set(SRCS
+    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 
 )
 

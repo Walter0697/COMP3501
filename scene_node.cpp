@@ -15,6 +15,7 @@ namespace game
 		// Set name of scene node
 		name_ = name;
 		position_ = glm::vec3(0, 0, 0);
+		prevAbsolutePosition = glm::vec3(0, 0, 0);
 		absolutePosition = glm::vec3(0, 0, 0);
 		del = false;
 
@@ -66,6 +67,7 @@ namespace game
 	GLsizei SceneNode::GetSize(void) const				    { return size_; }
 	GLuint SceneNode::GetMaterial(void) const			    { return material_; }
 	glm::vec3 SceneNode::getAbsolutePosition(void) const    { return absolutePosition; }
+	glm::vec3 SceneNode::getPrevAbsolutePosition(void) const { return prevAbsolutePosition; }
 	glm::quat SceneNode::getAbsoluteOrientation(void) const { return absoluteOrientation; }
 
 	/* Setters */
@@ -79,7 +81,7 @@ namespace game
 	void SceneNode::Scale(glm::vec3 scale) { scale_ *= scale; }
 
 	/* Update a SceneNode */
-	void SceneNode::Update(void) {}
+	void SceneNode::update(void) {}
 
 	/* Iterators */
 	std::vector<SceneNode *>::const_iterator SceneNode::children_begin() const { return children_.begin(); }
@@ -118,6 +120,7 @@ namespace game
 		// Set absolute position and orientation
 		if (parent_ != NULL) 
 		{
+			prevAbsolutePosition = absolutePosition;
 			glm::vec4 temp = parent_transf * glm::vec4(GetPosition().x , GetPosition().y , GetPosition().z , 1.0);
 			absolutePosition = glm::vec3(temp.x, temp.y, temp.z);		
 			absoluteOrientation = parent_->getAbsoluteOrientation() * GetOrientation();

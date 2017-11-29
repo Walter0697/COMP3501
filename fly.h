@@ -30,6 +30,7 @@ namespace game
 		Fly(SceneNode*,SceneNode*,SceneNode*);
 		~Fly();
 
+<<<<<<< HEAD
 		std::vector<Rocket*> rockets; //store the rockets
 
 		SceneNode* body;
@@ -47,6 +48,19 @@ namespace game
 		void update();	//update fly and all things that are related to it
 		bool collision(SceneNode*, float);
 
+=======
+		SceneNode* body;					//body node
+		SceneNode* wings;					//wings node
+		SceneNode* legs;					//legs node
+		int timer;							//movement timer
+		bool upWingMovement;				//check for wing movement
+		bool moving;						//check for whether it is moving or not
+		std::vector<Rocket*> rockets;		//store the rockets
+
+		//glm::vec3 prevPosition;
+		void update();						//update fly and all things that are related to it
+		bool collision(SceneNode*, float);	//collision detection
+>>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
 	private:
 	protected:
     }; 

@@ -10,14 +10,6 @@ namespace game
 
 	CameraNode::~CameraNode() {}
 
-	/*
-	glm::vec3 CameraNode::GetPosition(void) const
-	{
-		return camera->GetPosition();
-	}
-	*/
-
-	// glm::vec3 CameraNode::
 
 	// MIGHT NEED TO BE CHANGED !!!!!!!!
 	glm::vec3 CameraNode::GetPosition(void) const
