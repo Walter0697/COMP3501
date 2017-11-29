@@ -30,7 +30,6 @@ namespace game
 		Fly(SceneNode*,SceneNode*,SceneNode*);
 		~Fly();
 
-<<<<<<< HEAD
 		std::vector<Rocket*> rockets; //store the rockets
 
 		SceneNode* body;

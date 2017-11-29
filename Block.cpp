@@ -23,7 +23,7 @@ namespace game
 				object->SetPosition(object->GetPosition() - glm::vec3(0, speed, 0));
 				speed += 1;
 				if (object->GetPosition().y < 0) {
-					object->SetPosition(glm::vec3(object->GetPosition().x, 0, object->GetPosition().z));
+					object->SetPosition(glm::vec3(object->GetPosition().x, -20, object->GetPosition().z));
 				}
 			}
 		}

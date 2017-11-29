@@ -169,7 +169,7 @@ namespace game
 		resman_.LoadResource(Texture, "dragonFlyLegsTex", filename.c_str());
 
 		// ENVIRONMENT TEXTURES
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/floorTexture.png");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/floorTexture.jpg");
 		resman_.LoadResource(Texture, "floorTex", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wallTexture.png");
 		resman_.LoadResource(Texture, "wallTex", filename.c_str());
@@ -235,7 +235,7 @@ namespace game
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
 
 		block = createBlock("block1");
-		environment = createEnvironment();
+		//environment = createEnvironment();
 
 		room = createRoom();
 
@@ -707,7 +707,7 @@ namespace game
 	void Game::gameCollisionDetection()
 	{
 		projectileCollision();
-		environmentCollision();
+		//environmentCollision();
 		EnemiesCollision();
 	}
 
@@ -931,10 +931,10 @@ namespace game
 			}
 		}
 	}
-
+	/*
 	void Game::environmentCollision()
 	{
-		/* PLAYER ROOM COLLISION */
+		// PLAYER ROOM COLLISION 
 		glm::vec3 norm;
 		if (room->collision(player->body, player->boundingRadius, &norm))
 		{
@@ -943,7 +943,7 @@ namespace game
 			camera_.Translate(norm * 2.f * player->speed);
 		}
 		
-		/* PROJECTILES ROOM COLLISION DETECTION */
+		// PROJECTILES ROOM COLLISION DETECTION 
 		for (int k = 0; k < rockets.size(); k++)
 		{
 			if (room->collision(rockets[k]->node, rockets[k]->boundingRadius, &norm))
@@ -953,7 +953,7 @@ namespace game
 			}
 		}
 
-		/* WEBS ROOM COLLISION */
+		// WEBS ROOM COLLISION 
 		for (int w = 0; w < webs.size(); w++)
 		{
 			if (room->collision(webs[w]->node, webs[w]->boundingRadius, &norm))
@@ -963,7 +963,7 @@ namespace game
 			}
 		}
 
-		/* DRAGONFLIES AND WALLS COLLISION */
+		// DRAGONFLIES AND WALLS COLLISION 
 		for (int i = 0; i < dragonFlies.size(); i++)
 		{
 			if (room->collision(dragonFlies[i]->body, dragonFlies[i]->boundingRadius, &norm))
@@ -972,7 +972,7 @@ namespace game
 			}
 		}
 
-		/* SPIDERS WALL COLLISION */
+		// SPIDERS WALL COLLISION 
 		for (int j = 0; j < spiders.size(); j++)
 		{
 			if (room->collision(spiders[j]->body, spiders[j]->boundingRadius, &norm))
@@ -983,7 +983,7 @@ namespace game
 			}
 		}
 		
-		/* HUMANS WALL COLLISION */
+		// HUMANS WALL COLLISION 
 		for (int h = 0; h < humans.size(); h++)
 		{
 			if (room->collision(humans[h]->body, humans[h]->boundingRadius, &norm))
@@ -994,7 +994,7 @@ namespace game
 			}
 		}
 	}
-
+	*/
 	/* ENEMY COLLISION DETECTION */
 	void Game::EnemiesCollision()
 	{
