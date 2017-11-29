@@ -18,13 +18,11 @@
 #include "Spider.h"
 #include "Dragonfly.h"
 #include "Environment.h"
-<<<<<<< HEAD
+
 #include "Block.h"
-=======
+
 #include "Room.h"
 #include "wall.h"
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
-
 namespace game 
 {
     // Exception type for the game
@@ -65,18 +63,14 @@ namespace game
 			Human* human;									// human enemy
 			Spider* spider;									// Spider enemy
 			DragonFly* dragonFly;							// Dragon fly enemy
-<<<<<<< HEAD
+
 			Block* block;									// Draggable block
 
-
-			Environment* environment;						// Environment
-			std::vector<Rocket*> rockets;				// All Game projetiles
-=======
 			//Environment* environment;						// Environment
 			Room* room;										// A room
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
+
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans
 			std::vector<Spider*> spiders;					// All Spiders
@@ -106,12 +100,11 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
-<<<<<<< HEAD
+
 			Block* createBlock(std::string entity_name);
-			Environment *createEnvironment();
-=======
+
 			Room* createRoom();
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
+
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game
 } // namespace game

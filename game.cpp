@@ -233,12 +233,12 @@ namespace game
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
-<<<<<<< HEAD
+
 		block = createBlock("block1");
 		environment = createEnvironment();
-=======
+
 		room = createRoom();
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
+
 	}
 
 	void Game::MainLoop(void)
@@ -249,16 +249,12 @@ namespace game
 			/* INPUT */
 			checkInput(); 
 
-<<<<<<< HEAD
 
-			/* Check collision with bullets and all characters (friendly fire is fine) */
-			/* Rockets Collision Detection */
-			bool collided = false;
-			for (int i = 0; i < rockets.size(); i++)
-=======
+
+
 			//check if player health > 0 
 			if (player->health > 0)
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
+
 			{
 				/* DRAW */
 				scene_.Draw(&camera_);		// Draw the scene

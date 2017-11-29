@@ -12,18 +12,16 @@ namespace game
 		upWingMovement = true;			// Checking for upwards or downwards fly rotation
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
-<<<<<
 
 		dragging = NULL;
 		dragwait = 1;
 		dragtimer = -1;
-
-=======
+		
 		boundingRadius = 0.7;			// Radius of bounds
 		body = flyBody;					// Body of fly
 		wings = flyWings;				// Wings of the fly
 		legs = flyLegs;					// Legs of fly
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
+
 	}
 
 	/* Destructor */
@@ -32,11 +30,9 @@ namespace game
 	/* Update */
 	void Fly::update()
 	{
-<<<<<<< HEAD
 
-=======
 		//prevPosition = body->getAbsolutePosition();
->>>>>>> ec9318c8617119d3cd384f4b92923ae5c8ec771b
+
 		fireRate--;		
 		
 		// wing animation
