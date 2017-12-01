@@ -68,6 +68,7 @@ namespace game
 
 			//Environment* environment;						// Environment
 			Room* room;										// A room
+			Room* room2;
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
 
@@ -103,7 +104,7 @@ namespace game
 
 			Block* createBlock(std::string entity_name);
 
-			Room* createRoom();
+			Room* createRoom(std::string entity_name);
 
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game

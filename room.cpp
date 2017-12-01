@@ -22,4 +22,9 @@ namespace game
 		}
 		return false;
 	}
+
+	void Room::SetFloor(Wall *myFloor)
+	{
+		floor = myFloor;
+	}
 }
