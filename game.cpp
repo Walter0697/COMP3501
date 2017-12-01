@@ -175,8 +175,8 @@ namespace game
 		resman_.LoadResource(Texture, "wallTex", filename.c_str());
 
 		// BLOCK TEXTURE
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
-		resman_.LoadResource(Texture, "blockTex", filename.c_str());
+		//filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
+		//resman_.LoadResource(Texture, "blockTex", filename.c_str());
 
 		/* GEOMETRIES */
 
@@ -237,8 +237,10 @@ namespace game
 		block = createBlock("block1");
 		//environment = createEnvironment();
 
-		room = createRoom();
+		room = createRoom("Room1");
+		room2 = createRoom("Room2");
 
+		
 	}
 
 	void Game::MainLoop(void)
@@ -248,9 +250,6 @@ namespace game
 		{
 			/* INPUT */
 			checkInput(); 
-
-
-
 
 			//check if player health > 0 
 			if (player->health > 0)
@@ -602,12 +601,14 @@ namespace game
 	}
 
 	//GENERALIZE THIS FUNCTION
-	Room* Game::createRoom()
+	Room* Game::createRoom(std::string entity_name)
 	{
 		Room* myRoom = new Room();
 		float dimensionsWalls = 300; // wall dimensions
 
-		SceneNode* floor = createSceneNode("floor", "wallMesh", "textureMaterial", "floorTex");
+		std::string meshname = std::string(entity_name) + std::string("floor");
+
+		SceneNode* floor = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "floorTex");
 		world->AddChild(floor);
 		floor->SetScale(glm::vec3(300, 300, 1));
 		floor->Translate(glm::vec3(0.0, -30.0, 0.0));
@@ -619,11 +620,12 @@ namespace game
 		Wall* floorWall = new Wall(floor, glm::vec3(0, 1, 0), 600, 600);
 		myRoom->addWall(floorWall);
 
-		SceneNode* wall = createSceneNode("wall1", "wallMesh", "textureMaterial", "wallTex");
-		world->AddChild(wall);
+		meshname = std::string(entity_name) + std::string("wall1");
+		SceneNode* wall = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
+		floor->AddChild(wall);
 		wall->SetScale(glm::vec3(200, 300, 1));
-		//wall->Translate(glm::vec3(0.0, 270.0, -300.0));
-		wall->Translate(glm::vec3(-100.0, 270.0, -300.0));
+		wall->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1.0, 0.0, 0.0)));
+		wall->Translate(glm::vec3(0, 120 , 150));
 
 		glm::vec3 pos1 = wall->GetPosition();
 
@@ -631,9 +633,9 @@ namespace game
 		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 400);
 		myRoom->addWall(myWall1);
 		
-		
-		SceneNode* wall2 = createSceneNode("wall2", "wallMesh", "textureMaterial", "wallTex");
-		world->AddChild(wall2);
+		meshname = std::string(entity_name) + std::string("wall2");
+		SceneNode* wall2 = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
+		floor ->AddChild(wall2);
 		wall2->SetScale(glm::vec3(300, 300, 1));
 		wall2->Translate(glm::vec3(300.0, 270.0, 0.0));
 		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
@@ -644,8 +646,9 @@ namespace game
 		Wall* myWall2 = new Wall(wall2, glm::vec3(-1, 0, 0), 600, 600);
 		myRoom->addWall(myWall2);
 		
-		SceneNode* wall3 = createSceneNode("wall3", "wallMesh", "textureMaterial", "wallTex");
-		world->AddChild(wall3);
+		meshname = std::string(entity_name) + std::string("wall3");
+		SceneNode* wall3 = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
+		floor->AddChild(wall3);
 		wall3->SetScale(glm::vec3(300, 300, 1));
 		wall3->Translate(glm::vec3(-300.0, 270.0, 0.0));
 		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
@@ -656,8 +659,9 @@ namespace game
 		Wall* myWall3 = new Wall(wall3, glm::vec3(1, 0, 0), 600, 600);
 		myRoom->addWall(myWall3);
 		
-		SceneNode* wall4 = createSceneNode("wall4", "wallMesh", "textureMaterial", "wallTex");
-		world->AddChild(wall4);
+		meshname = std::string(entity_name) + std::string("wall4");
+		SceneNode* wall4 = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
+		floor->AddChild(wall4);
 		wall4->SetScale(glm::vec3(300, 300, 1));
 		wall4->Translate(glm::vec3(0.0, 270.0, 300.0));
 
