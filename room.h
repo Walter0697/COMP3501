@@ -17,11 +17,12 @@ namespace game
 		void addWall(Wall*);
 		bool collision(SceneNode*, float);
 		bool collision(SceneNode*, float, glm::vec3*);
-		void SetFloor(Wall*);
+		void SetFloor(SceneNode*);
+		SceneNode* getFloor();
 
 	private:
 		std::vector<Wall*> walls;
-		Wall* floor;
+		SceneNode* floor;
 	};
 }
 #endif ROOM_H

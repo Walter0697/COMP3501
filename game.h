@@ -17,7 +17,7 @@
 #include "Human.h"
 #include "Spider.h"
 #include "Dragonfly.h"
-//#include "Environment.h"
+#include "Environment.h"
 
 #include "Block.h"
 
@@ -66,7 +66,7 @@ namespace game
 
 			Block* block;									// Draggable block
 
-			//Environment* environment;						// Environment
+			Environment* environment;						// Environment
 			Room* room;										// A room
 			Room* room2;
 			std::vector<Rocket*> rockets;					// All Rockets
@@ -101,6 +101,8 @@ namespace game
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name);													// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
+			//JUST FOR DECORATION SO NO NEED TO CREATE CLASS FOR THIS IMO
+			SceneNode* createSky();
 
 			Block* createBlock(std::string entity_name);
 

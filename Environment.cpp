@@ -3,6 +3,8 @@
 
 namespace game
 {
+	Environment::Environment() {}
+
 	Environment::Environment(SceneNode *floor) 
 	{
 		this->floor = floor;
@@ -19,6 +21,11 @@ namespace game
 		float prod = abs(glm::dot(wallObjVec, glm::vec3(0,1,0)));
 		std::cout << prod << std::endl;
 		return prod <= boundRad;
+	}
+
+	void Environment::addRoom(Room *myRoom)
+	{
+		rooms.push_back(myRoom);
 	}
 
 }

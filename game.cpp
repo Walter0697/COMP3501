@@ -173,6 +173,8 @@ namespace game
 		resman_.LoadResource(Texture, "floorTex", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wallTexture.png");
 		resman_.LoadResource(Texture, "wallTex", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/sky-texture.jpg");
+		resman_.LoadResource(Texture, "skyTex", filename.c_str());
 
 		// BLOCK TEXTURE
 		//filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
@@ -235,12 +237,20 @@ namespace game
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
 
 		block = createBlock("block1");
-		//environment = createEnvironment();
 
+		environment = new Environment();
 		room = createRoom("Room1");
-		room2 = createRoom("Room2");
+		room2 = createRoom("Room2");	
+		environment->addRoom(room);
+		environment->addRoom(room2);
 
-		
+		SceneNode *room2Floor = room2->getFloor();
+		room2Floor->Translate(glm::vec3(0, 0, -600));
+		room2Floor->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
+		room2Floor->Translate(glm::vec3(480, 0, 0));
+
+		//Since it is just a decoration, do we need to store the pointer of that?
+		SceneNode *sky = createSky();
 	}
 
 	void Game::MainLoop(void)
@@ -623,21 +633,23 @@ namespace game
 		meshname = std::string(entity_name) + std::string("wall1");
 		SceneNode* wall = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
 		floor->AddChild(wall);
-		wall->SetScale(glm::vec3(200, 300, 1));
+		
+		wall->Translate(glm::vec3(-120, -300, -300));
 		wall->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1.0, 0.0, 0.0)));
-		wall->Translate(glm::vec3(0, 120 , 150));
+		wall->SetScale(glm::vec3(300, 300, 1));
 
 		glm::vec3 pos1 = wall->GetPosition();
 
 		//z-axis is the normal of this plane and size is 600x400
-		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 400);
+		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 300);
 		myRoom->addWall(myWall1);
 		
 		meshname = std::string(entity_name) + std::string("wall2");
 		SceneNode* wall2 = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
 		floor ->AddChild(wall2);
 		wall2->SetScale(glm::vec3(300, 300, 1));
-		wall2->Translate(glm::vec3(300.0, 270.0, 0.0));
+		wall2->Translate(glm::vec3(300, 0, -300));
+		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1.0, 0.0, 0.0)));
 		wall2->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
 		glm::vec3 pos2 = wall2->GetPosition();
@@ -650,7 +662,8 @@ namespace game
 		SceneNode* wall3 = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
 		floor->AddChild(wall3);
 		wall3->SetScale(glm::vec3(300, 300, 1));
-		wall3->Translate(glm::vec3(-300.0, 270.0, 0.0));
+		wall3->Translate(glm::vec3(-300.0, 0, -300.0));
+		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1.0, 0.0, 0.0)));
 		wall3->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.0, 1.0, 0.0)));
 
 		glm::vec3 pos3 = wall3->GetPosition();
@@ -663,13 +676,16 @@ namespace game
 		SceneNode* wall4 = createSceneNode(meshname.c_str(), "wallMesh", "textureMaterial", "wallTex");
 		floor->AddChild(wall4);
 		wall4->SetScale(glm::vec3(300, 300, 1));
-		wall4->Translate(glm::vec3(0.0, 270.0, 300.0));
+		wall4->Translate(glm::vec3(0, 300, -300));
+		wall4->Rotate(glm::angleAxis(glm::pi <float>() / 2, glm::vec3(-1.0, 0.0, 0.0)));
 
 		glm::vec3 pos4 = wall4->GetPosition();
 
 		//-z-axis is the normal of this plane and size is 600x600
 		Wall* myWall4 = new Wall(wall4, glm::vec3(0, 0, -1), 600, 600);
 		myRoom->addWall(myWall4);
+
+		myRoom->SetFloor(floor);
 
 		//SceneNode* table = createSceneNode("table", "tableMesh", "textureMaterial", "floorTex");
 		//wall->AddChild(table);
@@ -934,6 +950,16 @@ namespace game
 				}
 			}
 		}
+	}
+
+	SceneNode *Game::createSky()
+	{
+		SceneNode* sky = createSceneNode("SkyInstance", "wallMesh", "textureMaterial", "skyTex");
+		world->AddChild(sky);
+		sky->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
+		sky->Translate(glm::vec3(0, 600, 0));
+		sky->SetScale(glm::vec3(1000, 1000, 1));
+		return 0;
 	}
 	/*
 	void Game::environmentCollision()

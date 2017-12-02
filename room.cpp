@@ -23,8 +23,13 @@ namespace game
 		return false;
 	}
 
-	void Room::SetFloor(Wall *myFloor)
+	void Room::SetFloor(SceneNode *myFloor)
 	{
 		floor = myFloor;
+	}
+
+	SceneNode *Room::getFloor()
+	{
+		return floor;
 	}
 }
