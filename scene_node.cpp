@@ -48,6 +48,8 @@ namespace game
 
 		// Other attributes
 		scale_ = glm::vec3(1.0, 1.0, 1.0);
+		blending_ = false;
+		visible_ = true;
 
 		// Hierarchy
 		parent_ = NULL;
@@ -66,6 +68,7 @@ namespace game
 	GLuint SceneNode::GetElementArrayBuffer(void) const     { return element_array_buffer_; }
 	GLsizei SceneNode::GetSize(void) const				    { return size_; }
 	GLuint SceneNode::GetMaterial(void) const			    { return material_; }
+	bool SceneNode::GetBlending(void) const					{ return blending_;  }
 	glm::vec3 SceneNode::getAbsolutePosition(void) const    { return absolutePosition; }
 	glm::vec3 SceneNode::getPrevAbsolutePosition(void) const { return prevAbsolutePosition; }
 	glm::quat SceneNode::getAbsoluteOrientation(void) const { return absoluteOrientation; }
@@ -74,6 +77,8 @@ namespace game
 	void SceneNode::SetPosition(glm::vec3 position) { position_ = position; }
 	void SceneNode::SetOrientation(glm::quat orientation) { orientation_ = orientation; }
 	void SceneNode::SetScale(glm::vec3 scale) { scale_ = scale; }
+	void SceneNode::SetBlending(bool blending) { blending_ = blending; }
+	void SceneNode::SetVisible(bool visible) { visible_ = visible; }
 
 	/* Updaters */
 	void SceneNode::Translate(glm::vec3 trans) { position_ += trans; }
@@ -115,6 +120,7 @@ namespace game
 	/* Draw */
 	glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf)
 	{
+		if (!visible_) return glm::mat4();
 		maintainChildren(); // Check children for deletion
 
 		// Set absolute position and orientation
@@ -124,6 +130,23 @@ namespace game
 			glm::vec4 temp = parent_transf * glm::vec4(GetPosition().x , GetPosition().y , GetPosition().z , 1.0);
 			absolutePosition = glm::vec3(temp.x, temp.y, temp.z);		
 			absoluteOrientation = parent_->getAbsoluteOrientation() * GetOrientation();
+		}
+		// Select blending or not
+		if (blending_) {
+			// Disable z-buffer
+			glDisable(GL_DEPTH_TEST);
+
+			// Enable blending
+			glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Simpler form
+			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+		}
+		else {
+			// Enable z-buffer
+			glEnable(GL_DEPTH_TEST);
+			glDisable(GL_BLEND);
+			glDepthFunc(GL_LESS);
 		}
 
 		if ((array_buffer_ > 0) && (material_ > 0)) 
@@ -142,7 +165,7 @@ namespace game
 			glm::mat4 transf = SetupShader(material_, parent_transf);
 
 			// Draw geometry
-			if (mode_ == GL_POINTS) { glDrawArrays(GL_TRIANGLES, 0, size_); }
+			if (mode_ == GL_POINTS) { glDrawArrays(mode_, 0, size_); }
 			else { glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0); }
 
 			return transf;

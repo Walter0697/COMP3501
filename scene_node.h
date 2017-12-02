@@ -19,7 +19,7 @@ namespace game {
     class SceneNode {
 
         public:
-			SceneNode(const std::string name, const Resource *geometry, const Resource* material, const Resource*);		// Create scene node from given resources
+			SceneNode(const std::string name, const Resource *geometry, const Resource* material, const Resource *texture = 0);		// Create scene node from given resources
             ~SceneNode();	// Destructor
             
 			bool visible;	// Check visibility
@@ -32,7 +32,7 @@ namespace game {
 			virtual glm::vec3 getPrevAbsolutePosition(void) const;
             virtual glm::quat GetOrientation(void) const;
 			virtual glm::quat getAbsoluteOrientation(void) const;
-            glm::vec3 GetScale(void) const;
+            glm::vec3 GetScale(void) const; 
 
 			// OpenGL variables
 			GLenum GetMode(void) const;
@@ -40,11 +40,14 @@ namespace game {
 			GLuint GetElementArrayBuffer(void) const;
 			GLsizei GetSize(void) const;
 			GLuint GetMaterial(void) const;
+			bool GetBlending(void) const;
 
             // Set node attributes
             void SetPosition(glm::vec3 position);
             void SetOrientation(glm::quat orientation);
             void SetScale(glm::vec3 scale);
+			void SetBlending(bool blending);
+			void SetVisible(bool visible);
             
             // Perform transformations on node
             void Translate(glm::vec3 trans);
@@ -74,6 +77,8 @@ namespace game {
             glm::quat orientation_; // Orientation of node
 			glm::quat absoluteOrientation; // Absolute orientation
             glm::vec3 scale_; // Scale of node
+			bool blending_;
+			bool visible_;
 			
             // Hierarchy
             SceneNode *parent_;

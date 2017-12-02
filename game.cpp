@@ -118,18 +118,28 @@ namespace game
 	void Game::SetupResources(void)
 	{
 		/* Create Built-In Geometries */
-
 		resman_.CreateCylinder("rocketMesh");
 		resman_.CreateWall("wallMesh");
 		resman_.CreateSphere("simpleSphereMesh");
 		resman_.CreateCylinder("targetMesh", 0.1, 0.6, 0.35, 4, 4, glm::vec3(1,0,0));
 		resman_.CreateCube("CubeMesh");
+		resman_.CreateSphereParticles("SphereParticle");
+		resman_.CreateTorusParticles("TorusParticle");
+
+		/* Loading Material for Particle System */
+		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/fire");
+		resman_.LoadResource(Material, "FireMaterial", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle");
+		resman_.LoadResource(Material, "ExplosionMaterial", filename.c_str());
+
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyBody.obj");
+		resman_.LoadResource(PointSet, "humanParticle", filename.c_str(), 200000);
 
 		/* Create Resources */
 
 		/* MATERIAL GLSL FILES */
 		// OBJECT MATREIAL FOR GENERAL OBJECTS
-		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
 		resman_.LoadResource(Material, "objectMaterial", filename.c_str());
 
 		// TEXTURE MATERIAL FOR OBJECTS THAT HAVE TEXTURES
@@ -171,14 +181,18 @@ namespace game
 		// ENVIRONMENT TEXTURES
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/floorTexture.jpg");
 		resman_.LoadResource(Texture, "floorTex", filename.c_str());
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/wallTexture.png");
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/Cubes-3D-wall-panels-close-up-604x330.jpg");
 		resman_.LoadResource(Texture, "wallTex", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/sky-texture.jpg");
 		resman_.LoadResource(Texture, "skyTex", filename.c_str());
 
 		// BLOCK TEXTURE
-		//filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
-		//resman_.LoadResource(Texture, "blockTex", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
+		resman_.LoadResource(Texture, "blockTex", filename.c_str());
+
+		// FIRE TEXTURE
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/flame4x4orig.png");
+		resman_.LoadResource(Texture, "Flame", filename.c_str());
 
 		/* GEOMETRIES */
 
@@ -226,9 +240,11 @@ namespace game
 	}
 
 	/* Setup game elements */
-	void Game::SetupScene(void) 
+	void Game::SetupScene(void)
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
+		
+		
 
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
@@ -237,10 +253,26 @@ namespace game
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
 
 		block = createBlock("block1");
+		block->object->SetVisible(false);
+
+		//set up particle system
+		SceneNode *particles = createSceneNode("ParticleInstance1", "humanParticle", "FireMaterial", "Flame");
+		world->AddChild(particles);
+		particles->SetPosition(player->body->getAbsolutePosition());
+		particles->SetBlending(true);
+		particles->SetScale(glm::vec3(30, 30, 30));
+		particles->Translate(glm::vec3(0, -10, 0));
+
+		SceneNode *particles2 = createSceneNode("ParticleInstance2", "TorusParticle", "FireMaterial", "Flame");
+		world->AddChild(particles2);
+		particles2->SetPosition(player->body->getAbsolutePosition());
+		particles2->Translate(glm::vec3(10, 0, 0));
+		particles2->SetBlending(true);
+		//particles2->SetScale(glm::vec3(30, 30, 30));
 
 		environment = new Environment();
 		room = createRoom("Room1");
-		room2 = createRoom("Room2");	
+		room2 = createRoom("Room2");
 		environment->addRoom(room);
 		environment->addRoom(room2);
 
@@ -251,6 +283,8 @@ namespace game
 
 		//Since it is just a decoration, do we need to store the pointer of that?
 		SceneNode *sky = createSky();
+
+		
 	}
 
 	void Game::MainLoop(void)
@@ -701,8 +735,13 @@ namespace game
 		if (!geom) { throw(GameException(std::string("Could not find resource \"") + geometryName + std::string("\""))); }
 		Resource *mat = resman_.GetResource(materialName);
 		if (!mat) { throw(GameException(std::string("Could not find resource \"") + materialName + std::string("\""))); }
-		Resource *tex = resman_.GetResource(textureName);
-		if (!tex) { std::cout << std::string("Could not find resource \"") + textureName + std::string("\"") << std::endl; }
+		Resource *tex = NULL;
+		if (textureName != "") {
+			tex = resman_.GetResource(textureName);
+			if (!tex) {
+				throw(GameException(std::string("Could not find resource \"") + textureName + std::string("\"")));
+			}
+		}
 
 		//return a new sceneNode object
 		return new SceneNode(entity_name, geom, mat, tex);
