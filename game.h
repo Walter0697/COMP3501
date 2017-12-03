@@ -90,7 +90,7 @@ namespace game
 			void checkInput();
 			void gameCollisionDetection();																	// All game collision detection
 			void projectileCollision();																		// All Projectile Collision detection
-			//void environmentCollision();																	// All Environment Collision detection
+			void environmentCollision();																	// All Environment Collision detection
 			void EnemiesCollision();																			// Player collisions
 
 			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);

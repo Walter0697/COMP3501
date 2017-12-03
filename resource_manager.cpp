@@ -39,7 +39,7 @@ void ResourceManager::AddResource(ResourceType type, const std::string name, GLu
 }
 
 
-void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename){
+void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename, int num_particles){
 
     // Call appropriate method depending on type of resource
     if (type == Material){
@@ -48,7 +48,10 @@ void ResourceManager::LoadResource(ResourceType type, const std::string name, co
         LoadTexture(name, filename);
     } else if (type == Mesh){
         LoadMesh(name, filename);
-    } else {
+	} else if (type == PointSet) {
+		LoadMeshParticles(name, filename, num_particles);
+	}
+	else {
         throw(std::invalid_argument(std::string("Invalid type of resource")));
     }
 }
@@ -65,69 +68,101 @@ Resource *ResourceManager::GetResource(const std::string name) const {
     return NULL;
 }
 
+void ResourceManager::LoadMaterial(const std::string name, const char *prefix) {
 
-void ResourceManager::LoadMaterial(const std::string name, const char *prefix){
+	// Load vertex program source code
+	std::string filename = std::string(prefix) + std::string(VERTEX_PROGRAM_EXTENSION);
+	std::string vp = LoadTextFile(filename.c_str());
 
-    // Load vertex program source code
-    std::string filename = std::string(prefix) + std::string(VERTEX_PROGRAM_EXTENSION);
-    std::string vp = LoadTextFile(filename.c_str());
+	// Load fragment program source code
+	filename = std::string(prefix) + std::string(FRAGMENT_PROGRAM_EXTENSION);
+	std::string fp = LoadTextFile(filename.c_str());
 
-    // Load fragment program source code
-    filename = std::string(prefix) + std::string(FRAGMENT_PROGRAM_EXTENSION);
-    std::string fp = LoadTextFile(filename.c_str());
+	// Create a shader from the vertex program source code
+	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+	const char *source_vp = vp.c_str();
+	glShaderSource(vs, 1, &source_vp, NULL);
+	glCompileShader(vs);
 
-    // Create a shader from the vertex program source code
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    const char *source_vp = vp.c_str();
-    glShaderSource(vs, 1, &source_vp, NULL);
-    glCompileShader(vs);
+	// Check if shader compiled successfully
+	GLint status;
+	glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
+	if (status != GL_TRUE) {
+		char buffer[512];
+		glGetShaderInfoLog(vs, 512, NULL, buffer);
+		throw(std::ios_base::failure(std::string("Error compiling vertex shader: ") + std::string(buffer)));
+	}
 
-    // Check if shader compiled successfully
-    GLint status;
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
-    if (status != GL_TRUE){
-        char buffer[512];
-        glGetShaderInfoLog(vs, 512, NULL, buffer);
-        throw(std::ios_base::failure(std::string("Error compiling vertex shader: ")+std::string(buffer)));
-    }
+	// Create a shader from the fragment program source code
+	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+	const char *source_fp = fp.c_str();
+	glShaderSource(fs, 1, &source_fp, NULL);
+	glCompileShader(fs);
 
-    // Create a shader from the fragment program source code
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    const char *source_fp = fp.c_str();
-    glShaderSource(fs, 1, &source_fp, NULL);
-    glCompileShader(fs);
+	// Check if shader compiled successfully
+	glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
+	if (status != GL_TRUE) {
+		char buffer[512];
+		glGetShaderInfoLog(fs, 512, NULL, buffer);
+		throw(std::ios_base::failure(std::string("Error compiling fragment shader: ") + std::string(buffer)));
+	}
 
-    // Check if shader compiled successfully
-    glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
-    if (status != GL_TRUE){
-        char buffer[512];
-        glGetShaderInfoLog(fs, 512, NULL, buffer);
-        throw(std::ios_base::failure(std::string("Error compiling fragment shader: ")+std::string(buffer)));
-    }
+	// Try to also load a geometry shader
+	filename = std::string(prefix) + std::string(GEOMETRY_PROGRAM_EXTENSION);
+	bool geometry_program = false;
+	std::string gp = "";
+	GLuint gs;
+	try {
+		gp = LoadTextFile(filename.c_str());
+		geometry_program = true;
+	}
+	catch (std::exception &e) {
+	}
 
-    // Create a shader program linking both vertex and fragment shaders
-    // together
-    GLuint sp = glCreateProgram();
-    glAttachShader(sp, vs);
-    glAttachShader(sp, fs);
-    glLinkProgram(sp);
+	if (geometry_program) {
+		// Create a shader from the geometry program source code
+		gs = glCreateShader(GL_GEOMETRY_SHADER);
+		const char *source_gp = gp.c_str();
+		glShaderSource(gs, 1, &source_gp, NULL);
+		glCompileShader(gs);
 
-    // Check if shaders were linked successfully
-    glGetProgramiv(sp, GL_LINK_STATUS, &status);
-    if (status != GL_TRUE){
-        char buffer[512];
-        glGetShaderInfoLog(sp, 512, NULL, buffer);
-        throw(std::ios_base::failure(std::string("Error linking shaders: ")+std::string(buffer)));
-    }
+		// Check if shader compiled successfully
+		GLint status;
+		glGetShaderiv(gs, GL_COMPILE_STATUS, &status);
+		if (status != GL_TRUE) {
+			char buffer[512];
+			glGetShaderInfoLog(gs, 512, NULL, buffer);
+			throw(std::ios_base::failure(std::string("Error compiling geometry shader: ") + std::string(buffer)));
+		}
+	}
 
-    // Delete memory used by shaders, since they were already compiled
-    // and linked
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+	// Create a shader program linking both vertex and fragment shaders
+	// together
+	GLuint sp = glCreateProgram();
+	glAttachShader(sp, vs);
+	glAttachShader(sp, fs);
+	if (geometry_program) {
+		glAttachShader(sp, gs);
+	}
+	glLinkProgram(sp);
 
-    // Add a resource for the shader program
-    AddResource(Material, name, sp, 0);
+	// Check if shaders were linked successfully
+	glGetProgramiv(sp, GL_LINK_STATUS, &status);
+	if (status != GL_TRUE) {
+		char buffer[512];
+		glGetShaderInfoLog(sp, 512, NULL, buffer);
+		throw(std::ios_base::failure(std::string("Error linking shaders: ") + std::string(buffer)));
+	}
+
+	// Delete memory used by shaders, since they were already compiled
+	// and linked
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+
+	// Add a resource for the shader program
+	AddResource(Material, name, sp, 0);
 }
+
 
 
 std::string ResourceManager::LoadTextFile(const char *filename){
@@ -1045,6 +1080,459 @@ void ResourceManager::CreateWall(std::string object_name){
 
     // Create resource
     AddResource(Mesh, object_name, vbo, ebo, 2 * 3);
+}
+
+void ResourceManager::CreateSphereParticles(std::string object_name, int num_particles) {
+
+	// Create a set of points which will be the particles
+	// This is similar to drawing a sphere: we will sample points on a sphere, but will allow them to also deviate a bit from the sphere along the normal (change of radius)
+
+	// Data buffer
+	GLfloat *particle = NULL;
+
+	// Number of attributes per particle: position (3), normal (3), and color (3), texture coordinates (2)
+	const int particle_att = 11;
+
+	// Allocate memory for buffer
+	try {
+		particle = new GLfloat[num_particles * particle_att];
+	}
+	catch (std::exception &e) {
+		throw e;
+	}
+
+	float trad = 0.2; // Defines the starting point of the particles along the normal
+	float maxspray = 0.5; // This is how much we allow the points to deviate from the sphere
+	float u, v, w, theta, phi, spray; // Work variables
+
+	for (int i = 0; i < num_particles; i++) {
+
+		// Get three random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+		w = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along one direction of the sphere
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the other direction of the sphere
+		phi = acos(2.0*v - 1.0);
+		// Use w to define how much we can deviate from the surface of the sphere (change of radius)
+		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
+
+															// Define the normal and point based on theta, phi and the spray
+		glm::vec3 normal(spray*cos(theta)*sin(phi), spray*sin(theta)*sin(phi), spray*cos(phi));
+		glm::vec3 position(normal.x*trad, normal.y*trad, normal.z*trad);
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles)); // We can use the color for debug, if needed
+
+																						  // Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			particle[i*particle_att + k] = position[k];
+			particle[i*particle_att + k + 3] = normal[k];
+			particle[i*particle_att + k + 6] = color[k];
+		}
+	}
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * particle_att * sizeof(GLfloat), particle, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] particle;
+
+	// Create resource
+	AddResource(PointSet, object_name, vbo, 0, num_particles);
+}
+
+
+void ResourceManager::CreateTorusParticles(std::string object_name, int num_particles, float loop_radius, float circle_radius) {
+
+	// Create a set of points which will be the particles
+	// This is similar to drawing a torus
+
+	// Data buffer
+	GLfloat *particle = NULL;
+
+	// Number of attributes per particle: position (3), normal (3), and color (3), texture coordinates (2)
+	const int particle_att = 11;
+
+	// Allocate memory for buffer
+	try {
+		particle = new GLfloat[num_particles * particle_att];
+	}
+	catch (std::exception &e) {
+		throw e;
+	}
+
+	float maxspray = 0.5; // This is how much we allow the points to deviate from the sphere
+	float u, v, w, theta, phi, spray; // Work variables
+
+	for (int i = 0; i < num_particles; i++) {
+
+		// Get a random point on a torus
+
+		// Get two random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along the loop of the torus
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the circle of the torus
+		phi = v * 2.0*glm::pi<float>();
+
+		// Define the normal and point based on theta and phi
+		glm::vec3 normal(cos(theta)*cos(phi), sin(theta)*cos(phi), sin(phi));
+		glm::vec3 center(loop_radius*cos(theta), loop_radius*sin(theta), 0.0);
+		glm::vec3 position = center + normal*circle_radius;
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles)); // The red channel of the color stores the particle id
+
+																						  // Now sample a point on a sphere to define a direction for points to wander around
+																						  // Get three random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+		w = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along one direction of the sphere
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the other direction of the sphere
+		phi = acos(2.0*v - 1.0);
+		// Use w to define how much we can deviate from the surface of the sphere (change of radius)
+		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
+
+															// Define the normal and point based on theta, phi and the spray
+		glm::vec3 wander(spray*cos(theta)*sin(phi), spray*sin(theta)*sin(phi), spray*cos(phi));
+
+		// Assign the wander direction to the normal
+		normal = wander;
+
+		// Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			particle[i*particle_att + k] = position[k];
+			particle[i*particle_att + k + 3] = normal[k];
+			particle[i*particle_att + k + 6] = color[k];
+		}
+	}
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * particle_att * sizeof(GLfloat), particle, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] particle;
+
+	// Create resource
+	AddResource(PointSet, object_name, vbo, 0, num_particles);
+}
+
+void ResourceManager::LoadMeshParticles(const std::string name, const char *filename, int num_particles) {
+
+	// First load model into memory. If that goes well, we transfer the
+	// mesh to an OpenGL buffer
+	TriMesh mesh;
+
+	// Parse file
+	// Open file
+	std::ifstream f;
+	f.open(filename);
+	if (f.fail()) { throw(std::ios_base::failure(std::string("Error opening file ") + std::string(filename))); }
+
+	// Parse lines
+	std::string line;
+	std::string ignore(" \t\r\n");
+	std::string part_separator(" \t");
+	std::string face_separator("/");
+	bool added_normal = false;
+	while (std::getline(f, line)) {
+		// Clean extremities of the string
+		string_trim(line, ignore);
+		// Ignore comments
+		if ((line.size() <= 0) ||
+			(line[0] == '#')) {
+			continue;
+		}
+		// Parse string
+		std::vector<std::string> part = string_split(line, part_separator);
+		// Check commands
+		if (!part[0].compare(std::string("v"))) {
+			if (part.size() >= 4) {
+				glm::vec3 position(str_to_num<float>(part[1].c_str()), str_to_num<float>(part[2].c_str()), str_to_num<float>(part[3].c_str()));
+				mesh.position.push_back(position);
+			}
+			else {
+				throw(std::ios_base::failure(std::string("Error: v command should have exactly 3 parameters")));
+			}
+		}
+		else if (!part[0].compare(std::string("vn"))) {
+			if (part.size() >= 4) {
+				glm::vec3 normal(str_to_num<float>(part[1].c_str()), str_to_num<float>(part[2].c_str()), str_to_num<float>(part[3].c_str()));
+				mesh.normal.push_back(normal);
+				added_normal = true;
+			}
+			else {
+				throw(std::ios_base::failure(std::string("Error: vn command should have exactly 3 parameters")));
+			}
+		}
+		else if (!part[0].compare(std::string("vt"))) {
+			if (part.size() >= 3) {
+				glm::vec2 tex_coord(str_to_num<float>(part[1].c_str()), str_to_num<float>(part[2].c_str()));
+				mesh.tex_coord.push_back(tex_coord);
+			}
+			else {
+				throw(std::ios_base::failure(std::string("Error: vt command should have exactly 2 parameters")));
+			}
+		}
+		else if (!part[0].compare(std::string("f"))) {
+			if (part.size() >= 4) {
+				if (part.size() > 5) {
+					throw(std::ios_base::failure(std::string("Error: f commands with more than 4 vertices not supported")));
+				}
+				else if (part.size() == 5) {
+					// Break a quad into two triangles
+					Quad quad;
+					for (int i = 0; i < 4; i++) {
+						std::vector<std::string> fd = string_split_once(part[i + 1], face_separator);
+						if (fd.size() == 1) {
+							quad.i[i] = str_to_num<float>(fd[0].c_str()) - 1;
+							quad.t[i] = -1;
+							quad.n[i] = -1;
+						}
+						else if (fd.size() == 2) {
+							quad.i[i] = str_to_num<float>(fd[0].c_str()) - 1;
+							quad.t[i] = str_to_num<float>(fd[1].c_str()) - 1;
+							quad.n[i] = -1;
+						}
+						else if (fd.size() == 3) {
+							quad.i[i] = str_to_num<float>(fd[0].c_str()) - 1;
+							if (std::string("").compare(fd[1]) != 0) {
+								quad.t[i] = str_to_num<float>(fd[1].c_str()) - 1;
+							}
+							else {
+								quad.t[i] = -1;
+							}
+							quad.n[i] = str_to_num<float>(fd[2].c_str()) - 1;
+						}
+						else {
+							throw(std::ios_base::failure(std::string("Error: f parameter should have 1 or 3 parameters separated by '/'")));
+						}
+					}
+					Face face1, face2;
+					face1.i[0] = quad.i[0]; face1.i[1] = quad.i[1]; face1.i[2] = quad.i[2];
+					face1.n[0] = quad.n[0]; face1.n[1] = quad.n[1]; face1.n[2] = quad.n[2];
+					face1.t[0] = quad.t[0]; face1.t[1] = quad.t[1]; face1.t[2] = quad.t[2];
+					face2.i[0] = quad.i[0]; face2.i[1] = quad.i[2]; face2.i[2] = quad.i[3];
+					face2.n[0] = quad.n[0]; face2.n[1] = quad.n[2]; face2.n[2] = quad.n[3];
+					face2.t[0] = quad.t[0]; face2.t[1] = quad.t[2]; face2.t[2] = quad.t[3];
+					mesh.face.push_back(face1);
+					mesh.face.push_back(face2);
+				}
+				else if (part.size() == 4) {
+					Face face;
+					for (int i = 0; i < 3; i++) {
+						std::vector<std::string> fd = string_split_once(part[i + 1], face_separator);
+						if (fd.size() == 1) {
+							face.i[i] = str_to_num<float>(fd[0].c_str()) - 1;
+							face.t[i] = -1;
+							face.n[i] = -1;
+						}
+						else if (fd.size() == 2) {
+							face.i[i] = str_to_num<float>(fd[0].c_str()) - 1;
+							face.t[i] = str_to_num<float>(fd[1].c_str()) - 1;
+							face.n[i] = -1;
+						}
+						else if (fd.size() == 3) {
+							face.i[i] = str_to_num<float>(fd[0].c_str()) - 1;
+							if (std::string("").compare(fd[1]) != 0) {
+								face.t[i] = str_to_num<float>(fd[1].c_str()) - 1;
+							}
+							else {
+								face.t[i] = -1;
+							}
+							face.n[i] = str_to_num<float>(fd[2].c_str()) - 1;
+						}
+						else {
+							throw(std::ios_base::failure(std::string("Error: f parameter should have 1, 2, or 3 parameters separated by '/'")));
+						}
+					}
+					mesh.face.push_back(face);
+				}
+			}
+			else {
+				throw(std::ios_base::failure(std::string("Error: f command should have 3 or 4 parameters")));
+			}
+		}
+		// Ignore other commands
+	}
+
+	// Close file
+	f.close();
+
+	// Check if vertex references are correct
+	for (unsigned int i = 0; i < mesh.face.size(); i++) {
+		for (int j = 0; j < 3; j++) {
+			if (mesh.face[i].i[j] >= mesh.position.size()) {
+				throw(std::ios_base::failure(std::string("Error: index for triangle ") + num_to_str<int>(mesh.face[i].i[j]) + std::string(" is out of bounds")));
+			}
+		}
+	}
+
+	// Compute degree of each vertex
+	std::vector<int> degree(mesh.position.size(), 0);
+	for (unsigned int i = 0; i < mesh.face.size(); i++) {
+		for (int j = 0; j < 3; j++) {
+			degree[mesh.face[i].i[j]]++;
+		}
+	}
+
+	// Compute vertex normals if no normals were ever added
+	if (!added_normal) {
+		mesh.normal = std::vector<glm::vec3>(mesh.position.size(), glm::vec3(0.0, 0.0, 0.0));
+		for (unsigned int i = 0; i < mesh.face.size(); i++) {
+			// Compute face normal
+			glm::vec3 vec1, vec2;
+			vec1 = mesh.position[mesh.face[i].i[0]] -
+				mesh.position[mesh.face[i].i[1]];
+			vec2 = mesh.position[mesh.face[i].i[0]] -
+				mesh.position[mesh.face[i].i[2]];
+			glm::vec3 norm = glm::cross(vec1, vec2);
+			norm = glm::normalize(norm);
+			// Add face normal to vertices
+			mesh.normal[mesh.face[i].i[0]] += norm;
+			mesh.normal[mesh.face[i].i[1]] += norm;
+			mesh.normal[mesh.face[i].i[2]] += norm;
+		}
+		for (unsigned int i = 0; i < mesh.normal.size(); i++) {
+			if (degree[i] > 0) {
+				mesh.normal[i] /= degree[i];
+			}
+		}
+	}
+
+	// Debug
+	//print_mesh(mesh);
+
+	// If we got to this point, the file was parsed successfully and the
+	// mesh is in memory
+	// Now, transfer the mesh to OpenGL buffers
+	// Create three new vertices for each face, in case vertex
+	// normals/texture coordinates are not consistent over the mesh
+
+	// Number of attributes for vertices and faces
+	const int vertex_att = 11;
+	//const int face_att = 3;
+
+	// Create OpenGL buffers and copy data
+	//GLuint vbo, ebo;
+
+	/*glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, mesh.face.size() * 3 * vertex_att * sizeof(GLuint), 0, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.face.size() * face_att * sizeof(GLuint), 0, GL_STATIC_DRAW);*/
+
+	//GLfloat **particleSample = NULL;
+	GLfloat *outParticle = NULL;
+	try {
+		//particleSample = new GLfloat*[mesh.face.size()];
+		outParticle = new GLfloat[vertex_att * num_particles];
+	}
+	catch (std::exception &e){
+		throw e;
+	}
+
+	/*unsigned int vertex_index = 0;
+	for (unsigned int i = 0; i < mesh.face.size(); i++) {
+		// Add three vertices and their attributes
+		GLfloat att[3 * vertex_att] = { 0 };
+		for (int j = 0; j < 3; j++) {
+			// Position
+			att[j*vertex_att + 0] = mesh.position[mesh.face[i].i[j]][0];
+			att[j*vertex_att + 1] = mesh.position[mesh.face[i].i[j]][1];
+			att[j*vertex_att + 2] = mesh.position[mesh.face[i].i[j]][2];
+			// Normal
+			if (!added_normal) {
+				att[j*vertex_att + 3] = mesh.normal[mesh.face[i].i[j]][0];
+				att[j*vertex_att + 4] = mesh.normal[mesh.face[i].i[j]][1];
+				att[j*vertex_att + 5] = mesh.normal[mesh.face[i].i[j]][2];
+			}
+			else {
+				if (mesh.face[i].n[j] >= 0) {
+					att[j*vertex_att + 3] = mesh.normal[mesh.face[i].n[j]][0];
+					att[j*vertex_att + 4] = mesh.normal[mesh.face[i].n[j]][1];
+					att[j*vertex_att + 5] = mesh.normal[mesh.face[i].n[j]][2];
+				}
+			}
+			// No color in (6, 7, 8)
+			// Texture coordinates
+			if (mesh.face[i].t[j] >= 0) {
+				att[j*vertex_att + 9] = mesh.tex_coord[mesh.face[i].t[j]][0];
+				att[j*vertex_att + 10] = mesh.tex_coord[mesh.face[i].t[j]][1];
+			}
+		}
+		particleSample[i] = att;
+
+		// Copy attributes to buffer
+		//glBufferSubData(GL_ARRAY_BUFFER, i * 3 * vertex_att * sizeof(GLfloat), 3 * vertex_att * sizeof(GLfloat), att);
+
+		// Add triangle
+		GLuint findex[face_att] = { 0 };
+		findex[0] = vertex_index;
+		findex[1] = vertex_index + 1;
+		findex[2] = vertex_index + 2;
+		vertex_index += 3;
+
+		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, i * face_att * sizeof(GLuint), face_att * sizeof(GLuint), findex);
+	}*/
+	
+	int u, v; //Work variables
+	//randomly select particles from the sample
+	for (int i = 0; i < num_particles; i++)
+	{
+		u = rand() % mesh.position.size();
+		v = rand() % 3;
+
+		glm::vec3 position(mesh.position[mesh.face[u].i[v]][0], mesh.position[mesh.face[u].i[v]][1], mesh.position[mesh.face[u].i[v]][2]);
+		glm::vec3 normal;
+		if (!added_normal) {
+			normal = glm::vec3(mesh.normal[mesh.face[u].i[v]][0], mesh.normal[mesh.face[u].i[v]][1], mesh.normal[mesh.face[u].i[v]][2]);
+		}
+		else{
+			normal = glm::vec3(mesh.normal[mesh.face[u].n[v]][0], mesh.normal[mesh.face[u].n[v]][1], mesh.normal[mesh.face[u].n[v]][2]);
+		}
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles));
+		/*
+		glm::vec3 position(mesh.position[mesh.face[i].i[0]][0], mesh.position[mesh.face[i].i[0]][1], mesh.position[mesh.face[i].i[0]][2]);
+		glm::vec3 normal;
+		if (!added_normal) {
+			normal = glm::vec3(mesh.normal[mesh.face[i].i[0]][0], mesh.normal[mesh.face[i].i[0]][1], mesh.normal[mesh.face[i].i[0]][2]);
+		}
+		else {
+			normal = glm::vec3(mesh.normal[mesh.face[i].n[0]][0], mesh.normal[mesh.face[i].n[0]][1], mesh.normal[mesh.face[i].n[0]][2]);
+		}
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles));*/
+
+		for (int k = 0; k < 3; k++)
+		{
+			outParticle[i*vertex_att + k] = position[k];
+			outParticle[i*vertex_att + k + 3] = normal[k];
+			outParticle[i*vertex_att + k + 6] = color[k];
+		}
+	}
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * vertex_att * sizeof(GLfloat), outParticle, GL_STATIC_DRAW);
+
+	delete[] outParticle;
+	//delete[] particleSample;
+
+	// Create resource
+	AddResource(PointSet, name, vbo, 0, num_particles);
 }
 
 } // namespace game;
