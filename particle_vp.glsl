@@ -19,7 +19,7 @@ out float particle_id;
 uniform vec3 up_vec = vec3(0.0, 1.0, 0.0); // Up direction
 float accel = 1.2; // An acceleration applied to the particles coming from some attraction force
 float speed = 0.2; // Control the speed of the motion
-float grav = 0.2;
+float grav = 0.8;
 
 // Define some useful constants
 const float pi = 3.1415926536;
@@ -39,7 +39,7 @@ void main()
     //float circtime = sin(rem); // Get time value in [0..1], according to a sinusoidal wave
       
 	float circtime = timer - 2.0 * floor(timer / 2);
-	float t = circtime * 2;
+	float t = circtime * 2 - 0.5;
 
     // Set up parameters of the particle motion
     //float t = abs(circtime)*(0.3 + abs(normal.y)); // Our time parameter
@@ -49,9 +49,12 @@ void main()
 	vec4 position = world_mat * vec4(vertex, 1.0);
 	vec4 norm = normal_mat * vec4(normal, 1.0);
 
-	position.x += norm.x * t * speed - grav * speed * up_vec.x * t * t;
-	position.y += norm.y * t * speed - grav * speed * up_vec.y * t * t;
-	position.z += norm.z * t * speed - grav * speed * up_vec.z * t * t;
+	if (circtime > 0.5)
+	{
+		position.x += norm.x * t * speed - grav * speed * up_vec.x * t * t;
+		position.y += norm.y * t * speed - grav * speed * up_vec.y * t * t;
+		position.z += norm.z * t * speed - grav * speed * up_vec.z * t * t;
+	}
     //position += speed*up_vec*accel*t*t; // Particle moves up
     
     // Define output position but do not apply the projection matrix yet

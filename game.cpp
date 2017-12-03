@@ -132,8 +132,19 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle");
 		resman_.LoadResource(Material, "ExplosionMaterial", filename.c_str());
 
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyBody.obj");
-		resman_.LoadResource(PointSet, "humanParticle", filename.c_str(), 200000);
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
+		resman_.LoadResource(PointSet, "humanBodyParticle", filename.c_str(), 200000);
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanLeftHand.obj");
+		resman_.LoadResource(PointSet, "humanLeftParticle", filename.c_str(), 200000);
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanRightHand.obj");
+		resman_.LoadResource(PointSet, "humanRightParticle", filename.c_str(), 200000);
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanLeftLeg.obj");
+		resman_.LoadResource(PointSet, "humanLeftLegParticle", filename.c_str(), 200000);
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanRightLeg.obj");
+		resman_.LoadResource(PointSet, "humanRightLegParticle", filename.c_str(), 200000);
+
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderBody.obj");
+		resman_.LoadResource(PointSet, "SpiderParticle", filename.c_str(), 20000);
 
 		/* Create Resources */
 
@@ -256,19 +267,19 @@ namespace game
 		block->object->SetVisible(false);
 
 		//set up particle system
-		SceneNode *particles = createSceneNode("ParticleInstance1", "humanParticle", "FireMaterial", "Flame");
+		SceneNode *particles = createSceneNode("ParticleInstance1", "humanBodyParticle", "FireMaterial", "Flame");
 		world->AddChild(particles);
 		particles->SetPosition(player->body->getAbsolutePosition());
 		particles->SetBlending(true);
 		particles->SetScale(glm::vec3(30, 30, 30));
 		particles->Translate(glm::vec3(0, -10, 0));
 
-		SceneNode *particles2 = createSceneNode("ParticleInstance2", "TorusParticle", "FireMaterial", "Flame");
+		SceneNode *particles2 = createSceneNode("ParticleInstance2", "SpiderParticle", "ExplosionMaterial", "Flame");
 		world->AddChild(particles2);
 		particles2->SetPosition(player->body->getAbsolutePosition());
 		particles2->Translate(glm::vec3(10, 0, 0));
-		particles2->SetBlending(true);
-		//particles2->SetScale(glm::vec3(30, 30, 30));
+		particles2->SetBlending(false);
+		particles2->SetScale(glm::vec3(0.005, 0.005, 0.005));
 
 		environment = new Environment();
 		room = createRoom("Room1");
@@ -561,11 +572,22 @@ namespace game
 	// CREATE HUMAN
 	Human* Game::createHuman(std::string entity_name)
 	{
-		SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
-		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
-		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
-		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
-		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
+		//SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
+		//SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
+		//SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
+		//SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
+		//SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
+		
+		SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyParticle", "FireMaterial", "Flame"); 
+		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftParticle", "FireMaterial", "Flame");
+		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightParticle", "FireMaterial", "Flame");
+		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegParticle", "FireMaterial", "Flame");
+		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegParticle", "FireMaterial", "Flame");
+		humanBody->SetBlending(true);
+		humanLeftHand->SetBlending(true);
+		humanRightHand->SetBlending(true);
+		humanLeftLeg->SetBlending(true);
+		humanRightLeg->SetBlending(true);
 
 		// Setup Heirarchy
 		world->AddChild(humanBody);

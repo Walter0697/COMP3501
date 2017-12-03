@@ -57,6 +57,9 @@ namespace game {
             virtual glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf);	 // Draw the node according to scene parameters in 'camera'
             virtual void update(void);		// Update the node
 
+			//for starting the animation
+			void updateTime(void);
+
             // Hierarchy-related methods
             void AddChild(SceneNode *node);
 			void RemoveChild(SceneNode *node);
@@ -79,6 +82,7 @@ namespace game {
             glm::vec3 scale_; // Scale of node
 			bool blending_;
 			bool visible_;
+			double start_time_;
 			
             // Hierarchy
             SceneNode *parent_;

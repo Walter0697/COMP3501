@@ -53,6 +53,8 @@ namespace game
 
 		// Hierarchy
 		parent_ = NULL;
+
+		start_time_ = glfwGetTime();
 	}
 
 	/* Destructor */
@@ -87,6 +89,7 @@ namespace game
 
 	/* Update a SceneNode */
 	void SceneNode::update(void) {}
+	void SceneNode::updateTime(void) { start_time_ = glfwGetTime(); }
 
 	/* Iterators */
 	std::vector<SceneNode *>::const_iterator SceneNode::children_begin() const { return children_.begin(); }
@@ -231,7 +234,7 @@ namespace game
 
 		// Timer
 		GLint timer_var = glGetUniformLocation(program, "timer");
-		double current_time = glfwGetTime();
+		double current_time = glfwGetTime() - start_time_;
 		glUniform1f(timer_var, (float)current_time);
 
 		// Return transformation of node combined with parent, without scaling
