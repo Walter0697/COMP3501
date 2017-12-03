@@ -22,6 +22,9 @@
 // Ascent and Descent are Q and E respectively
 // G to get a draggable object when close enough to it
 // Esc to quit 
+
+
+
 namespace game 
 {
 	// Some configuration constants
@@ -60,6 +63,7 @@ namespace game
 		world = new SceneNode("world", 0, 0, 0);	// Dummy Node
 		scene_.SetRoot(world);						// Set dummy as Root of Heirarchy
 		world->AddChild(camNode);					// Set the camera as a child of the world
+
 	}
 
 	void Game::InitWindow(void) 
@@ -268,11 +272,26 @@ namespace game
 	
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
-		human = createHuman("human1");														// Create human enemy
-		spider = createSpider("spider1");													// Create Spider enemy
-		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
-
-		createBlock("block1");																// Create block instance 
+		createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
+		createHuman("human2", glm::vec3(100, 0, -200));
+		createHuman("human3", glm::vec3(100, 0, 200));
+		createHuman("human4", glm::vec3(0, 0, 200));
+		createHuman("human5", glm::vec3(100, 0, 100));
+		createSpider("spider1", glm::vec3(10, 0, -20));								// Create Spider enemy
+		createSpider("spider2", glm::vec3(100, 0, -20));
+		createSpider("spider3", glm::vec3(10, 0, 20));
+		createSpider("spider4", glm::vec3(-50, 0, -30));
+		createSpider("spider5", glm::vec3(30, 0, -50));
+		createDragonFly("dragonfly1", glm::vec3(-10, 0, -20));					// Create dragonfly enemy
+		createDragonFly("dragonfly2", glm::vec3(-100, 0, -20));
+		createDragonFly("dragonfly3", glm::vec3(100, 0, -20));
+		createDragonFly("dragonfly4", glm::vec3(10, 0, -20));
+		createDragonFly("dragonfly5", glm::vec3(-100, 0, 20));
+		createBlock("block1", glm::vec3(200, -0.3, -0.6));							// Create block instances
+		createBlock("block2", glm::vec3(0, -20.3, -0.6));
+		createBlock("block3", glm::vec3(100, -20.3, -0.6));
+		createBlock("block4", glm::vec3(-50, -20.3, -0.6));
+		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
 		//block->object->SetVisible(false);
 
 		/* creating ParticleNode */
@@ -447,6 +466,7 @@ namespace game
 
 	void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
+
 		// Get user data with a pointer to the game class
 		void* ptr = glfwGetWindowUserPointer(window);
 		Game* game = (Game *)ptr;
@@ -463,7 +483,7 @@ namespace game
 					// Drag add alittle to the bounding box for the block we want to drag
 					if (game->player->collision(game->blocks[i]->object, game->blocks[i]->offset, game->blocks[i]->boundingRadius + 1.f))
 					{
-						std::cout << "dragging" << std::endl;
+						//std::cout << "dragging" << std::endl;
 						game->world->RemoveChild(game->blocks[i]->object);
 						game->player->myBlock = game->blocks[i];
 						game->player->myBlock->beingDragged = true;
@@ -475,7 +495,7 @@ namespace game
 			// Drop
 			else
 			{
-				std::cout << "dropping" << std::endl;
+				//std::cout << "dropping" << std::endl;
 				game->player->myBlock->beingDragged = false;
 				game->player->body->RemoveChild(game->player->myBlock->object);
 				game->player->myBlock->object->SetPosition(game->player->myBlock->object->getPrevAbsolutePosition());
@@ -570,7 +590,7 @@ namespace game
 		return new Fly(flyBody, flyWings, flyLegs);
 	}
 
-	Block* Game::createBlock(std::string entity_name)
+	Block* Game::createBlock(std::string entity_name, glm::vec3 pos)
 	{
 		SceneNode* object = createSceneNode(entity_name, "simpleSphereMesh", "textureMaterial", "blockTex");
 
@@ -578,7 +598,7 @@ namespace game
 
 		// Setup parts Scale, Setup parts Positions
 		object->SetScale(glm::vec3(2, 2, 2));
-		object->SetPosition(glm::vec3(0, -0.3, -0.6));
+		object->SetPosition(pos);
 
 		Block* bl = new Block(object);
 		blocks.push_back(bl);
@@ -587,7 +607,7 @@ namespace game
 	}
 
 	// Create a Spider instance
-	Spider* Game::createSpider(std::string entity_name)
+	Spider* Game::createSpider(std::string entity_name, glm::vec3 pos)
 	{
 		// Setup spider parts 
 		SceneNode* spiderBody = createSceneNode(entity_name + "Body", "spiderBodyMesh", "textureMaterial", "spiderBodyTex");
@@ -605,7 +625,7 @@ namespace game
 		spiderRightLeg->SetScale(glm::vec3(glm::vec3(0.02, 0.02, 0.02)));
 
 		// Setup parts positions
-		spiderBody->SetPosition(glm::vec3(10, 0, -20));
+		spiderBody->SetPosition(pos);
 		spiderBody->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0)));
 
 		Spider* spi = new Spider(spiderBody, spiderLeftLeg, spiderRightLeg);
@@ -615,7 +635,7 @@ namespace game
 	}
 
 	// Create a Dragonfly instance
-	DragonFly* Game::createDragonFly(std::string entity_name)
+	DragonFly* Game::createDragonFly(std::string entity_name, glm::vec3 pos)
 	{
 		// Setup dragonFly parts 
 		SceneNode* dragonFlyBody = createSceneNode(entity_name + "Body", "dragonFlyBodyMesh", "textureMaterial", "dragonFlyBodyTex");
@@ -636,7 +656,7 @@ namespace game
 		dragonFlyLegs->SetScale(glm::vec3(40, 40, 40));
 
 		// Setup parts positions
-		dragonFlyBody->SetPosition(glm::vec3(-10, 0, -20));
+		dragonFlyBody->SetPosition(pos);
 
 		// Create dragon fly instance and add it to the character collidables
 		DragonFly* dragon = new DragonFly(dragonFlyBody, dragonFlyLeftWing, dragonFlyRightWing, dragonFlyLegs);
@@ -646,7 +666,7 @@ namespace game
 	}
 
 	// CREATE HUMAN
-	Human* Game::createHuman(std::string entity_name)
+	Human* Game::createHuman(std::string entity_name, glm::vec3 pos)
 	{
 		//SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
 		//SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
@@ -680,7 +700,7 @@ namespace game
 		humanRightLeg->SetScale(glm::vec3(1, 1, 1));
 
 		// Setup part Positions
-		humanBody->SetPosition(glm::vec3(0, 0, -200));
+		humanBody->SetPosition(pos);
 
 		Human* hum = new Human(humanBody, humanLeftHand, humanRightHand, humanLeftLeg, humanRightLeg);
 		humans.push_back(hum);

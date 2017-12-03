@@ -58,16 +58,12 @@ namespace game
             Camera camera_;					// Camera abstraction
             bool animating_;				// Flag to turn animation on/off
 
+
+
 			CameraNode* camNode;
 			Fly* player;									// Player fly
 			SceneNode* target;								// Target for shooting
 			SceneNode* world;								// Dummy for root of the heirarchy
-			Human* human;									// human enemy
-			Spider* spider;									// Spider enemy
-			DragonFly* dragonFly;							// Dragon fly enemy
-
-			//Block* block;									// Draggable block
-			std::vector<Block*> blocks;						// list of draggable objs
 
 			Environment* environment;						// Environment
 			Room* room;										// A room
@@ -84,6 +80,10 @@ namespace game
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans
 			std::vector<Spider*> spiders;					// All Spiders
+
+			std::vector<Block*> blocks;									// list of draggable objs
+
+
 			// STORE COLLIDABLES OR SMTHG
 
             // Methods to initialize the game
@@ -107,14 +107,14 @@ namespace game
 			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);							// Create a rocket instance
 			Web* createWeb(std::string, glm::vec3 direction, glm::vec3 pos);								// Create a web instance
 			Fly* createFly(std::string entity_name);														// Create a fly instance
-			Human* createHuman(std::string entity_name);													// Create a human instance
+			Human* createHuman(std::string entity_name, glm::vec3 pos);													// Create a human instance
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
-			Spider* createSpider(std::string entity_name);													// Create a spider instance
-			DragonFly* createDragonFly(std::string entity_name);											// Create a dragonfly instance
+			Spider* createSpider(std::string entity_name, glm::vec3 pos);													// Create a spider instance
+			DragonFly* createDragonFly(std::string entity_name, glm::vec3 pos);											// Create a dragonfly instance
 			//JUST FOR DECORATION SO NO NEED TO CREATE CLASS FOR THIS IMO
 			SceneNode* createSky();
 
-			Block* createBlock(std::string entity_name);
+			Block* createBlock(std::string entity_name, glm::vec3 pos);
 
 			Room* createRoom(std::string entity_name);
 
