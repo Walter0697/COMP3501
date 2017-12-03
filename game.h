@@ -21,8 +21,6 @@
 
 #include "Block.h"
 
-#include "particleNode.h"
-
 #include "Room.h"
 #include "wall.h"
 namespace game 
@@ -66,14 +64,13 @@ namespace game
 			Spider* spider;									// Spider enemy
 			DragonFly* dragonFly;							// Dragon fly enemy
 
-			Block* block;									// Draggable block
-
-			ParticleNode *spiderParticle;
-			ParticleNode *tempParticle;
+			//Block* block;									// Draggable block
+			std::vector<Block*> blocks;						// list of draggable objs
 
 			Environment* environment;						// Environment
 			Room* room;										// A room
 			Room* room2;
+
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
 
@@ -96,7 +93,8 @@ namespace game
 			void gameCollisionDetection();																	// All game collision detection
 			void projectileCollision();																		// All Projectile Collision detection
 			void environmentCollision();																	// All Environment Collision detection
-			void EnemiesCollision();																			// Player collisions
+			void enemiesCollision();																		// Player collisions
+			void blocksCollision();																			// collision detection for the blocks
 
 			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
 			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);							// Create a rocket instance

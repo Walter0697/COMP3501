@@ -35,12 +35,13 @@ namespace game
 		SceneNode* body;
 		SceneNode* wings;
 		SceneNode* legs;
-		Block* dragging;
+		Block* myBlock;
 		int dragtimer;
 		int dragwait;
 		int timer;
 		bool upWingMovement;
 		bool moving;
+		bool dragging;		// if we want to disallow shooting while dragging
 
 		void update();						//update fly and all things that are related to it
 		bool collision(SceneNode*, float, float);	//collision detection

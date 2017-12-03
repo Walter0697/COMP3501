@@ -4,18 +4,19 @@ namespace game
 {
 	Wall::Wall(SceneNode* wallNode, glm::vec3 myNormal , float length , float width)
 	{
-		node = wallNode;
-		normal = glm::normalize(myNormal);
-		this->length = length;
-		this->width = width;
+		boundingRadius = 10000000.f;			// useless 
+		node = wallNode;						// sceneNode for the wall
+		normal = glm::normalize(myNormal);		// normal vector of the wall
+		this->length = length;					// length value of the rectangular wall
+		this->width = width;					// width value of the rectangular wall
 	}
 
 	Wall::~Wall() {}
 
+	// Not needed
 	bool Wall::collision(SceneNode* obj, float boundRad, float) { return false; }
 
-	//plane sphere collision (still need to check min and max x and y values)
-	//check if within plane
+	//plane sphere collision with min max bounds checks
 	bool Wall::collision(SceneNode* obj, float boundRad, float off, glm::vec3* norm)
 	{
 		*norm = normal;			//return the normal of the plane

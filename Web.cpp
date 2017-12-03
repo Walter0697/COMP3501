@@ -27,9 +27,8 @@ namespace game
 		if (timer <= 0) { node->del = true; }
 		else 
 		{ 
-			node->Translate(glm::vec3(speed * direction));
 			//move the web
-			// webNode->Translate(); 
+			node->Translate(glm::vec3(speed * direction));
 		}
 	}
 

@@ -10,6 +10,7 @@ namespace game
 	{
 	public:
 		float offset;
+		float boundingRadius;
 		virtual bool collision(SceneNode*, float, float) = 0;
 	};
 }

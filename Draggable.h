@@ -11,13 +11,9 @@ namespace game
 	class Draggable : public Collidable
 	{
 	public:
-		virtual bool getDrag() { return drag; };
-		virtual void setDrag(bool b) { drag = b; };
-		virtual void setDragger(glm::vec3 s) { dragger = s; }
-
-		bool drag;
-		glm::vec3 dragger;
-
+		bool beingDragged;
+		bool onFloor;
+		float gravity;
 	};
 }
 #endif // DRAGGABLE_H

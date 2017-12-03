@@ -22,7 +22,6 @@ namespace game
 		isMoving = false;							// Check for movement
 		boundingRadius = 0.8;						// Radius bounding
 		offset = 0.7;
-
 		onFloor = false;							// Check whether on floor or not
 		gravity = -0.2f;							// Gravity
 		body = spiderBody;							// Body of the spider node

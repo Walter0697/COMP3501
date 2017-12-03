@@ -11,10 +11,10 @@ namespace game
 		lastUpdate = -1;								// Last update time
 		updateTime = 0.5;								// Update time
 		state = 0;										// State in state machine 
-		speed = 0.2;									// Human speed of movement
+		speed = 0.3;									// Human speed of movement
 		fireRate = 0;									// Human fireRate 
 		maxFireRate = 60;								// Human maxFireRate
-		maxHealth = 40;									// Max health
+		maxHealth = 1000;									// Max health
 		health = maxHealth;								// Health
 		firing = false;									// Controls if the enemy is shooting
 		shotTimer = -1.f;								

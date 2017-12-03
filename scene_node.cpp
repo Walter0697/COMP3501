@@ -105,10 +105,16 @@ namespace game
 	/* Removing a child */
 	void SceneNode::RemoveChild(SceneNode *node)
 	{
-		//children_.erase(std::remove(children_.begin(), children_.end(), node), children_.end());
-
-		children_.pop_back();
-		node->parent_ = NULL;
+		for (int i = 0; i < children_.size(); i++)
+		{
+			if (children_[i]->GetName() == node->GetName())
+			{
+				children_.erase(children_.begin() + i);
+				node->parent_ = NULL;
+				return;
+			}
+		}
+		std::cout << "didn't find node" << std::endl;
 	}
 
 	/* Maintain children if a child needs to be deleted, delete it */

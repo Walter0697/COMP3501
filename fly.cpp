@@ -14,7 +14,8 @@ namespace game
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
 
-		dragging = NULL;
+		myBlock = NULL;
+		dragging = false;
 		dragwait = 1;
 		dragtimer = -1;
 		
@@ -31,9 +32,6 @@ namespace game
 	/* Update */
 	void Fly::update()
 	{
-
-		//prevPosition = body->getAbsolutePosition();
-
 		fireRate--;		
 		
 		// wing animation

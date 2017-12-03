@@ -5,29 +5,20 @@ namespace game
 	Block::Block(SceneNode* obj)
 	{
 		object = obj;					// Object
-		boundingRadius = 0.6;
+		boundingRadius = 2.0;			// bounding radius
+		offset = 0.0;					// offset from center
 
-		drag = false;
-		dragger = glm::vec3(0,0,0);
-		speed = 1;
+		beingDragged = false;			// being dragged check
+		onFloor = false;				// onFloor check
+		gravity = -0.4f;				// gravity value
 	}
 
 	Block::~Block() {}
 
 	void Block::update()
 	{
-		if (drag) {// Follow dragging position
-			object->SetPosition(glm::vec3(dragger.x, dragger.y - 6.7, dragger.z));
-		}
-		else {// Fall
-			if (object->GetPosition().y > 0) {
-				object->SetPosition(object->GetPosition() - glm::vec3(0, speed, 0));
-				speed += 1;
-				if (object->GetPosition().y < 0) {
-					object->SetPosition(glm::vec3(object->GetPosition().x, -20, object->GetPosition().z));
-				}
-			}
-		}
+		// not being dragged and not on the floor -> drop with gravity
+		if (!beingDragged && !onFloor) { object->Translate(glm::vec3(0, gravity, 0)); }
 	}
 
 	bool Block::collision(SceneNode * obj, float off, float boundRad)

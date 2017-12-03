@@ -6,13 +6,12 @@
 #include "bin/path_config.h"
 
 // TO DO:
+// MAKE HUMAN MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
+// SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
 // REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// HAVE EACH ROOM CONNECTED TO ONE ANOTHER AND ETC...
-// RESETTING TO PREV POSITION IS NOT WORKING COLLISION ON ENVIRONMENT???????
 // SPLINE TRAJECTORIES WITH SPIDER WEB ATTACK
-// PARTICLE SYSTEMS ???????
-
 // PARTICLE SYSTEMS FOR THE DEATH OR DESTRUCTION OF OBJS
+
 // SHADOW MAPPING (OPTIONAL)
 
 // Spacebar to shoot rocket
@@ -21,6 +20,7 @@
 // Up,down,left,right arrow keys for camera movement 
 // Z and C to roll the camera
 // Ascent and Descent are Q and E respectively
+// G to get a draggable object when close enough to it
 // Esc to quit 
 namespace game 
 {
@@ -132,7 +132,6 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle");
 		resman_.LoadResource(Material, "ExplosionMaterial", filename.c_str());
 
-		/* Particle system for object */
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
 		resman_.LoadResource(PointSet, "humanBodyParticle", filename.c_str(), 200000);
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanLeftHand.obj");
@@ -255,17 +254,32 @@ namespace game
 	void Game::SetupScene(void)
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
-		
-		
-
+	
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
 		human = createHuman("human1");														// Create human enemy
 		spider = createSpider("spider1");													// Create Spider enemy
 		dragonFly = createDragonFly("dragonfly1");											// Create dragonfly enemy
 
-		block = createBlock("block1");
-		block->object->SetVisible(false);
+		createBlock("block1");																// Create block instance 
+		//block->object->SetVisible(false);
+
+		/*
+		//set up particle system
+		SceneNode *particles = createSceneNode("ParticleInstance1", "humanBodyParticle", "FireMaterial", "Flame");
+		world->AddChild(particles);
+		particles->SetPosition(player->body->getAbsolutePosition());
+		particles->SetBlending(true);
+		particles->SetScale(glm::vec3(30, 30, 30));
+		particles->Translate(glm::vec3(0, -10, 0));
+
+		SceneNode *particles2 = createSceneNode("ParticleInstance2", "SpiderParticle", "ExplosionMaterial", "Flame");
+		world->AddChild(particles2);
+		particles2->SetPosition(player->body->getAbsolutePosition());
+		particles2->Translate(glm::vec3(10, 0, 0));
+		particles2->SetBlending(false);
+		particles2->SetScale(glm::vec3(0.005, 0.005, 0.005));
+		*/
 
 		environment = new Environment();
 		room = createRoom("Room1");
@@ -278,38 +292,8 @@ namespace game
 		room2Floor->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
 		room2Floor->Translate(glm::vec3(480, 0, 0));
 
-		/* THIS IS JUST FOR TESTING IF THE PARTICLE SYSTEM WORK */
-		//set up particle system
-		/*SceneNode *particles = createSceneNode("ParticleInstance1", "humanBodyParticle", "FireMaterial", "Flame");
-		world->AddChild(particles);
-		particles->SetPosition(player->body->getAbsolutePosition());
-		particles->SetBlending(true);
-		particles->SetScale(glm::vec3(30, 30, 30));
-		particles->Translate(glm::vec3(0, -10, 0));
-		
-		SceneNode *particles2 = createSceneNode("ParticleInstance2", "SpiderParticle", "ExplosionMaterial", "Flame");
-		world->AddChild(particles2);
-		particles2->SetPosition(player->body->getAbsolutePosition());
-		particles2->Translate(glm::vec3(10, 0, 0));
-		particles2->SetBlending(false);
-		particles2->SetScale(glm::vec3(0.005, 0.005, 0.005));
-		*/
-		/* ABOVE IS JUST THE TESTING FOR THE PARTICLE SYSTEM */
-		SceneNode *spi = createSceneNode("SpiderParticleInstance", "SpiderParticle", "FireMaterial", "Flame");
-		world->AddChild(spi);
-		spi->SetBlending(false);
-		spi->SetScale(glm::vec3(0.2, 0.2, 0.2));
-		spiderParticle = new ParticleNode(spi);
-
-		SceneNode *temp = createSceneNode("TempInstance", "TorusParticle", "FireMaterial", "Flame");
-		world->AddChild(temp);
-		temp->SetBlending(true);
-		tempParticle = new ParticleNode(temp);
-
 		//Since it is just a decoration, do we need to store the pointer of that?
 		SceneNode *sky = createSky();
-
-		
 	}
 
 	void Game::MainLoop(void)
@@ -327,55 +311,98 @@ namespace game
 				/* DRAW */
 				scene_.Draw(&camera_);		// Draw the scene
 
+				//std::cout << block->object->parent_->GetName() << std::endl;
+
 				/* COLLISION DETECTION */
 				gameCollisionDetection();
 
-				/* Check collision with bullets and all characters (friendly fire is fine) */
-				// Webs and player
-				/* Check collision with characters and other characters */
-
-				// Human attack with player
-				// WE MIGHT NEED A SEPERATE COLLISION DETECTION FOR THE HUMANS!!!!
-
-
 				/* UPDATE */
-				// Check distances
+				// Check distances before updating
 				// redo locking on to player
-				if (player) { player->update(); }
+				if (player)
+				{
+					if (player->health <= 0)
+					{
+						player->body->del = true;					// Delete node from sceneGraph
+						player->wings->del = true;					// Delete node from sceneGraph
+						player->legs->del = true;					// Delete node from sceneGraph
+						std::cout << "You are Dead" << std::endl;
+						//delete player;
+					}
+					else
+					{
+						player->update();
+					}
+				}
 
 				for (int i = 0; i < dragonFlies.size(); i++)
 				{
-					dragonFlies[i]->updateTarget(player->body->getAbsolutePosition());
-					dragonFlies[i]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-
-					dragonFlies[i]->update();
-					if (dragonFlies[i]->getFiring()) { dragonFlies[i]->fire(createRocket("Rocket4", dragonFlies[i]->getDirection(), dragonFlies[i]->body->getAbsolutePosition())); }
+					// Check if dragonfly has any leftover health if it does update else kill the dragonfly
+					if (dragonFlies[i]->health <= 0)
+					{
+						dragonFlies[i]->body->del = true;			// Delete node from sceneGraph
+						dragonFlies[i]->leftWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[i]->rightWing->del = true;		// Delete node from sceneGraph
+						dragonFlies[i]->legs->del = true;			// Delete node from sceneGraph
+						delete dragonFlies[i];
+						dragonFlies.erase(dragonFlies.begin() + i); // Delete from dragonfly vector
+					}
+					else
+					{
+						dragonFlies[i]->updateTarget(player->body->getAbsolutePosition());
+						dragonFlies[i]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+						dragonFlies[i]->update();
+						if (dragonFlies[i]->getFiring()) { dragonFlies[i]->fire(createRocket("Rocket4", dragonFlies[i]->getDirection(), dragonFlies[i]->body->getAbsolutePosition())); }
+					}
 				}
 
 				for (int j = 0; j < spiders.size(); j++)
 				{
-					spiders[j]->updateTarget(player->body->getAbsolutePosition());
-					spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
 
-					spiders[j]->update();
-					if (spiders[j]->getFiring()) { spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition())); }
+					if (spiders[j]->health <= 0)
+					{
+						spiders[j]->body->del = true;			// Delete node from sceneGraph
+						spiders[j]->leftLeg->del = true;		// Delete node from sceneGraph
+						spiders[j]->rightLeg->del = true;		// Delete node from sceneGraph
+						delete spiders[j];
+						spiders.erase(spiders.begin() + j);		// Delete from spiders vector
+					}
+					else
+					{
+						spiders[j]->updateTarget(player->body->getAbsolutePosition());
+						spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+						spiders[j]->update();
+						if (spiders[j]->getFiring()) { spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition())); }
+					}
 				}
 
 				for (int k = 0; k < humans.size(); k++)
 				{
-					humans[k]->updateTarget(player->body->getAbsolutePosition());
-					humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+					if (humans[k]->health <= 0)
+					{
+						humans[k]->body->del = true;				// Delete node from sceneGraph
+						humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
+						humans[k]->leftHand->del = true;			// Delete node from sceneGraph
+						humans[k]->rightHand->del = true;			// Delete node from sceneGraph
+						humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
+						delete humans[k];
+						humans.erase(humans.begin() + k);			// Delete from human vector
+					}
+					else
+					{
+						humans[k]->updateTarget(player->body->getAbsolutePosition());
+						humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+						humans[k]->update();
+						//if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", humans[k]->getDirection(), humans[k]->body->getAbsolutePosition())); }
+					}
+				}
 
-					humans[k]->update();
-					//if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", humans[k]->getDirection(), humans[k]->body->getAbsolutePosition())); }
+				//UPDATE BLOCKS
+				for (int i = 0; i < blocks.size(); i++)
+				{
+					blocks[i]->update();
 				}
 			}
-
-			//UPDATE BLOCK
-			if (block->getDrag()) {
-				block->setDragger(camera_.GetPosition());
-			}
-			block->update();
 
 
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
@@ -401,6 +428,36 @@ namespace game
 
 		// Quit game if ESC button is pressed
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+
+		if (key == GLFW_KEY_G && action == GLFW_PRESS)
+		{
+			if (game->player->myBlock == NULL)
+			{
+				for (int i = 0; i < game->blocks.size(); i++)
+				{
+					// Drag add alittle to the bounding box for the block we want to drag
+					if (game->player->collision(game->blocks[i]->object, game->blocks[i]->offset, game->blocks[i]->boundingRadius + 1.f))
+					{
+						std::cout << "dragging" << std::endl;
+						game->world->RemoveChild(game->blocks[i]->object);
+						game->player->myBlock = game->blocks[i];
+						game->player->myBlock->beingDragged = true;
+						game->blocks[i]->object->SetPosition(game->player->body->GetPosition() + (glm::vec3(0, -0.8, 0)));
+						game->player->body->AddChild(game->blocks[i]->object);
+					}
+				}
+			}
+			// Drop
+			else
+			{
+				std::cout << "dropping" << std::endl;
+				game->player->myBlock->beingDragged = false;
+				game->player->body->RemoveChild(game->player->myBlock->object);
+				game->player->myBlock->object->SetPosition(game->player->myBlock->object->getPrevAbsolutePosition());
+				game->world->AddChild(game->player->myBlock->object);
+				game->player->myBlock = 0;
+			}
+		}
 	}
 
 	/* Resize Screen */
@@ -439,30 +496,6 @@ namespace game
 		if (glfwGetKey(window_, GLFW_KEY_Q)) { camera_.Translate(camera_.GetUp() * player->speed); }
 		if (glfwGetKey(window_, GLFW_KEY_E)) { camera_.Translate(-camera_.GetUp() * player->speed); }
 
-		// Drag
-		/*if (glfwGetKey(window_, GLFW_KEY_G)) { 
-			if (player->dragtimer == -1 || player->dragtimer + player->dragwait <= glfwGetTime()) {
-				if (player->dragging == NULL) {
-					if (player->collision(block->object, 10.0f)) {
-						player->dragging = block;
-						player->dragging->setDrag(true);
-						player->dragging->setDragger(camera_.GetPosition());
-						block->object->SetPosition(camera_.GetPosition());
-						//player->legs->AddChild(block->object);
-						player->dragtimer = glfwGetTime();
-					}
-				}
-				else {
-					player->dragging->setDrag(false);
-					player->dragging = NULL;
-					//player->legs->RemoveChild(block->object);
-					player->dragtimer = glfwGetTime();
-					block->object->SetPosition(block->object->GetPosition() + glm::vec3(1,1,1));
-					block->speed = 1;
-				}
-			}
-		}*/
-
 		// Shoot a rocket
 		if (glfwGetKey(window_ , GLFW_KEY_SPACE))
 		{
@@ -472,6 +505,16 @@ namespace game
 				player->fireRate = player->maxFireRate;
 			}
 		}
+	}
+
+	SceneNode *Game::createSky()
+	{
+		SceneNode* sky = createSceneNode("SkyInstance", "wallMesh", "textureMaterial", "skyTex");
+		world->AddChild(sky);
+		sky->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
+		sky->Translate(glm::vec3(0, 600, 0));
+		sky->SetScale(glm::vec3(1000, 1000, 1));
+		return 0;
 	}
 
 	// (MAYBE MAKE IT INDEPENDENT OF CAMERA LATER ON) initial values are set in the constructor
@@ -497,32 +540,26 @@ namespace game
 		flyBody->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0)));
 
 		// Setup parts Positions
-		//flyWings->SetPosition(glm::vec3(0, 0.07, 0));
 		flyBody->SetPosition(glm::vec3(0, -0.3, -0.6));
 
 		return new Fly(flyBody, flyWings, flyLegs);
 	}
 
-
 	Block* Game::createBlock(std::string entity_name)
 	{
-		// Setup fly parts
 		SceneNode* object = createSceneNode(entity_name, "simpleSphereMesh", "textureMaterial", "blockTex");
 
 		world->AddChild(object);
 
-		// Setup parts Scales
-		object->SetScale(glm::vec3(10, 10, 10));
-
-		// Setup fly Rotations
-		//flyBody->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0)));
-
-		// Setup parts Positions
+		// Setup parts Scale, Setup parts Positions
+		object->SetScale(glm::vec3(2, 2, 2));
 		object->SetPosition(glm::vec3(0, -0.3, -0.6));
 
-		return new Block(object);
-	}
+		Block* bl = new Block(object);
+		blocks.push_back(bl);
 
+		return bl;
+	}
 
 	// Create a Spider instance
 	Spider* Game::createSpider(std::string entity_name)
@@ -710,8 +747,8 @@ namespace game
 
 		glm::vec3 pos1 = wall->GetPosition();
 
-		//z-axis is the normal of this plane and size is 600x400
-		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 300);
+		//z-axis is the normal of this plane and size is 600x600
+		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 600);
 		myRoom->addWall(myWall1);
 		
 		meshname = std::string(entity_name) + std::string("wall2");
@@ -801,10 +838,10 @@ namespace game
 
 	void Game::gameCollisionDetection()
 	{
-		//std::cout << human->body->getAbsolutePosition().x << std::endl;
 		environmentCollision();
 		projectileCollision();
-		EnemiesCollision();
+		enemiesCollision();
+		blocksCollision();
 	}
 
 	void Game::projectileCollision()
@@ -822,15 +859,6 @@ namespace game
 				i--;
 
 				//player->health -= 10;
-
-				if (player->health <= 0)
-				{
-					player->body->del = true;					// Delete node from sceneGraph
-					player->wings->del = true;					// Delete node from sceneGraph
-					player->legs->del = true;					// Delete node from sceneGraph
-					std::cout << "You are Dead" << std::endl;
-					//delete player;
-				}
 				collided = true;
 				break;
 			}
@@ -847,16 +875,6 @@ namespace game
 					i--;
 
 					dragonFlies[j]->health -= 10;
-
-					if (dragonFlies[j]->health <= 0)
-					{
-						dragonFlies[j]->body->del = true;			// Delete node from sceneGraph
-						dragonFlies[j]->leftWing->del = true;		// Delete node from sceneGraph
-						dragonFlies[j]->rightWing->del = true;		// Delete node from sceneGraph
-						dragonFlies[j]->legs->del = true;			// Delete node from sceneGraph
-						delete dragonFlies[j];
-						dragonFlies.erase(dragonFlies.begin() + j); // Delete from dragonfly vector
-					}
 					collided = true;
 					break;
 				}
@@ -875,17 +893,6 @@ namespace game
 					i--;
 
 					humans[k]->health -= 10;
-
-					if (humans[k]->health <= 0)
-					{
-						humans[k]->body->del = true;				// Delete node from sceneGraph
-						humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
-						humans[k]->leftHand->del = true;			// Delete node from sceneGraph
-						humans[k]->rightHand->del = true;			// Delete node from sceneGraph
-						humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
-						delete humans[k];
-						humans.erase(humans.begin() + k);			// Delete from human vector
-					}
 					collided = true;
 					break;
 				}
@@ -903,16 +910,6 @@ namespace game
 					i--;
 
 					spiders[l]->health -= 10;
-
-					if (spiders[l]->health <= 0)
-					{
-						spiders[l]->body->del = true;			// Delete node from sceneGraph
-						spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
-						spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
-						delete spiders[l];
-						spiders.erase(spiders.begin() + l);		// Delete from spiders vector
-					}
-
 					break;
 				}
 			}
@@ -932,20 +929,11 @@ namespace game
 				i--;
 
 				//player->health -= 10;
-
-				if (player->health <= 0)
-				{
-					player->body->del = true;					// Delete node from sceneGraph
-					player->wings->del = true;					// Delete node from sceneGraph
-					player->legs->del = true;					// Delete node from sceneGraph
-					std::cout << "You are Dead" << std::endl;
-					//delete player;
-				}
 				collided = true;
 				break;
 			}
 
-			if (collided) { break; }
+			if (collided) { continue; }
 
 			/* DRAGONFLY COLLISION DETECTION WITH WEBS */
 			for (int j = 0; j < dragonFlies.size(); j++)
@@ -957,25 +945,14 @@ namespace game
 					i--;
 
 					dragonFlies[j]->health -= 10;
-
-					if (dragonFlies[j]->health <= 0)
-					{
-						dragonFlies[j]->body->del = true;			// Delete node from sceneGraph
-						dragonFlies[j]->leftWing->del = true;		// Delete node from sceneGraph
-						dragonFlies[j]->rightWing->del = true;		// Delete node from sceneGraph
-						dragonFlies[j]->legs->del = true;			// Delete node from sceneGraph
-						delete dragonFlies[j];
-						dragonFlies.erase(dragonFlies.begin() + j); // Delete from dragonfly vector
-					}
 					collided = true;
 					break;
 				}
 			}
 
-			if (collided) { break; }
+			if (collided) { continue; }
 
 			/* HUMAN COLLISION DETECTION WITH WEBS */
-
 			for (int k = 0; k < humans.size(); k++)
 			{
 				if (!collided && (webs[i]->collision(humans[k]->body, humans[k]->offset, humans[k]->boundingRadius)
@@ -986,23 +963,12 @@ namespace game
 					i--;
 
 					humans[k]->health -= 10;
-
-					if (humans[k]->health <= 0)
-					{
-						humans[k]->body->del = true;				// Delete node from sceneGraph
-						humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
-						humans[k]->leftHand->del = true;			// Delete node from sceneGraph
-						humans[k]->rightHand->del = true;			// Delete node from sceneGraph
-						humans[k]->rightLeg->del = true;			// Delete node from sceneGraph
-						delete humans[k];
-						humans.erase(humans.begin() + k);			// Delete from human vector
-					}
 					collided = true;
 					break;
 				}
 			}
 
-			if (collided) { break; }
+			if (collided) { continue; }
 
 			/* SPIDERS COLLISION DETECTION WITH WEBS */
 			for (int l = 0; l < spiders.size(); l++)
@@ -1014,48 +980,32 @@ namespace game
 					i--;
 
 					spiders[l]->health -= 10;
-
-					if (spiders[l]->health <= 0)
-					{
-						//put the spider particle here and start it
-						tempParticle->startAnimate(spiders[l]->body->GetPosition());
-						spiderParticle->startAnimate(spiders[l]->body->getAbsolutePosition());
-						std::cout << "die" << std::endl;
-
-						spiders[l]->body->del = true;			// Delete node from sceneGraph
-						spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
-						spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
-						delete spiders[l];
-						spiders.erase(spiders.begin() + l);		// Delete from spiders vector
-					}
 					break;
 				}
 			}
 		}
 	}
 
-	SceneNode *Game::createSky()
-	{
-		SceneNode* sky = createSceneNode("SkyInstance", "wallMesh", "textureMaterial", "skyTex");
-		world->AddChild(sky);
-		sky->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
-		sky->Translate(glm::vec3(0, 600, 0));
-		sky->SetScale(glm::vec3(1000, 1000, 1));
-		return 0;
-	}
-
-
 	void Game::environmentCollision()
 	{
 		// PLAYER ROOM COLLISION 
 		glm::vec3 norm;
+
+		// BLOCK ROOM COLLISION DETECTION 
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			if (room->collision(blocks[i]->object, blocks[i]->boundingRadius, blocks[i]->offset, &norm))
+			{
+				if (norm == glm::vec3(0, 1, 0)) { blocks[i]->onFloor = true; }
+			}
+			else { blocks[i]->onFloor = false; }
+		}
 
 		// PROJECTILES ROOM COLLISION DETECTION 
 		for (int k = 0; k < rockets.size(); k++)
 		{
 			if (room->collision(rockets[k]->node, rockets[k]->boundingRadius, rockets[k]->offset, &norm))
 			{
-				std::cout << "collided" << std::endl;
 				rockets.erase(rockets.begin() + k);
 				k--;
 			}
@@ -1066,7 +1016,6 @@ namespace game
 		{
 			if (room->collision(webs[w]->node, webs[w]->boundingRadius, webs[w]->offset, &norm))
 			{
-				std::cout << "collided" << std::endl;
 				webs.erase(webs.begin() + w);
 				w--;
 			}
@@ -1074,7 +1023,6 @@ namespace game
 
 		if (room->collision(player->body, player->boundingRadius, player->offset, &norm))
 		{
-			std::cout << "collision" << std::endl;
 			camera_.Translate(norm * 4.f * player->speed);
 		}
 
@@ -1113,7 +1061,7 @@ namespace game
 	}
 
 	/* ENEMY COLLISION DETECTION */
-	void Game::EnemiesCollision()
+	void Game::enemiesCollision()
 	{
 		/* DRAGONFLIES ENEMIES AND PLAYER COLLISION  */
 		for (int i = 0; i < dragonFlies.size(); i++)
@@ -1202,9 +1150,55 @@ namespace game
 				player->collision(humans[k]->body, humans[k]->offset + humans[k]->boundingRadius, humans[k]->boundingRadius))
 			{
 				glm::vec3 direc = glm::normalize(player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition());
-				camera_.Translate((float)player->speed * 3.f * direc);
+				camera_.Translate(player->speed * 3.f * direc);
+			}
+		}
+	}
+
+	/* Blocks Collision */ // DO WE DELETE BLOCK AFTER USING IT
+	void Game::blocksCollision()
+	{
+		for (int w = 0; w < blocks.size(); w++)
+		{
+			if (blocks[w]->beingDragged) { return; }
+
+			if (player->collision(blocks[w]->object, blocks[w]->offset, blocks[w]->boundingRadius))
+			{
+				glm::vec3 dir = glm::normalize(blocks[w]->object->getAbsolutePosition() - player->body->getAbsolutePosition());
+				camera_.Translate(-dir * 2.f * player->speed);
+			}
+
+			//check if it is dropped or is on the floor since each is handled differently
+			//if on the floor move the dragonfly back if dropped kill it
+			for (int i = 0; i < dragonFlies.size(); i++)
+			{
+				if (dragonFlies[i]->collision(blocks[w]->object, blocks[w]->offset, blocks[w]->boundingRadius))
+				{
+					if (blocks[w]->onFloor) { dragonFlies[i]->body->Translate(-dragonFlies[i]->getDirection() * 2.f * dragonFlies[i]->speed); }
+					else { dragonFlies[i]->health = 0; }
+				}
+			}
+
+			for (int j = 0; j < spiders.size(); j++)
+			{
+				if (spiders[j]->collision(blocks[w]->object, blocks[w]->offset, blocks[w]->boundingRadius))
+				{
+					if (blocks[w]->onFloor) { spiders[j]->body->Translate(-spiders[j]->getDirection() * 2.f * spiders[j]->speed); }
+					else { spiders[j]->health = 0; }
+				}
+			}
+
+			for (int k = 0; k < humans.size(); k++)
+			{
+				if (blocks[w]->collision(humans[k]->body, humans[k]->offset, humans[k]->boundingRadius) ||
+					blocks[w]->collision(humans[k]->body, humans[k]->boundingRadius + humans[k]->offset, humans[k]->boundingRadius))
+				{
+					if (blocks[w]->onFloor) { humans[k]->body->Translate(-humans[k]->getDirection() * 2.f * humans[k]->speed); }
+					else { humans[k]->health = 0; }
+				}
 			}
 		}
 	}
 }
+	
 // namespace game
