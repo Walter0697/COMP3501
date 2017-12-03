@@ -5,11 +5,11 @@ project(FlyingUndersizedControlledKiller)
 
 # Specify project files: header files and source files
 set(HDRS
-    camera.h CameraNode.h game.h resource.h resource_manager.h scene_graph.h scene_node.h Rocket.h fly.h Human.h Character.h Collidable.h Spider.h DragonFly.h Enemy.h Environment.h Draggable.h Web.h Projectile.h wall.h room.h Block.h particleNode.h
+    camera.h CameraNode.h game.h resource.h resource_manager.h scene_graph.h scene_node.h Rocket.h fly.h Human.h Character.h Collidable.h Spider.h DragonFly.h Enemy.h Environment.h Draggable.h Web.h Projectile.h wall.h room.h Block.h particleNode.h shader_attribute.h
 )
  
 set(SRCS
-    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp Block.cpp particleNode.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl
+    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp Block.cpp particleNode.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl fire_gp.glsl fire_vp.glsl fire_fp.glsl particle_gp.glsl particle_vp.glsl particle_fp.glsl death_gp.glsl death_vp.glsl death_fp.glsl bullet_gp.glsl bullet_vp.glsl bullet_fp.glsl
 
 )
 

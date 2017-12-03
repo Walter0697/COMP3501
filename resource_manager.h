@@ -25,6 +25,7 @@ namespace game
 
 		void AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size);	// Add a resource that was already loaded and allocated to memory
 		void AddResource(ResourceType type, const std::string name, GLuint array_buffer, GLuint element_array_buffer, GLsizei size);
+		void AddResource(ResourceType type, const std::string name, GLfloat *data, GLsizei size);// Load a resource from a file, according to the specified type
 		void LoadResource(ResourceType type, const std::string name, const char *filename, int num_particles = 20000);	// Load a resource from a file, according to the specified type
 		Resource *GetResource(const std::string name) const;	// Get the resource with the specified name
 
@@ -36,6 +37,9 @@ namespace game
 		void CreateCube(std::string object_name);
 		void CreateSphereParticles(std::string object_name, int num_particles = 20000);
 		void CreateTorusParticles(std::string object_name, int num_particles = 20000, float loop_radius = 0.6, float circle_radius = 0.2);
+		void CreateConeParticles(std::string object_name, int num_particles = 20000, glm::vec3 color = glm::vec3(-1, -1, -1));
+	
+		void CreateControlPoints(std::string object_name, int num_control_points);
 	private:
 		std::vector<Resource*> resource_;	// List storing all resources
  

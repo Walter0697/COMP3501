@@ -131,6 +131,8 @@ namespace game
 		resman_.LoadResource(Material, "FireMaterial", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle");
 		resman_.LoadResource(Material, "ExplosionMaterial", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/death");
+		resman_.LoadResource(Material, "deathMaterial", filename.c_str());
 
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
 		resman_.LoadResource(PointSet, "humanBodyParticle", filename.c_str(), 200000);
@@ -280,7 +282,7 @@ namespace game
 		dra->SetScale(glm::vec3(40, 40, 40));
 		dragonFlyParticle = new ParticleNode(dra);
 
-		SceneNode *spi = createSceneNode("spiderParticleInstance", "spiderParticle", "ExplosionMaterial", "");
+		SceneNode *spi = createSceneNode("spiderParticleInstance", "spiderParticle", "deathMaterial", "");
 		world->AddChild(spi);
 		//spi->SetBlending(true);
 		spi->SetScale(glm::vec3(0.02, 0.02, 0.02));

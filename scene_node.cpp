@@ -173,6 +173,10 @@ namespace game
 			// Set world matrix and other shader input variables
 			glm::mat4 transf = SetupShader(material_, parent_transf);
 
+			for (int i = 0; i < shader_att_.size(); i++) {
+				shader_att_[i].SetupShader(material_);
+
+			}
 			// Draw geometry
 			if (mode_ == GL_POINTS) { glDrawArrays(mode_, 0, size_); }
 			else { glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0); }
@@ -245,5 +249,30 @@ namespace game
 
 		// Return transformation of node combined with parent, without scaling
 		return transf;
+	}
+
+	void SceneNode::AddShaderAttribute(std::string name, DataType type, int size, GLfloat *data) {
+
+		ShaderAttribute att(name, type, size, data);
+		shader_att_.push_back(att);
+	}
+
+
+	void SceneNode::RemoveShaderAttribute(std::string name) {
+
+		for (std::vector<ShaderAttribute>::iterator it = shader_att_.begin();
+		it != shader_att_.end();
+			it++) {
+			if (it->GetName() == name) {
+				shader_att_.erase(it);
+				break;
+			}
+		}
+	}
+
+
+	void SceneNode::ClearShaderAttributes(void) {
+
+		shader_att_.clear();
 	}
 }// namespace game;

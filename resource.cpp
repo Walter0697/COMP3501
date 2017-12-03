@@ -20,6 +20,14 @@ Resource::Resource(ResourceType type, std::string name, GLuint array_buffer, GLu
     size_ = size;
 }
 
+Resource::Resource(ResourceType type, std::string name, GLfloat *data, GLsizei size) {
+
+	type_ = type;
+	name_ = name;
+	data_ = data;
+	size_ = size;
+}
+
 
 Resource::~Resource(){
 
@@ -60,5 +68,11 @@ GLsizei Resource::GetSize(void) const {
 
     return size_;
 }
+
+GLfloat *Resource::GetData(void) const {
+
+	return data_;
+}
+
 
 } // namespace game

@@ -12,6 +12,7 @@
 
 #include "resource.h"
 #include "camera.h"
+#include "shader_attribute.h"
 
 namespace game {
 
@@ -66,6 +67,9 @@ namespace game {
             std::vector<SceneNode *>::const_iterator children_begin() const;
             std::vector<SceneNode *>::const_iterator children_end() const;
 
+			void AddShaderAttribute(std::string name, DataType type, int size, GLfloat *data);
+			void RemoveShaderAttribute(std::string name);
+			void ClearShaderAttributes(void);
         private:
             std::string name_; // Name of the scene node
             GLuint array_buffer_; // References to geometry: vertex and array buffers
@@ -88,6 +92,7 @@ namespace game {
             SceneNode *parent_;
             std::vector<SceneNode *> children_;
 
+			std::vector<ShaderAttribute> shader_att_; // Shader attributes
             // Set matrices that transform the node in a shader program
             // Return transformation of current node combined with
             // parent transformation, without including scaling

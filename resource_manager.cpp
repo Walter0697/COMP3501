@@ -38,6 +38,14 @@ void ResourceManager::AddResource(ResourceType type, const std::string name, GLu
     resource_.push_back(res);
 }
 
+void ResourceManager::AddResource(ResourceType type, const std::string name, GLfloat *data, GLsizei size) {
+
+	Resource *res;
+
+	res = new Resource(type, name, data, size);
+
+	resource_.push_back(res);
+}
 
 void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename, int num_particles){
 
@@ -1533,6 +1541,179 @@ void ResourceManager::LoadMeshParticles(const std::string name, const char *file
 
 	// Create resource
 	AddResource(PointSet, name, vbo, 0, num_particles);
+}
+
+void ResourceManager::CreateControlPoints(std::string object_name, int num_control_points) {
+
+	// Adjust number of control points, if needed, so that we have
+	// groups of four control points
+	if ((num_control_points % 4) != 0) {
+		num_control_points += (4 - (num_control_points % 4));
+	}
+
+	// Variable to hold the control points for the spline
+	GLfloat *control_point;
+
+	// Allocate memory for control points
+	int num_att = 3;
+	control_point = new GLfloat[num_control_points * num_att];
+
+	// Create control points of a piecewise spline
+	// We store the control points in groups of 4 
+	// Each group represents the control points (p0, p1, p2, p3) of a cubic Bezier curve
+	// To ensure C1 continuity, we constrain the first and second point of each curve according to the previous curve
+
+	float currentx = 0.0;
+	float currenty = 1.0;
+	float currentz = 0.0;
+
+	float bottomrange = -2;
+	float upperrange = 2;
+	// Initialize the first two control points to fixed values
+	// First
+
+	// Second
+	/*
+	control_point[3] = 0.0;
+	control_point[4] = -3.0;
+	control_point[5] = 0.0;
+
+	control_point[6] = 5.0;
+	control_point[7] = -6.0;
+	control_point[8] = 0.0;*/
+
+	// Create remaining points
+
+	for (int i = 1; i < num_control_points; i++) {
+		// Check if we have the first or second point of a curve
+		// Then we need to constrain the points
+		if (i % 4 == 0) {
+			// Constrain the first point of the curve
+			// p3 = q0, where the previous curve is (p0, p1, p2, p3) and the current curve is (q0, q1, q2, q3)
+			// p3 is at position -1 from the current point q0
+			for (int k = 0; k < 3; k++) {
+				control_point[i*num_att + k] = control_point[(i - 1)*num_att + k];
+			}
+		}
+		else if (i % 4 == 1) {
+			// Constrain the second point of the curve
+			// q1 = 2*p3 - p2
+			// p3 is at position -1 and we add another -1 since we are at i%4 == 1 (not i%4 == 0)
+			// p2 is at position -2 and we add another -1 since we are at i%4 == 1 (not i%4 == 0)
+			for (int k = 0; k < 3; k++) {
+				control_point[i*num_att + k] = 2.0*control_point[(i - 2)*num_att + k] - control_point[(i - 3)*num_att + k];
+			}
+		}
+		else {
+			// Other points: we can freely assign random values to them
+			// Get 3 random numbers
+			control_point[i*num_att] = currentx;
+			control_point[i*num_att + 1] = currenty;
+			control_point[i*num_att + 2] = currentz;
+			if (currentx < bottomrange)
+				currentx += 2 * rand() / RAND_MAX;
+			else if (currentx > upperrange)
+				currentx -= 2 * rand() / RAND_MAX;
+			else
+				currentx += 2 * rand() / RAND_MAX - 2 * rand() / RAND_MAX;
+			currenty -= 0.5;
+
+			if (currentz < bottomrange)
+				currentz += 2 * rand() / RAND_MAX;
+			else if (currentz > upperrange)
+				currentz -= 2 * rand() / RAND_MAX;
+			else
+				currentz += 2 * rand() / RAND_MAX - 2 * rand() / RAND_MAX;
+			/*
+			float u, v, w;
+			u = ((double)rand() / (RAND_MAX));
+			v = ((double)rand() / (RAND_MAX));
+			w = ((double)rand() / (RAND_MAX));
+			// Define control points based on u, v, and w and scale by the control point index
+			control_point[i*num_att] = u*3.0*(i / 4 + 1);
+			control_point[i*num_att + 1] = v*3.0*(i / 4 + 1);
+			control_point[i*num_att + 2] = w*2.5*(i / 4 + 1);
+			*/
+			//control_point[i*num_att + 2] = 0.0; // Easier to visualize with the control points on the screen
+		}
+	}
+
+	// Create resource
+	AddResource(Data, object_name, control_point, num_control_points * num_att);
+}
+
+void ResourceManager::CreateConeParticles(std::string object_name, int num_particles, glm::vec3 input_color) {
+
+	// Create a set of points which will be the particles
+	// This is similar to drawing a sphere: we will sample points on a sphere, but will allow them to also deviate a bit from the sphere along the normal (change of radius)
+
+	// Data buffer
+	GLfloat *particle = NULL;
+
+	// Number of attributes per particle: position (3), normal (3), and color (3), texture coordinates (2)
+	const int particle_att = 11;
+
+	// Allocate memory for buffer
+	try {
+		particle = new GLfloat[num_particles * particle_att];
+	}
+	catch (std::exception &e) {
+		throw e;
+	}
+
+	float trad = 0.2; // Defines the starting point of the particles along the normal
+	float maxspray = 0.5; // This is how much we allow the points to deviate from the sphere
+	float u, v, w, theta, phi, spray; // Work variables
+
+	for (int i = 0; i < num_particles; i++) {
+
+		// Get three random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+		w = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along one direction of the sphere
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the other direction of the sphere
+		phi = acos(2.0*v - 1.0);
+		// Use w to define how much we can deviate from the surface of the sphere (change of radius)
+		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
+
+															// Define the normal and point based on theta, phi and the spray
+		glm::vec3 normal(spray*cos(theta)*sin(phi), 5.0, spray*cos(phi));
+		glm::vec3 position(normal.x*trad, normal.y*trad, normal.z*trad);
+		glm::vec3 color;
+		if (input_color.b == -1)
+		{
+			glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles));
+		}
+
+		else
+			color = input_color;
+
+		glm::vec2 uv((float)i / (float)num_particles, 1.0);
+
+		// Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			particle[i*particle_att + k] = position[k];
+			particle[i*particle_att + k + 3] = normal[k];
+			particle[i*particle_att + k + 6] = color[k];
+		}
+		particle[i*particle_att + 9] = uv.x;
+		particle[i*particle_att + 10] = uv.y;
+	}
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * particle_att * sizeof(GLfloat), particle, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] particle;
+
+	// Create resource
+	AddResource(PointSet, object_name, vbo, 0, num_particles);
 }
 
 } // namespace game;
