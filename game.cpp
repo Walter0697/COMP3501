@@ -143,8 +143,17 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanRightLeg.obj");
 		resman_.LoadResource(PointSet, "humanRightLegParticle", filename.c_str(), 200000);
 
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/dragonflyfull.obj");
+		resman_.LoadResource(PointSet, "dragonFlyParticle", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyfull.obj");
+		resman_.LoadResource(PointSet, "flyParticle", filename.c_str());
+		/*std::cout << "after here?" << std::endl;
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanfull.obj");
+		resman_.LoadResource(PointSet, "humanParticle", filename.c_str());
+		std::cout << "Before here?" << std::endl;*/
+
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderBody.obj");
-		resman_.LoadResource(PointSet, "SpiderParticle", filename.c_str(), 20000);
+		resman_.LoadResource(PointSet, "spiderParticle", filename.c_str(), 20000);
 
 		/* Create Resources */
 
@@ -264,22 +273,30 @@ namespace game
 		createBlock("block1");																// Create block instance 
 		//block->object->SetVisible(false);
 
-		/*
-		//set up particle system
-		SceneNode *particles = createSceneNode("ParticleInstance1", "humanBodyParticle", "FireMaterial", "Flame");
-		world->AddChild(particles);
-		particles->SetPosition(player->body->getAbsolutePosition());
-		particles->SetBlending(true);
-		particles->SetScale(glm::vec3(30, 30, 30));
-		particles->Translate(glm::vec3(0, -10, 0));
+		/* creating ParticleNode */
+		SceneNode *dra = createSceneNode("dragonFlyParticleInstance", "dragonFlyParticle", "ExplosionMaterial", "");
+		world->AddChild(dra);
+		//dra->SetBlending(true);
+		dra->SetScale(glm::vec3(40, 40, 40));
+		dragonFlyParticle = new ParticleNode(dra);
 
-		SceneNode *particles2 = createSceneNode("ParticleInstance2", "SpiderParticle", "ExplosionMaterial", "Flame");
-		world->AddChild(particles2);
-		particles2->SetPosition(player->body->getAbsolutePosition());
-		particles2->Translate(glm::vec3(10, 0, 0));
-		particles2->SetBlending(false);
-		particles2->SetScale(glm::vec3(0.005, 0.005, 0.005));
-		*/
+		SceneNode *spi = createSceneNode("spiderParticleInstance", "spiderParticle", "ExplosionMaterial", "");
+		world->AddChild(spi);
+		//spi->SetBlending(true);
+		spi->SetScale(glm::vec3(0.02, 0.02, 0.02));
+		spiderParticle = new ParticleNode(spi);
+
+		/*SceneNode *hum = createSceneNode("humanParticleInstance", "humanParticle", "ExplosionMaterial", "");
+		world->AddChild(hum);
+		//hum->SetBlending(true);
+		hum->SetScale(glm::vec3(1, 1, 1));
+		humanParticle = new ParticleNode(hum);*/
+
+		SceneNode *fly = createSceneNode("flyParticleInstance", "flyParticle", "ExplosionMaterial", "");
+		world->AddChild(fly);
+		//fly->SetBlending(true);
+		fly->SetScale(glm::vec3(1, 1, 1));
+		flyParticle = new ParticleNode(fly);
 
 		environment = new Environment();
 		room = createRoom("Room1");
@@ -316,6 +333,10 @@ namespace game
 				/* COLLISION DETECTION */
 				gameCollisionDetection();
 
+				/* CHECK THE PARTICLE SYSTEM TIME */
+				dragonFlyParticle->update();
+				spiderParticle->update();
+
 				/* UPDATE */
 				// Check distances before updating
 				// redo locking on to player
@@ -340,6 +361,7 @@ namespace game
 					// Check if dragonfly has any leftover health if it does update else kill the dragonfly
 					if (dragonFlies[i]->health <= 0)
 					{
+						dragonFlyParticle->startAnimate(dragonFlies[i]->body->getAbsolutePosition(), dragonFlies[i]->body->getAbsoluteOrientation(), 3);
 						dragonFlies[i]->body->del = true;			// Delete node from sceneGraph
 						dragonFlies[i]->leftWing->del = true;		// Delete node from sceneGraph
 						dragonFlies[i]->rightWing->del = true;		// Delete node from sceneGraph
@@ -361,6 +383,7 @@ namespace game
 
 					if (spiders[j]->health <= 0)
 					{
+						spiderParticle->startAnimate(spiders[j]->body->getAbsolutePosition(), spiders[j]->body->getAbsoluteOrientation(), 3);
 						spiders[j]->body->del = true;			// Delete node from sceneGraph
 						spiders[j]->leftLeg->del = true;		// Delete node from sceneGraph
 						spiders[j]->rightLeg->del = true;		// Delete node from sceneGraph

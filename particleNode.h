@@ -13,10 +13,11 @@ namespace game
 		~ParticleNode();
 
 		void update(void);
-		void startAnimate(glm::vec3 position);
+		void startAnimate(glm::vec3 position, glm::quat orientation, double duration);
 
 	private:
 		double timer;
+		double lasttime;
 		SceneNode *particle;
 	};
 }

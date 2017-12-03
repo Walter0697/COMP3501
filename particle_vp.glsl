@@ -38,8 +38,8 @@ void main()
     float rem = mod(param, pi_over_two); // Use the remainder of dividing by pi/2 so that we are always in the range [0..pi/2] where sin() gives values in [0..1]
     //float circtime = sin(rem); // Get time value in [0..1], according to a sinusoidal wave
       
-	float circtime = timer - 2.0 * floor(timer / 2);
-	float t = circtime * 2 - 0.5;
+	float circtime = timer - 4.0 * floor(timer / 4);
+	float t = circtime * 2 - 1;
 
     // Set up parameters of the particle motion
     //float t = abs(circtime)*(0.3 + abs(normal.y)); // Our time parameter
@@ -49,7 +49,7 @@ void main()
 	vec4 position = world_mat * vec4(vertex, 1.0);
 	vec4 norm = normal_mat * vec4(normal, 1.0);
 
-	if (circtime > 0.5)
+	if (circtime > 1)
 	{
 		position.x += norm.x * t * speed - grav * speed * up_vec.x * t * t;
 		position.y += norm.y * t * speed - grav * speed * up_vec.y * t * t;

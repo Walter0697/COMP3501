@@ -23,6 +23,8 @@
 
 #include "Room.h"
 #include "wall.h"
+
+#include "particleNode.h"
 namespace game 
 {
     // Exception type for the game
@@ -70,6 +72,11 @@ namespace game
 			Environment* environment;						// Environment
 			Room* room;										// A room
 			Room* room2;
+
+			ParticleNode *dragonFlyParticle;
+			ParticleNode *flyParticle;
+			ParticleNode *humanParticle;
+			ParticleNode *spiderParticle;
 
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
