@@ -9,7 +9,7 @@ set(HDRS
 )
  
 set(SRCS
-    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp Block.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl fire_fp.glsl fire_gp.glsl fire_vp.glsl particle_fp.glsl particle_vp.glsl particle_gp.glsl
+    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp Block.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl
 
 )
 

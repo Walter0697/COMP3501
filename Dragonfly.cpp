@@ -10,7 +10,7 @@ namespace game
 		lastUpdate = -1;								// Previous update time
 		updateTime = 0.5;								// Update time
 		state = 0;										// State in game Machine 
-		speed = 0.2;									// Speed of dragon fly
+		speed = 1;									// Speed of dragon fly
 		fireRate = 0;									// Fire rate of dragonfly shots 
 		maxFireRate = 150;								// maxFireRate of dragonfly
 		maxHealth = 20;									// Max health 
@@ -19,7 +19,8 @@ namespace game
 		shotTimer = -1.f;
 		timer = 12;										// Timer for wing animation
 		upWingMovement = true;							// Check for wing movement
-		boundingRadius = 0.7;							// radius bound
+		boundingRadius = 0.5;							// radius bound
+		offset = 0.3;									// center offset
 		direction = glm::vec3(0, 0, 0);					// Direction of movement
 		prevDirection = glm::vec3(0, 0, 0);				// Previous direction for setting up orientation
 		body = dragonFlyBody;							// Body of the dragonfly node
@@ -94,9 +95,20 @@ namespace game
 	}
 
 	/* Collision */
-	bool DragonFly::collision(SceneNode* object, float boundRad)
+	bool DragonFly::collision(SceneNode* object, float off, float boundRad)
 	{
-		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		//find real center of the object
+		glm::vec3 objUpVec = glm::normalize(object->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 objRealCenter = object->getAbsolutePosition() + objUpVec * off;
+
+		//find my real center
+		glm::vec3 myUpVec = glm::normalize(body->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 myRealCenter = body->getAbsolutePosition() + myUpVec * offset;
+
+		//find difference in positions
+		glm::vec3 difference = myRealCenter - objRealCenter;
+
+		//compare distances 
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

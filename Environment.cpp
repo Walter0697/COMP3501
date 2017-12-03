@@ -12,10 +12,10 @@ namespace game
 
 	Environment::~Environment() {}
 
-	bool Environment::collision(SceneNode*, float) { return false; }
+	bool Environment::collision(SceneNode*, float, float) { return false; }
 
 	//need normals of each plane I create 
-	bool Environment::collision(SceneNode* object , float boundRad , glm::vec3 direction)
+	bool Environment::collision(SceneNode* object , float boundRad , float off, glm::vec3* direction)
 	{
 		glm::vec3 wallObjVec = floor->getAbsolutePosition() - object->getAbsolutePosition();
 		float prod = abs(glm::dot(wallObjVec, glm::vec3(0,1,0)));

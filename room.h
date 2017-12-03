@@ -15,8 +15,8 @@ namespace game
 		~Room();
 
 		void addWall(Wall*);
-		bool collision(SceneNode*, float);
-		bool collision(SceneNode*, float, glm::vec3*);
+		bool collision(SceneNode*, float, float);
+		bool collision(SceneNode*, float, float, glm::vec3*);
 		void SetFloor(SceneNode*);
 		SceneNode* getFloor();
 

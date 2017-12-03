@@ -10,7 +10,7 @@ namespace game
 		lastUpdate = -1;							// Last update time
 		updateTime = 0.5;							// Update time
 		state = 0;									// Machine state
-		speed = 1.0;								// Speed of movement the spider
+		speed = 0.3;								// Speed of movement the spider
 		fireRate = 0;								// FireRate of the shooting webs
 		maxFireRate = 120;							// Maximum fire rate of shooting
 		maxHealth = 30;								// Maximum health
@@ -20,7 +20,9 @@ namespace game
 		timer = 5;									// Timer for leg movement
 		legMovement = true;							// Check for leg movement
 		isMoving = false;							// Check for movement
-		boundingRadius = 1.3;						// Radius bounding
+		boundingRadius = 0.8;						// Radius bounding
+		offset = 0.7;
+
 		onFloor = false;							// Check whether on floor or not
 		gravity = -0.2f;							// Gravity
 		body = spiderBody;							// Body of the spider node
@@ -107,9 +109,20 @@ namespace game
 	}
 
 	/* Collision */
-	bool Spider::collision(SceneNode* object, float boundRad)
+	bool Spider::collision(SceneNode* object, float off, float boundRad)
 	{
-		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		//find real center of the object
+		glm::vec3 objUpVec = glm::normalize(object->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 objRealCenter = object->getAbsolutePosition() + objUpVec * off;
+
+		//find my real center
+		glm::vec3 myUpVec = glm::normalize(body->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 myRealCenter = body->getAbsolutePosition() + myUpVec * offset;
+
+		//find difference in positions
+		glm::vec3 difference = myRealCenter - objRealCenter;
+
+		//compare distances 
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

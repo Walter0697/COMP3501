@@ -5,6 +5,7 @@ namespace game
 	/* Constructor */
 	Fly::Fly(SceneNode* flyBody, SceneNode* flyWings, SceneNode* flyLegs)
 	{
+		offset = 0.17;
 		speed = 0.5;					// hardcode speed
 		maxFireRate = 30;				// maximum fire rate
 		fireRate = 0;					// fire rate handler
@@ -17,7 +18,7 @@ namespace game
 		dragwait = 1;
 		dragtimer = -1;
 		
-		boundingRadius = 0.7;			// Radius of bounds
+		boundingRadius = 1;			// Radius of bounds
 		body = flyBody;					// Body of fly
 		wings = flyWings;				// Wings of the fly
 		legs = flyLegs;					// Legs of fly
@@ -65,9 +66,20 @@ namespace game
 	}
 
 	/* Collision */
-	bool Fly::collision(SceneNode * object, float boundRad)
+	bool Fly::collision(SceneNode * object, float off, float boundRad)
 	{
-		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		//find real center of the object
+		glm::vec3 objUpVec = glm::normalize(object->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 objRealCenter = object->getAbsolutePosition() + objUpVec * off;
+
+		//find my real center
+		glm::vec3 myUpVec = glm::normalize(body->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 myRealCenter = body->getAbsolutePosition() + myUpVec * offset;
+
+		//find difference in positions
+		glm::vec3 difference = myRealCenter - objRealCenter;
+
+		//compare distances 
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 } // namespace game

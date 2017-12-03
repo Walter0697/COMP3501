@@ -18,7 +18,8 @@ namespace game
 	class Enemy : public Character
 	{
 	public:
-		
+		float offset;
+
 		glm::vec3 getDirection() { return direction; }
 
 		virtual void updateTarget(glm::vec3 targPos) 

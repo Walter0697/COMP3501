@@ -8,6 +8,7 @@ namespace game
 	/* Constructor */
 	Web::Web(SceneNode* node, glm::vec3 direction)
 	{
+		offset = 0.0;
 		this->node = node;		 						 // SceneNode for Web
 		this->direction = glm::normalize(direction);	 // Direction of the Web
 		this->speed = 0.8;								 // Speed of the Web
@@ -33,9 +34,20 @@ namespace game
 	}
 
 	/* Collision */
-	bool Web::collision(SceneNode* collidable, float boundingRad)
+	bool Web::collision(SceneNode* collidable, float off, float boundingRad)
 	{
-		glm::vec3 difference = node->getAbsolutePosition() - collidable->getAbsolutePosition();
-		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundingRad);
+		//find real center of the object
+		glm::vec3 objUpVec = glm::normalize(collidable->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 objRealCenter = collidable->getAbsolutePosition() + objUpVec * off;
+
+		//find my real center
+		glm::vec3 myUpVec = glm::normalize(node->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 myRealCenter = node->getAbsolutePosition() + myUpVec * offset;
+
+		//find difference in positions
+		glm::vec3 difference = myRealCenter - objRealCenter;
+
+		//compare distances 
+		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundingRad + boundingRadius);
 	}
 }

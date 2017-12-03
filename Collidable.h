@@ -9,7 +9,8 @@ namespace game
 	class Collidable
 	{
 	public:
-		virtual bool collision(SceneNode*, float) = 0;
+		float offset;
+		virtual bool collision(SceneNode*, float, float) = 0;
 	};
 }
 #endif // COLLIDABLE_H

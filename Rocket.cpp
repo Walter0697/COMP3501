@@ -6,6 +6,7 @@ namespace game
 	/* Constructor */
 	Rocket::Rocket(SceneNode* node , glm::vec3 dir)
 	{
+		offset = 0.0;
 		this->direction = glm::normalize(dir);
 		this->speed = 0.8;				// Hardcode speed 
 		this->timer = 200;				// Hardcoded timer to get rid of rocket
@@ -47,9 +48,20 @@ namespace game
 	}
 
 	/* Collision */
-	bool Rocket::collision(SceneNode* object , float boundRad)
+	bool Rocket::collision(SceneNode* object , float off, float boundRad)
 	{
-		glm::vec3 difference = node->getAbsolutePosition() - object->getAbsolutePosition();
+		//find real center of the object
+		glm::vec3 objUpVec = glm::normalize(object->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 objRealCenter = object->getAbsolutePosition() + objUpVec * off;
+
+		//find my real center
+		glm::vec3 myUpVec = glm::normalize(node->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 myRealCenter = node->getAbsolutePosition() + myUpVec * offset;
+
+		//find difference in positions
+		glm::vec3 difference = myRealCenter - objRealCenter;
+
+		//compare distances 
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }

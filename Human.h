@@ -23,7 +23,7 @@ namespace game
 		bool onFloor;
 
 		void update();
-		bool collision(SceneNode*, float);
+		bool collision(SceneNode*, float, float);
 	private:
 	protected:
 	};

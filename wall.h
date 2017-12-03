@@ -16,8 +16,8 @@ namespace game
 		glm::vec3 normal;
 		float length;
 		float width;
-		bool collision(SceneNode*, float);
-		bool collision(SceneNode*, float, glm::vec3*);
+		bool collision(SceneNode*, float, float);
+		bool collision(SceneNode*, float, float, glm::vec3*);
 	};
 }
 #endif // WALL_H

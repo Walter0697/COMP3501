@@ -34,7 +34,7 @@ namespace game
 
 		virtual void update();	// update the position of the rocket
 		bool collision(SceneNode* , Camera*);	// collision detection between rocket and other collidables
-		bool collision(SceneNode*, float);
+		bool collision(SceneNode*, float, float);
 
 		float boundingRadius;
 

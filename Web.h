@@ -25,7 +25,7 @@ namespace game
 		float boundingRadius;
 
 		void update();							// update the position of the rocket
-		bool collision(SceneNode*, float);		// collision Detection
+		bool collision(SceneNode*, float, float);		// collision Detection
 
 	private:
 	protected:

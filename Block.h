@@ -33,9 +33,10 @@ namespace game
 
 		int timer;
 		bool moving;
+		float boundingRadius;
 
 		void update();	//update block and all things that are related to it
-		bool collision(SceneNode*, float);
+		bool collision(SceneNode*, float , float);
 		int speed;
 
 	private:

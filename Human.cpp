@@ -5,19 +5,21 @@ namespace game
 	/* Constructor */
 	Human::Human(SceneNode* humanBody, SceneNode* humanLeftHand, SceneNode* humanRightHand, SceneNode* humanLeftLeg, SceneNode* humanRightLeg)
 	{
+		
 		targetPos = glm::vec3(0, 0, 0);					// Store target position
 		targetOrientation = glm::quat(0, 0, 0, 0);		// Store target orientation
 		lastUpdate = -1;								// Last update time
 		updateTime = 0.5;								// Update time
 		state = 0;										// State in state machine 
-		speed = 0.3;									// Human speed of movement
+		speed = 0.2;									// Human speed of movement
 		fireRate = 0;									// Human fireRate 
 		maxFireRate = 60;								// Human maxFireRate
 		maxHealth = 40;									// Max health
 		health = maxHealth;								// Health
 		firing = false;									// Controls if the enemy is shooting
 		shotTimer = -1.f;								
-		boundingRadius = 4.0;							// Bounding Circle
+		boundingRadius = 7.0;								// Bounding Circle
+		offset = 7;
 		onFloor = false;								// Check whether enemy is on the floor
 		gravity = -0.2f;								// Gravity
 		body = humanBody;								// Body of the human node
@@ -76,9 +78,20 @@ namespace game
 	}
 
 	/* Collision */
-	bool Human::collision(SceneNode * object, float boundRad)
+	bool Human::collision(SceneNode * object, float off, float boundRad)
 	{
-		glm::vec3 difference = body->getAbsolutePosition() - object->getAbsolutePosition();
+		//find real center of the object
+		glm::vec3 objUpVec = glm::normalize(object->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 objRealCenter = object->getAbsolutePosition() + objUpVec * off;
+
+		//find my real center
+		glm::vec3 myUpVec = glm::normalize(body->getAbsoluteOrientation() * glm::vec3(0, 1, 0));
+		glm::vec3 myRealCenter = body->getAbsolutePosition() + myUpVec * offset;
+
+		//find difference in positions
+		glm::vec3 difference = myRealCenter - objRealCenter;
+
+		//compare distances 
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
 }
