@@ -21,6 +21,8 @@
 
 #include "Block.h"
 
+#include "particleNode.h"
+
 #include "Room.h"
 #include "wall.h"
 namespace game 
@@ -65,6 +67,9 @@ namespace game
 			DragonFly* dragonFly;							// Dragon fly enemy
 
 			Block* block;									// Draggable block
+
+			ParticleNode *spiderParticle;
+			ParticleNode *tempParticle;
 
 			Environment* environment;						// Environment
 			Room* room;										// A room

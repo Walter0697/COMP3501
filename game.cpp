@@ -132,6 +132,7 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle");
 		resman_.LoadResource(Material, "ExplosionMaterial", filename.c_str());
 
+		/* Particle system for object */
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
 		resman_.LoadResource(PointSet, "humanBodyParticle", filename.c_str(), 200000);
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanLeftHand.obj");
@@ -266,21 +267,6 @@ namespace game
 		block = createBlock("block1");
 		block->object->SetVisible(false);
 
-		//set up particle system
-		SceneNode *particles = createSceneNode("ParticleInstance1", "humanBodyParticle", "FireMaterial", "Flame");
-		world->AddChild(particles);
-		particles->SetPosition(player->body->getAbsolutePosition());
-		particles->SetBlending(true);
-		particles->SetScale(glm::vec3(30, 30, 30));
-		particles->Translate(glm::vec3(0, -10, 0));
-
-		SceneNode *particles2 = createSceneNode("ParticleInstance2", "SpiderParticle", "ExplosionMaterial", "Flame");
-		world->AddChild(particles2);
-		particles2->SetPosition(player->body->getAbsolutePosition());
-		particles2->Translate(glm::vec3(10, 0, 0));
-		particles2->SetBlending(false);
-		particles2->SetScale(glm::vec3(0.005, 0.005, 0.005));
-
 		environment = new Environment();
 		room = createRoom("Room1");
 		room2 = createRoom("Room2");
@@ -291,6 +277,34 @@ namespace game
 		room2Floor->Translate(glm::vec3(0, 0, -600));
 		room2Floor->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
 		room2Floor->Translate(glm::vec3(480, 0, 0));
+
+		/* THIS IS JUST FOR TESTING IF THE PARTICLE SYSTEM WORK */
+		//set up particle system
+		/*SceneNode *particles = createSceneNode("ParticleInstance1", "humanBodyParticle", "FireMaterial", "Flame");
+		world->AddChild(particles);
+		particles->SetPosition(player->body->getAbsolutePosition());
+		particles->SetBlending(true);
+		particles->SetScale(glm::vec3(30, 30, 30));
+		particles->Translate(glm::vec3(0, -10, 0));
+		
+		SceneNode *particles2 = createSceneNode("ParticleInstance2", "SpiderParticle", "ExplosionMaterial", "Flame");
+		world->AddChild(particles2);
+		particles2->SetPosition(player->body->getAbsolutePosition());
+		particles2->Translate(glm::vec3(10, 0, 0));
+		particles2->SetBlending(false);
+		particles2->SetScale(glm::vec3(0.005, 0.005, 0.005));
+		*/
+		/* ABOVE IS JUST THE TESTING FOR THE PARTICLE SYSTEM */
+		SceneNode *spi = createSceneNode("SpiderParticleInstance", "SpiderParticle", "FireMaterial", "Flame");
+		world->AddChild(spi);
+		spi->SetBlending(false);
+		spi->SetScale(glm::vec3(0.2, 0.2, 0.2));
+		spiderParticle = new ParticleNode(spi);
+
+		SceneNode *temp = createSceneNode("TempInstance", "TorusParticle", "FireMaterial", "Flame");
+		world->AddChild(temp);
+		temp->SetBlending(true);
+		tempParticle = new ParticleNode(temp);
 
 		//Since it is just a decoration, do we need to store the pointer of that?
 		SceneNode *sky = createSky();
@@ -787,7 +801,7 @@ namespace game
 
 	void Game::gameCollisionDetection()
 	{
-		std::cout << human->body->getAbsolutePosition().x << std::endl;
+		//std::cout << human->body->getAbsolutePosition().x << std::endl;
 		environmentCollision();
 		projectileCollision();
 		EnemiesCollision();
@@ -1003,6 +1017,11 @@ namespace game
 
 					if (spiders[l]->health <= 0)
 					{
+						//put the spider particle here and start it
+						tempParticle->startAnimate(spiders[l]->body->GetPosition());
+						spiderParticle->startAnimate(spiders[l]->body->getAbsolutePosition());
+						std::cout << "die" << std::endl;
+
 						spiders[l]->body->del = true;			// Delete node from sceneGraph
 						spiders[l]->leftLeg->del = true;		// Delete node from sceneGraph
 						spiders[l]->rightLeg->del = true;		// Delete node from sceneGraph
