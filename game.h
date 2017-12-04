@@ -58,6 +58,8 @@ namespace game
             Camera camera_;					// Camera abstraction
             bool animating_;				// Flag to turn animation on/off
 
+			bool gamestart_;
+
 			CameraNode* camNode;
 			Fly* player;									// Player fly
 			SceneNode* target;								// Target for shooting
@@ -78,10 +80,10 @@ namespace game
 			ParticleNode *humanParticle;
 			ParticleNode *spiderParticle;
 			ParticleNode *humanParticle2;
-			ParticleNode *webParticle;
 
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
+			std::vector<ParticleNode*> mo_is_retarded;      // All web's particles
 
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans

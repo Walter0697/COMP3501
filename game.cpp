@@ -57,6 +57,7 @@ namespace game
 
 		// Set variables
 		animating_ = true;
+		gamestart_ = true;
 		world = new SceneNode("world", 0, 0, 0);	// Dummy Node
 		scene_.SetRoot(world);						// Set dummy as Root of Heirarchy
 		world->AddChild(camNode);					// Set the camera as a child of the world
@@ -295,11 +296,6 @@ namespace game
 		createBlock("block4", glm::vec3(-50, -20.3, -0.6));
 		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
 
-		
-		webParticle = createParticle("webParticleInstance", "TorusParticle", "splineMaterial", "", glm::vec3(1, 1, 1));
-		Resource *cp = resman_.GetResource("ControlPoints");
-		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
-		webParticle->startAnimate(player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
 		/* setting blending to false becuz we cannot see that clearly */
 		//dragonFlyParticle->getParticle()->SetBlending(false);
 		//spiderParticle->getParticle()->SetBlending(false);
@@ -330,16 +326,12 @@ namespace game
 		{
 			/* INPUT */
 			checkInput(); 
+			/* DRAW */
+			scene_.Draw(&camera_);		// Draw the scene
 
 			//check if player health > 0 
-			if (player->health > 0)
-
+			if (player->health > 0 && gamestart_)
 			{
-				/* DRAW */
-				scene_.Draw(&camera_);		// Draw the scene
-
-				//std::cout << block->object->parent_->GetName() << std::endl;
-
 				/* COLLISION DETECTION */
 				gameCollisionDetection();
 
@@ -411,12 +403,19 @@ namespace game
 						if (spiders[j]->getFiring()) { 
 							spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition())); 
 						}
-						/*
-						webParticle = createParticle("webParticleInstance", "TorusParticle", "splineMaterial", "", glm::vec3(1, 1, 1));
-		Resource *cp = resman_.GetResource("ControlPoints");
-		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
-		webParticle->startAnimate(player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
-		*/
+					}
+				}
+
+				for (int j = 0; j < webs.size(); j++)
+				{
+					if (webs[j]->node->del)
+					{
+						mo_is_retarded[j]->deleteNode();
+						mo_is_retarded.erase(mo_is_retarded.begin() + j);
+					}
+					else
+					{
+						mo_is_retarded[j]->updatePosition(webs[j]->node->getAbsolutePosition());
 					}
 				}
 
@@ -448,8 +447,9 @@ namespace game
 				{
 					blocks[i]->update();
 				}
-			}
 
+				
+			}	
 
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
 			glfwPollEvents();			// Update other events like input handling
@@ -461,9 +461,10 @@ namespace game
 		// Get user data with a pointer to the game class
 		void* ptr = glfwGetWindowUserPointer(window);
 		Game *game = (Game *)ptr;
-
-		// Mouse click checks for 1st or third person
-		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) { game->camera_.firstPerson = !game->camera_.firstPerson; }
+		
+		if (game->gamestart_)
+			// Mouse click checks for 1st or third person
+			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) { game->camera_.firstPerson = !game->camera_.firstPerson; }
 	}
 
 	void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -746,6 +747,13 @@ namespace game
 		webNode->SetOrientation(player->body->getAbsoluteOrientation());
 		webNode->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
 		webNode->SetPosition(pos + 2.f * glm::normalize(direction));
+
+		ParticleNode* webParticle = createParticle(entity_name + "Particle", "TorusParticle", "splineMaterial", "", glm::vec3(1, 1, 1));
+		Resource *cp = resman_.GetResource("ControlPoints");
+		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
+		webParticle->startAnimate(pos + 2.f * glm::normalize(direction), player->body->getAbsoluteOrientation(), 999);
+		webParticle->getParticle()->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
+		mo_is_retarded.push_back(webParticle);
 
 		//add rockets for collision detection
 		Web* web = new Web(webNode, direction);
