@@ -22,9 +22,6 @@
 // Ascent and Descent are Q and E respectively
 // G to get a draggable object when close enough to it
 // Esc to quit 
-
-
-
 namespace game 
 {
 	// Some configuration constants
@@ -63,7 +60,6 @@ namespace game
 		world = new SceneNode("world", 0, 0, 0);	// Dummy Node
 		scene_.SetRoot(world);						// Set dummy as Root of Heirarchy
 		world->AddChild(camNode);					// Set the camera as a child of the world
-
 	}
 
 	void Game::InitWindow(void) 
@@ -129,6 +125,7 @@ namespace game
 		resman_.CreateCube("CubeMesh");
 		resman_.CreateSphereParticles("SphereParticle");
 		resman_.CreateTorusParticles("TorusParticle");
+		resman_.CreateConeParticles("ConeParticle");
 
 		/* Loading Material for Particle System */
 		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/fire");
@@ -137,6 +134,8 @@ namespace game
 		resman_.LoadResource(Material, "ExplosionMaterial", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/death");
 		resman_.LoadResource(Material, "deathMaterial", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/bullet");
+		resman_.LoadResource(Material, "bulletMaterial", filename.c_str());
 
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
 		resman_.LoadResource(PointSet, "humanBodyParticle", filename.c_str(), 200000);
@@ -153,13 +152,10 @@ namespace game
 		resman_.LoadResource(PointSet, "dragonFlyParticle", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyfull.obj");
 		resman_.LoadResource(PointSet, "flyParticle", filename.c_str());
-		/*std::cout << "after here?" << std::endl;
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanfull.obj");
 		resman_.LoadResource(PointSet, "humanParticle", filename.c_str());
-		std::cout << "Before here?" << std::endl;*/
-
-		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderBody.obj");
-		resman_.LoadResource(PointSet, "spiderParticle", filename.c_str(), 20000);
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderfull.obj");
+		resman_.LoadResource(PointSet, "spiderParticle", filename.c_str());
 
 		/* Create Resources */
 
@@ -259,17 +255,20 @@ namespace game
 		resman_.LoadResource(Mesh, "flyWingsMesh", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyLegs.obj");
 		resman_.LoadResource(Mesh, "flyLegsMesh", filename.c_str());
-
-		// TABLE 
-		//filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/table.obj");
-		//resman_.LoadResource(Mesh, "tableMesh", filename.c_str());
 	}
 
 	/* Setup game elements */
 	void Game::SetupScene(void)
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
-	
+																							/* creating ParticleNode */
+
+		dragonFlyParticle = createParticle("dragonFlyParticleInstance", "dragonFlyParticle", "ExplosionMaterial", "", glm::vec3(40, 40, 40));
+		spiderParticle = createParticle("spiderParticleInstance", "spiderParticle", "deathMaterial", "", glm::vec3(0.02, 0.02, 0.02));
+		humanParticle = createParticle("humanParticleInstance", "humanParticle", "FireMaterial", "Flame", glm::vec3(1, 1, 1));
+		flyParticle = createParticle("flyParticleInstance", "flyParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
+		humanParticle2 = createParticle("humanParticleInstance2", "humanParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
+
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
 		createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
@@ -292,38 +291,22 @@ namespace game
 		createBlock("block3", glm::vec3(100, -20.3, -0.6));
 		createBlock("block4", glm::vec3(-50, -20.3, -0.6));
 		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
-		//block->object->SetVisible(false);
 
-		/* creating ParticleNode */
-		SceneNode *dra = createSceneNode("dragonFlyParticleInstance", "dragonFlyParticle", "ExplosionMaterial", "");
-		world->AddChild(dra);
-		//dra->SetBlending(true);
-		dra->SetScale(glm::vec3(40, 40, 40));
-		dragonFlyParticle = new ParticleNode(dra);
+		
 
-		SceneNode *spi = createSceneNode("spiderParticleInstance", "spiderParticle", "deathMaterial", "");
-		world->AddChild(spi);
-		//spi->SetBlending(true);
-		spi->SetScale(glm::vec3(0.02, 0.02, 0.02));
-		spiderParticle = new ParticleNode(spi);
-
-		/*SceneNode *hum = createSceneNode("humanParticleInstance", "humanParticle", "ExplosionMaterial", "");
-		world->AddChild(hum);
-		//hum->SetBlending(true);
-		hum->SetScale(glm::vec3(1, 1, 1));
-		humanParticle = new ParticleNode(hum);*/
-
-		SceneNode *fly = createSceneNode("flyParticleInstance", "flyParticle", "ExplosionMaterial", "");
-		world->AddChild(fly);
-		//fly->SetBlending(true);
-		fly->SetScale(glm::vec3(1, 1, 1));
-		flyParticle = new ParticleNode(fly);
+		/* setting blending to false becuz we cannot see that clearly */
+		//dragonFlyParticle->getParticle()->SetBlending(false);
+		//spiderParticle->getParticle()->SetBlending(false);
+		//humanParticle->getParticle()>SetBlending(false);
+		//flyParticle->getParticle()->SetBlending(false);
 
 		environment = new Environment();
 		room = createRoom("Room1");
 		room2 = createRoom("Room2");
 		environment->addRoom(room);
 		environment->addRoom(room2);
+
+		
 
 		SceneNode *room2Floor = room2->getFloor();
 		room2Floor->Translate(glm::vec3(0, 0, -600));
@@ -357,6 +340,9 @@ namespace game
 				/* CHECK THE PARTICLE SYSTEM TIME */
 				dragonFlyParticle->update();
 				spiderParticle->update();
+				humanParticle->update();
+				flyParticle->update();
+				humanParticle2->update();
 
 				/* UPDATE */
 				// Check distances before updating
@@ -424,6 +410,8 @@ namespace game
 				{
 					if (humans[k]->health <= 0)
 					{
+						humanParticle->startAnimate(humans[k]->body->getAbsolutePosition(), humans[k]->body->getAbsoluteOrientation(), 5);
+						humanParticle2->startAnimate(humans[k]->body->getAbsolutePosition(), humans[k]->body->getAbsoluteOrientation(), 4);
 						humans[k]->body->del = true;				// Delete node from sceneGraph
 						humans[k]->leftLeg->del = true;				// Delete node from sceneGraph
 						humans[k]->leftHand->del = true;			// Delete node from sceneGraph
@@ -466,7 +454,6 @@ namespace game
 
 	void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-
 		// Get user data with a pointer to the game class
 		void* ptr = glfwGetWindowUserPointer(window);
 		Game* game = (Game *)ptr;
@@ -483,7 +470,7 @@ namespace game
 					// Drag add alittle to the bounding box for the block we want to drag
 					if (game->player->collision(game->blocks[i]->object, game->blocks[i]->offset, game->blocks[i]->boundingRadius + 1.f))
 					{
-						//std::cout << "dragging" << std::endl;
+						std::cout << "dragging" << std::endl;
 						game->world->RemoveChild(game->blocks[i]->object);
 						game->player->myBlock = game->blocks[i];
 						game->player->myBlock->beingDragged = true;
@@ -495,7 +482,7 @@ namespace game
 			// Drop
 			else
 			{
-				//std::cout << "dropping" << std::endl;
+				std::cout << "dropping" << std::endl;
 				game->player->myBlock->beingDragged = false;
 				game->player->body->RemoveChild(game->player->myBlock->object);
 				game->player->myBlock->object->SetPosition(game->player->myBlock->object->getPrevAbsolutePosition());
@@ -546,6 +533,12 @@ namespace game
 		{
 			if (player->fireRate <= 0)
 			{
+				ParticleNode *particle = createParticle("rocketParticle1", "ConeParticle", "bulletMaterial", "", glm::vec3(1, 1, 1));
+				//particle->getParticle()->SetBlending(false);
+				particle->startAnimate(target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
+				particle->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
+				player->rockets_particles.push_back(particle);
+
 				player->rockets.push_back(createRocket("Rocket1", target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsolutePosition()));
 				player->fireRate = player->maxFireRate;
 			}
@@ -668,13 +661,13 @@ namespace game
 	// CREATE HUMAN
 	Human* Game::createHuman(std::string entity_name, glm::vec3 pos)
 	{
-		//SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
-		//SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
-		//SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
-		//SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
-		//SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
-		
-		SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyParticle", "FireMaterial", "Flame"); 
+		SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
+		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
+		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
+		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
+		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
+
+		/*SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyParticle", "FireMaterial", "Flame");
 		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftParticle", "FireMaterial", "Flame");
 		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightParticle", "FireMaterial", "Flame");
 		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegParticle", "FireMaterial", "Flame");
@@ -683,7 +676,7 @@ namespace game
 		humanLeftHand->SetBlending(true);
 		humanRightHand->SetBlending(true);
 		humanLeftLeg->SetBlending(true);
-		humanRightLeg->SetBlending(true);
+		humanRightLeg->SetBlending(true);*/
 
 		// Setup Heirarchy
 		world->AddChild(humanBody);
@@ -693,7 +686,7 @@ namespace game
 		humanBody->AddChild(humanRightLeg);
 
 		// Setup part scale
-		humanBody->SetScale (glm::vec3(1, 1, 1));
+		humanBody->SetScale(glm::vec3(1, 1, 1));
 		humanLeftHand->SetScale(glm::vec3(1, 1, 1));
 		humanRightHand->SetScale(glm::vec3(1, 1, 1));
 		humanLeftLeg->SetScale(glm::vec3(1, 1, 1));
@@ -845,6 +838,16 @@ namespace game
 		return myRoom;
 	}
 
+	// Function to create a new ParticleNode
+	ParticleNode *Game::createParticle(std::string entity_name, std::string geometry, std::string material, std::string texture, glm::vec3 scale)
+	{
+		SceneNode *particle = createSceneNode(entity_name, geometry, material, texture);
+		world->AppendChild(particle);
+		particle->SetScale(scale);
+		particle->SetBlending(true);
+		return new ParticleNode(particle);
+	}
+
 	// Function to create a new SceneNode
 	SceneNode* Game::createSceneNode(std::string entity_name, std::string geometryName, std::string materialName, std::string textureName )
 	{
@@ -899,6 +902,7 @@ namespace game
 		{
 			if (rockets[i]->collision(player->body, player->offset, player->boundingRadius))
 			{
+
 				rockets[i]->node->del = true;
 				rockets.erase(rockets.begin() + i);
 				i--;
@@ -1051,6 +1055,7 @@ namespace game
 		{
 			if (room->collision(rockets[k]->node, rockets[k]->boundingRadius, rockets[k]->offset, &norm))
 			{
+				rockets[k]->node->del = true;
 				rockets.erase(rockets.begin() + k);
 				k--;
 			}
@@ -1061,6 +1066,7 @@ namespace game
 		{
 			if (room->collision(webs[w]->node, webs[w]->boundingRadius, webs[w]->offset, &norm))
 			{
+				webs[w]->node->del = true;
 				webs.erase(webs.begin() + w);
 				w--;
 			}

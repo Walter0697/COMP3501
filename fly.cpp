@@ -54,12 +54,24 @@ namespace game
 		for (int i = 0; i < rockets.size(); i++)
 		{
 			// when timer is 0 delete the rocket
-			if (rockets[i]->timer <= 0) 
-			{ 
+			if (rockets[i]->timer <= 0)
+			{
 				rockets[i]->node->del = true;
-				rockets.erase(rockets.begin() + i); 
 			}
-			else { rockets[i]->update(); }
+			else {
+				rockets[i]->update();
+			}
+
+			if (rockets[i]->node->del)
+			{
+				rockets_particles[i]->deleteNode();
+				rockets_particles.erase(rockets_particles.begin() + i);
+				rockets.erase(rockets.begin() + i);
+			}
+			else
+			{
+				rockets_particles[i]->updatePosition(rockets[i]->node->getAbsolutePosition());
+			}
 		}
 	}
 

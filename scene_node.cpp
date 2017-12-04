@@ -102,6 +102,12 @@ namespace game
 		node->parent_ = this;
 	}
 
+	void SceneNode::AppendChild(SceneNode *node)
+	{
+		children_.insert(children_.begin(), node);
+		node->parent_ = this;
+	}
+
 	/* Removing a child */
 	void SceneNode::RemoveChild(SceneNode *node)
 	{
@@ -143,8 +149,9 @@ namespace game
 		// Select blending or not
 		if (blending_) {
 			// Disable z-buffer
-			glDisable(GL_DEPTH_TEST);
-
+			//glDisable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
+			
 			// Enable blending
 			glEnable(GL_BLEND);
 			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Simpler form

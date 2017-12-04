@@ -14,6 +14,9 @@ namespace game
 
 		void update(void);
 		void startAnimate(glm::vec3 position, glm::quat orientation, double duration);
+		void updatePosition(glm::vec3 position);
+		SceneNode *getParticle(void);
+		void deleteNode(void);
 
 	private:
 		double timer;

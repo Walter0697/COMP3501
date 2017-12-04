@@ -10,7 +10,7 @@ namespace game
 		lastUpdate = -1;								// Previous update time
 		updateTime = 0.5;								// Update time
 		state = 0;										// State in game Machine 
-		speed = 1;									// Speed of dragon fly
+		speed = 0.2;									// Speed of dragon fly
 		fireRate = 0;									// Fire rate of dragonfly shots 
 		maxFireRate = 150;								// maxFireRate of dragonfly
 		maxHealth = 20;									// Max health 

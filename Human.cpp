@@ -14,7 +14,7 @@ namespace game
 		speed = 0.3;									// Human speed of movement
 		fireRate = 0;									// Human fireRate 
 		maxFireRate = 60;								// Human maxFireRate
-		maxHealth = 1000;									// Max health
+		maxHealth = 30;									// Max health
 		health = maxHealth;								// Health
 		firing = false;									// Controls if the enemy is shooting
 		shotTimer = -1.f;								

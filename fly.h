@@ -20,6 +20,7 @@
 #include "Rocket.h"
 #include "Character.h"
 #include "Block.h"
+#include "particleNode.h"
 
 // FLIES ARE COLLIDABLES AND CHARACTERS
 namespace game 
@@ -30,6 +31,7 @@ namespace game
 		Fly(SceneNode*,SceneNode*,SceneNode*);
 		~Fly();
 
+		std::vector<ParticleNode *> rockets_particles;
 		std::vector<Rocket*> rockets; //store the rockets
 
 		SceneNode* body;

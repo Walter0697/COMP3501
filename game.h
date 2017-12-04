@@ -58,12 +58,16 @@ namespace game
             Camera camera_;					// Camera abstraction
             bool animating_;				// Flag to turn animation on/off
 
-
-
 			CameraNode* camNode;
 			Fly* player;									// Player fly
 			SceneNode* target;								// Target for shooting
 			SceneNode* world;								// Dummy for root of the heirarchy
+			Human* human;									// human enemy
+			Spider* spider;									// Spider enemy
+			DragonFly* dragonFly;							// Dragon fly enemy
+
+			//Block* block;									// Draggable block
+			std::vector<Block*> blocks;						// list of draggable objs
 
 			Environment* environment;						// Environment
 			Room* room;										// A room
@@ -73,6 +77,7 @@ namespace game
 			ParticleNode *flyParticle;
 			ParticleNode *humanParticle;
 			ParticleNode *spiderParticle;
+			ParticleNode *humanParticle2;
 
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
@@ -80,10 +85,6 @@ namespace game
 			std::vector<DragonFly*> dragonFlies;			// All dragonflies
 			std::vector<Human*> humans;						// All humans
 			std::vector<Spider*> spiders;					// All Spiders
-
-			std::vector<Block*> blocks;									// list of draggable objs
-
-
 			// STORE COLLIDABLES OR SMTHG
 
             // Methods to initialize the game
@@ -102,7 +103,7 @@ namespace game
 			void environmentCollision();																	// All Environment Collision detection
 			void enemiesCollision();																		// Player collisions
 			void blocksCollision();																			// collision detection for the blocks
-
+			
 			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
 			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);							// Create a rocket instance
 			Web* createWeb(std::string, glm::vec3 direction, glm::vec3 pos);								// Create a web instance
@@ -113,6 +114,7 @@ namespace game
 			DragonFly* createDragonFly(std::string entity_name, glm::vec3 pos);											// Create a dragonfly instance
 			//JUST FOR DECORATION SO NO NEED TO CREATE CLASS FOR THIS IMO
 			SceneNode* createSky();
+			ParticleNode* createParticle(std::string entity_name, std::string geometry, std::string material, std::string texture, glm::vec3 scale);
 
 			Block* createBlock(std::string entity_name, glm::vec3 pos);
 

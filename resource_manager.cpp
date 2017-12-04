@@ -1680,7 +1680,7 @@ void ResourceManager::CreateConeParticles(std::string object_name, int num_parti
 		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
 
 															// Define the normal and point based on theta, phi and the spray
-		glm::vec3 normal(spray*cos(theta)*sin(phi), 5.0, spray*cos(phi));
+		glm::vec3 normal(spray*cos(theta)*sin(phi), 0.8, spray*cos(phi));
 		glm::vec3 position(normal.x*trad, normal.y*trad, normal.z*trad);
 		glm::vec3 color;
 		if (input_color.b == -1)
