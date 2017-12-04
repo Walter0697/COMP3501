@@ -121,7 +121,7 @@ namespace game
 
 			Block* createBlock(std::string entity_name, glm::vec3 pos);
 
-			Room* createRoom(std::string entity_name);
+			Room* createRoom(std::string entity_name, int);
 
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator
 	}; // class Game

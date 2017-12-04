@@ -309,8 +309,8 @@ namespace game
 		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
 
 		environment = new Environment();
-		room = createRoom("Room1");
-		room2 = createRoom("Room2");
+		room = createRoom("Room1", 0);
+		room2 = createRoom("Room2", 1);
 		environment->addRoom(room);
 		environment->addRoom(room2);
 
@@ -793,7 +793,7 @@ namespace game
 	}
 
 	//GENERALIZE THIS FUNCTION
-	Room* Game::createRoom(std::string entity_name)
+	Room* Game::createRoom(std::string entity_name, int direction)
 	{
 		Room* myRoom = new Room();
 		float dimensionsWalls = 300; // wall dimensions
@@ -823,7 +823,12 @@ namespace game
 		glm::vec3 pos1 = wall->GetPosition();
 
 		//z-axis is the normal of this plane and size is 600x600
-		Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 600);
+		//Wall* myWall1 = new Wall(wall , glm::vec3(0 , 0 , 1), 600, 600);
+		Wall* myWall1;
+		if (direction == 0)
+			myWall1 = new Wall(wall, glm::vec3(0, 0, 1), 600, 600);
+		else
+			myWall1 = new Wall(wall, glm::vec3(0, 0, -1), 600, 600);
 		myRoom->addWall(myWall1);
 		
 		meshname = std::string(entity_name) + std::string("wall2");
@@ -837,7 +842,11 @@ namespace game
 		glm::vec3 pos2 = wall2->GetPosition();
 
 		//-x-axis is the normal of this plane size is 600x600
-		Wall* myWall2 = new Wall(wall2, glm::vec3(-1, 0, 0), 600, 600);
+		Wall* myWall2;
+		if (direction == 0)
+			myWall2 = new Wall(wall2, glm::vec3(-1, 0, 0), 600, 600);
+		else
+			myWall2 = new Wall(wall2, glm::vec3(1, 0, 0), 600, 600);
 		myRoom->addWall(myWall2);
 		
 		meshname = std::string(entity_name) + std::string("wall3");
@@ -851,7 +860,11 @@ namespace game
 		glm::vec3 pos3 = wall3->GetPosition();
 
 		//x-axis is the normal of this plane and size 600x600
-		Wall* myWall3 = new Wall(wall3, glm::vec3(1, 0, 0), 600, 600);
+		Wall* myWall3;
+		if (direction == 0)
+			myWall3 = new Wall(wall3, glm::vec3(1, 0, 0), 600, 600);
+		else
+			myWall3 = new Wall(wall3, glm::vec3(-1, 0, 0), 600, 600);
 		myRoom->addWall(myWall3);
 		
 		meshname = std::string(entity_name) + std::string("wall4");
@@ -864,7 +877,11 @@ namespace game
 		glm::vec3 pos4 = wall4->GetPosition();
 
 		//-z-axis is the normal of this plane and size is 600x600
-		Wall* myWall4 = new Wall(wall4, glm::vec3(0, 0, -1), 600, 600);
+		Wall* myWall4;
+		if (direction == 0)
+			myWall4 = new Wall(wall4, glm::vec3(0, 0, -1), 600, 600);
+		else
+			myWall4 = new Wall(wall4, glm::vec3(0, 0, 1), 600, 600);
 		myRoom->addWall(myWall4);
 
 		myRoom->SetFloor(floor);
@@ -1084,7 +1101,7 @@ namespace game
 		// BLOCK ROOM COLLISION DETECTION 
 		for (int i = 0; i < blocks.size(); i++)
 		{
-			if (room->collision(blocks[i]->object, blocks[i]->boundingRadius, blocks[i]->offset, &norm))
+			if (environment->collision(blocks[i]->object, blocks[i]->boundingRadius, blocks[i]->offset, &norm))
 			{
 				if (norm == glm::vec3(0, 1, 0)) { blocks[i]->onFloor = true; }
 			}
@@ -1094,7 +1111,7 @@ namespace game
 		// PROJECTILES ROOM COLLISION DETECTION 
 		for (int k = 0; k < rockets.size(); k++)
 		{
-			if (room->collision(rockets[k]->node, rockets[k]->boundingRadius, rockets[k]->offset, &norm))
+			if (environment->collision(rockets[k]->node, rockets[k]->boundingRadius, rockets[k]->offset, &norm))
 			{
 				rockets[k]->node->del = true;
 				rockets.erase(rockets.begin() + k);
@@ -1105,7 +1122,7 @@ namespace game
 		// WEBS ROOM COLLISION 
 		for (int w = 0; w < webs.size(); w++)
 		{
-			if (room->collision(webs[w]->node, webs[w]->boundingRadius, webs[w]->offset, &norm))
+			if (environment->collision(webs[w]->node, webs[w]->boundingRadius, webs[w]->offset, &norm))
 			{
 				webs[w]->webParticle->deleteNode();
 				webs[w]->node->del = true;
@@ -1114,7 +1131,7 @@ namespace game
 			}
 		}
 
-		if (room->collision(player->body, player->boundingRadius, player->offset, &norm))
+		if (environment->collision(player->body, player->boundingRadius, player->offset, &norm))
 		{
 			camera_.Translate(norm * 4.f * player->speed);
 		}
@@ -1123,7 +1140,7 @@ namespace game
 		// DRAGONFLIES AND WALLS COLLISION 
 		for (int i = 0; i < dragonFlies.size(); i++)
 		{
-			if (room->collision(dragonFlies[i]->body, dragonFlies[i]->boundingRadius, dragonFlies[i]->offset, &norm))
+			if (environment->collision(dragonFlies[i]->body, dragonFlies[i]->boundingRadius, dragonFlies[i]->offset, &norm))
 			{
 				dragonFlies[i]->body->Translate(norm * 2.f * dragonFlies[i]->speed);
 			}
@@ -1132,7 +1149,7 @@ namespace game
 		// SPIDERS WALL COLLISION 
 		for (int j = 0; j < spiders.size(); j++)
 		{
-			if (room->collision(spiders[j]->body, spiders[j]->boundingRadius, spiders[j]->offset, &norm))
+			if (environment->collision(spiders[j]->body, spiders[j]->boundingRadius, spiders[j]->offset, &norm))
 			{
 				if (norm == glm::vec3(0, 1, 0)) { spiders[j]->onFloor = true; }
 				else { spiders[j]->onFloor = false; }
@@ -1143,8 +1160,8 @@ namespace game
 		// HUMANS WALL COLLISION 
 		for (int h = 0; h < humans.size(); h++)
 		{
-			if (room->collision(humans[h]->body, humans[h]->boundingRadius, humans[h]->offset, &norm)
-				|| room->collision(humans[h]->body, humans[h]->boundingRadius, humans[h]->offset + humans[h]->boundingRadius, &norm))
+			if (environment->collision(humans[h]->body, humans[h]->boundingRadius, humans[h]->offset, &norm)
+				|| environment->collision(humans[h]->body, humans[h]->boundingRadius, humans[h]->offset + humans[h]->boundingRadius, &norm))
 			{
 				if (norm == glm::vec3(0, 1, 0)) { humans[h]->onFloor = true; }
 				else { humans[h]->onFloor = false; }
