@@ -6,14 +6,15 @@
 namespace game
 {
 	/* Constructor */
-	Web::Web(SceneNode* node, glm::vec3 direction)
+	Web::Web(SceneNode* node, ParticleNode *particle, glm::vec3 direction)
 	{
-		offset = 0.0;
+		offset = 1.0;
+		webParticle = particle;
 		this->node = node;		 						 // SceneNode for Web
 		this->direction = glm::normalize(direction);	 // Direction of the Web
-		this->speed = 0.8;								 // Speed of the Web
+		this->speed = 0.5;								 // Speed of the Web
 		this->timer = 300;			                     // Timer for lifespan of web
-		boundingRadius = 0.1;
+		boundingRadius = 0.5;
 	}
 
 	/* Destructor */

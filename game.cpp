@@ -57,7 +57,7 @@ namespace game
 
 		// Set variables
 		animating_ = true;
-		gamestart_ = true;
+		gamestart_ = false;
 		world = new SceneNode("world", 0, 0, 0);	// Dummy Node
 		scene_.SetRoot(world);						// Set dummy as Root of Heirarchy
 		world->AddChild(camNode);					// Set the camera as a child of the world
@@ -125,7 +125,7 @@ namespace game
 		resman_.CreateCylinder("targetMesh", 0.1, 0.6, 0.35, 4, 4, glm::vec3(1,0,0));
 		resman_.CreateCube("CubeMesh");
 		resman_.CreateSphereParticles("SphereParticle");
-		resman_.CreateTorusParticles("TorusParticle");
+		resman_.CreateTorusParticles("TorusParticle", 20000, 0.002, 0.002);
 		resman_.CreateConeParticles("ConeParticle");
 		resman_.CreateControlPoints("ControlPoints", 64);
 
@@ -220,6 +220,10 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/flame4x4orig.png");
 		resman_.LoadResource(Texture, "Flame", filename.c_str());
 
+		// MENU TEXTURE 
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/menuscreen.jpg");
+		resman_.LoadResource(Texture, "menuTex", filename.c_str());
+
 		/* GEOMETRIES */
 
 		// HUMAN BODY LEFT AND RIGHT HANDS AND LEGS
@@ -265,8 +269,15 @@ namespace game
 	void Game::SetupScene(void)
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
-																							/* creating ParticleNode */
 
+		/* Menu Screen */
+		menuNode = createSceneNode("menuInstance", "wallMesh", "textureMaterial", "menuTex");
+		menuNode->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 0, 0)));
+		menuNode->SetPosition(camera_.GetPosition());
+		menuNode->Translate(glm::vec3(0, 0, -1.3));
+		world->AddChild(menuNode);
+		
+		/* creating ParticleNode */
 		dragonFlyParticle = createParticle("dragonFlyParticleInstance", "dragonFlyParticle", "ExplosionMaterial", "", glm::vec3(40, 40, 40));
 		spiderParticle = createParticle("spiderParticleInstance", "spiderParticle", "deathMaterial", "", glm::vec3(0.02, 0.02, 0.02));
 		humanParticle = createParticle("humanParticleInstance", "humanParticle", "FireMaterial", "Flame", glm::vec3(1, 1, 1));
@@ -274,6 +285,7 @@ namespace game
 		humanParticle2 = createParticle("humanParticleInstance2", "humanParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
 	
 		player = createFly("player");														// Create player
+		player->body->SetVisible(false);
 		target = createTarget("playerTarget");												// Create target for shooting
 		createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
 		createHuman("human2", glm::vec3(100, 0, -200));
@@ -296,19 +308,11 @@ namespace game
 		createBlock("block4", glm::vec3(-50, -20.3, -0.6));
 		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
 
-		/* setting blending to false becuz we cannot see that clearly */
-		//dragonFlyParticle->getParticle()->SetBlending(false);
-		//spiderParticle->getParticle()->SetBlending(false);
-		//humanParticle->getParticle()>SetBlending(false);
-		//flyParticle->getParticle()->SetBlending(false);
-
 		environment = new Environment();
 		room = createRoom("Room1");
 		room2 = createRoom("Room2");
 		environment->addRoom(room);
 		environment->addRoom(room2);
-
-		
 
 		SceneNode *room2Floor = room2->getFloor();
 		room2Floor->Translate(glm::vec3(0, 0, -600));
@@ -406,19 +410,6 @@ namespace game
 					}
 				}
 
-				for (int j = 0; j < webs.size(); j++)
-				{
-					if (webs[j]->node->del)
-					{
-						mo_is_retarded[j]->deleteNode();
-						mo_is_retarded.erase(mo_is_retarded.begin() + j);
-					}
-					else
-					{
-						mo_is_retarded[j]->updatePosition(webs[j]->node->getAbsolutePosition());
-					}
-				}
-
 				for (int k = 0; k < humans.size(); k++)
 				{
 					if (humans[k]->health <= 0)
@@ -448,6 +439,14 @@ namespace game
 					blocks[i]->update();
 				}
 
+				//UPDATE PARTICLE SYSTEM
+				for (int i = 0; i < webs.size(); i++)
+				{
+					if (!webs[i]->node->del)
+					{
+						webs[i]->webParticle->updatePosition(webs[i]->node->getAbsolutePosition());
+					}
+				}
 				
 			}	
 
@@ -473,36 +472,40 @@ namespace game
 		void* ptr = glfwGetWindowUserPointer(window);
 		Game* game = (Game *)ptr;
 
-		// Quit game if ESC button is pressed
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-
-		if (key == GLFW_KEY_G && action == GLFW_PRESS)
+		if (game->gamestart_)
 		{
-			if (game->player->myBlock == NULL)
+
+			// Quit game if ESC button is pressed
+			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+
+			if (key == GLFW_KEY_G && action == GLFW_PRESS)
 			{
-				for (int i = 0; i < game->blocks.size(); i++)
+				if (game->player->myBlock == NULL)
 				{
-					// Drag add alittle to the bounding box for the block we want to drag
-					if (game->player->collision(game->blocks[i]->object, game->blocks[i]->offset, game->blocks[i]->boundingRadius + 1.f))
+					for (int i = 0; i < game->blocks.size(); i++)
 					{
-						std::cout << "dragging" << std::endl;
-						game->world->RemoveChild(game->blocks[i]->object);
-						game->player->myBlock = game->blocks[i];
-						game->player->myBlock->beingDragged = true;
-						game->blocks[i]->object->SetPosition(game->player->body->GetPosition() + (glm::vec3(0, -0.8, 0)));
-						game->player->body->AddChild(game->blocks[i]->object);
+						// Drag add alittle to the bounding box for the block we want to drag
+						if (game->player->collision(game->blocks[i]->object, game->blocks[i]->offset, game->blocks[i]->boundingRadius + 1.f))
+						{
+							std::cout << "dragging" << std::endl;
+							game->world->RemoveChild(game->blocks[i]->object);
+							game->player->myBlock = game->blocks[i];
+							game->player->myBlock->beingDragged = true;
+							game->blocks[i]->object->SetPosition(game->player->body->GetPosition() + (glm::vec3(0, -0.8, 0)));
+							game->player->body->AddChild(game->blocks[i]->object);
+						}
 					}
 				}
-			}
-			// Drop
-			else
-			{
-				std::cout << "dropping" << std::endl;
-				game->player->myBlock->beingDragged = false;
-				game->player->body->RemoveChild(game->player->myBlock->object);
-				game->player->myBlock->object->SetPosition(game->player->myBlock->object->getPrevAbsolutePosition());
-				game->world->AddChild(game->player->myBlock->object);
-				game->player->myBlock = 0;
+				// Drop
+				else
+				{
+					std::cout << "dropping" << std::endl;
+					game->player->myBlock->beingDragged = false;
+					game->player->body->RemoveChild(game->player->myBlock->object);
+					game->player->myBlock->object->SetPosition(game->player->myBlock->object->getPrevAbsolutePosition());
+					game->world->AddChild(game->player->myBlock->object);
+					game->player->myBlock = 0;
+				}
 			}
 		}
 	}
@@ -520,42 +523,54 @@ namespace game
 	// CHECKING WHETHER A BUTTON IS HELD DOWN OR NOT IS AN ISSUE???????? WITH THE CHECK INPUT FUNCTION
 	void Game::checkInput()
 	{
-		// View control
-		float rot_factor(glm::pi<float>() / 360);
-
-		// Move camera up, down, and to the sides
-		if (glfwGetKey(window_, GLFW_KEY_UP)) { camera_.Pitch(rot_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_DOWN)) { camera_.Pitch(-rot_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_LEFT)) { camera_.Yaw(rot_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_RIGHT)) { camera_.Yaw(-rot_factor); }
-
-		// Forward backward and side movements
-		if (glfwGetKey(window_, GLFW_KEY_W)) { camera_.Translate(camera_.GetForward() * player->speed); }
-		if (glfwGetKey(window_, GLFW_KEY_S)) { camera_.Translate(-camera_.GetForward() * player->speed); }
-		if (glfwGetKey(window_, GLFW_KEY_A)) { camera_.Translate(-camera_.GetSide() * player->speed); }
-		if (glfwGetKey(window_, GLFW_KEY_D)) { camera_.Translate(camera_.GetSide() * player->speed); }
-
-		// Roll camera
-		if (glfwGetKey(window_, GLFW_KEY_Z)) { camera_.Roll(-rot_factor); }
-		if (glfwGetKey(window_, GLFW_KEY_C)) { camera_.Roll(rot_factor); }
-
-		// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
-		if (glfwGetKey(window_, GLFW_KEY_Q)) { camera_.Translate(camera_.GetUp() * player->speed); }
-		if (glfwGetKey(window_, GLFW_KEY_E)) { camera_.Translate(-camera_.GetUp() * player->speed); }
-
-		// Shoot a rocket
-		if (glfwGetKey(window_ , GLFW_KEY_SPACE))
+		if (gamestart_)
 		{
-			if (player->fireRate <= 0)
-			{
-				ParticleNode *particle = createParticle("rocketParticle1", "ConeParticle", "bulletMaterial", "", glm::vec3(1, 1, 1));
-				//particle->getParticle()->SetBlending(false);
-				particle->startAnimate(target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
-				particle->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
-				player->rockets_particles.push_back(particle);
+			// View control
+			float rot_factor(glm::pi<float>() / 360);
 
-				player->rockets.push_back(createRocket("Rocket1", target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsolutePosition()));
-				player->fireRate = player->maxFireRate;
+			// Move camera up, down, and to the sides
+			if (glfwGetKey(window_, GLFW_KEY_UP)) { camera_.Pitch(rot_factor); }
+			if (glfwGetKey(window_, GLFW_KEY_DOWN)) { camera_.Pitch(-rot_factor); }
+			if (glfwGetKey(window_, GLFW_KEY_LEFT)) { camera_.Yaw(rot_factor); }
+			if (glfwGetKey(window_, GLFW_KEY_RIGHT)) { camera_.Yaw(-rot_factor); }
+
+			// Forward backward and side movements
+			if (glfwGetKey(window_, GLFW_KEY_W)) { camera_.Translate(camera_.GetForward() * player->speed); }
+			if (glfwGetKey(window_, GLFW_KEY_S)) { camera_.Translate(-camera_.GetForward() * player->speed); }
+			if (glfwGetKey(window_, GLFW_KEY_A)) { camera_.Translate(-camera_.GetSide() * player->speed); }
+			if (glfwGetKey(window_, GLFW_KEY_D)) { camera_.Translate(camera_.GetSide() * player->speed); }
+
+			// Roll camera
+			if (glfwGetKey(window_, GLFW_KEY_Z)) { camera_.Roll(-rot_factor); }
+			if (glfwGetKey(window_, GLFW_KEY_C)) { camera_.Roll(rot_factor); }
+
+			// TO BE CHANGED!!!!!!!!!!!!!! (movement up and down)
+			if (glfwGetKey(window_, GLFW_KEY_Q)) { camera_.Translate(camera_.GetUp() * player->speed); }
+			if (glfwGetKey(window_, GLFW_KEY_E)) { camera_.Translate(-camera_.GetUp() * player->speed); }
+
+			// Shoot a rocket
+			if (glfwGetKey(window_, GLFW_KEY_SPACE))
+			{
+				if (player->fireRate <= 0)
+				{
+					ParticleNode *particle = createParticle("rocketParticle1", "ConeParticle", "bulletMaterial", "", glm::vec3(1, 1, 1));
+					//particle->getParticle()->SetBlending(false);
+					particle->startAnimate(target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
+					particle->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0)));
+					player->rockets_particles.push_back(particle);
+
+					player->rockets.push_back(createRocket("Rocket1", target->getAbsolutePosition() - player->body->getAbsolutePosition(), player->body->getAbsolutePosition()));
+					player->fireRate = player->maxFireRate;
+				}
+			}
+		}
+		else
+		{
+			if (glfwGetKey(window_, GLFW_KEY_SPACE))
+			{
+				gamestart_ = true;
+				menuNode->SetVisible(false);
+				player->body->SetVisible(true);
 			}
 		}
 	}
@@ -748,16 +763,16 @@ namespace game
 		webNode->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
 		webNode->SetPosition(pos + 2.f * glm::normalize(direction));
 
-		ParticleNode* webParticle = createParticle(entity_name + "Particle", "TorusParticle", "splineMaterial", "", glm::vec3(1, 1, 1));
+		ParticleNode* webParticle = createParticle(entity_name + "Particle", "TorusParticle", "splineMaterial", "", glm::vec3(0.2, 0.2, 0.2));
 		Resource *cp = resman_.GetResource("ControlPoints");
 		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
 		webParticle->startAnimate(pos + 2.f * glm::normalize(direction), player->body->getAbsoluteOrientation(), 999);
 		webParticle->getParticle()->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		mo_is_retarded.push_back(webParticle);
 
 		//add rockets for collision detection
-		Web* web = new Web(webNode, direction);
+		Web* web = new Web(webNode, webParticle, direction);
 		webs.push_back(web);
+
 
 		// Set the rocket node and the direction of the rocket
 		return web;
@@ -995,6 +1010,7 @@ namespace game
 			/* PLAYER COLLISION WITH WEBS */
 			if (webs[i]->collision(player->body, player->offset, player->boundingRadius))
 			{
+				webs[i]->webParticle->deleteNode();
 				webs[i]->node->del = true;
 				webs.erase(webs.begin() + i);
 				i--;
@@ -1011,6 +1027,7 @@ namespace game
 			{
 				if (!collided && webs[i]->collision(dragonFlies[j]->body, dragonFlies[j]->offset, dragonFlies[j]->boundingRadius))
 				{
+					webs[i]->webParticle->deleteNode();
 					webs[i]->node->del = true;
 					webs.erase(webs.begin() + i);
 					i--;
@@ -1029,6 +1046,7 @@ namespace game
 				if (!collided && (webs[i]->collision(humans[k]->body, humans[k]->offset, humans[k]->boundingRadius)
 					|| webs[i]->collision(humans[k]->body, humans[k]->boundingRadius + humans[k]->offset, humans[k]->boundingRadius)))
 				{
+					webs[i]->webParticle->deleteNode();
 					webs[i]->node->del = true;
 					webs.erase(webs.begin() + i);
 					i--;
@@ -1046,6 +1064,7 @@ namespace game
 			{
 				if (!collided && webs[i]->collision(spiders[l]->body, spiders[l]->offset, spiders[l]->boundingRadius))
 				{
+					webs[i]->webParticle->deleteNode();
 					webs[i]->node->del = true;
 					webs.erase(webs.begin() + i);
 					i--;
@@ -1088,6 +1107,7 @@ namespace game
 		{
 			if (room->collision(webs[w]->node, webs[w]->boundingRadius, webs[w]->offset, &norm))
 			{
+				webs[w]->webParticle->deleteNode();
 				webs[w]->node->del = true;
 				webs.erase(webs.begin() + w);
 				w--;

@@ -44,6 +44,6 @@ namespace game
 
 	void ParticleNode::deleteNode()
 	{
-		delete particle;
+		particle->del = true;
 	}
 }

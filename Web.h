@@ -12,6 +12,7 @@
 
 #include "scene_node.h"
 #include "Projectile.h"
+#include "particleNode.h"
 
 // Web 
 namespace game
@@ -19,10 +20,11 @@ namespace game
 	class Web : public Projectile
 	{
 	public:
-		Web(SceneNode*, glm::vec3);
+		Web(SceneNode*, ParticleNode*, glm::vec3);
 		~Web();
 
 		float boundingRadius;
+		ParticleNode *webParticle;
 
 		void update();							// update the position of the rocket
 		bool collision(SceneNode*, float, float);		// collision Detection

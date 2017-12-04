@@ -135,7 +135,7 @@ namespace game
 	/* Draw */
 	glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf)
 	{
-		if (!visible_) return glm::mat4();
+		if (!visible_) return parent_transf;
 		maintainChildren(); // Check children for deletion
 
 		// Set absolute position and orientation
