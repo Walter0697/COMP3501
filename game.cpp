@@ -408,7 +408,15 @@ namespace game
 						spiders[j]->updateTarget(player->body->getAbsolutePosition());
 						spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
 						spiders[j]->update();
-						if (spiders[j]->getFiring()) { spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition())); }
+						if (spiders[j]->getFiring()) { 
+							spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition())); 
+						}
+						/*
+						webParticle = createParticle("webParticleInstance", "TorusParticle", "splineMaterial", "", glm::vec3(1, 1, 1));
+		Resource *cp = resman_.GetResource("ControlPoints");
+		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
+		webParticle->startAnimate(player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
+		*/
 					}
 				}
 

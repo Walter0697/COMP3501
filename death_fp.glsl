@@ -8,7 +8,7 @@ in vec2 tex_coord;
 uniform sampler2D tex_samp;
 
 // Simulation parameters (constants)
-uniform vec3 object_color = vec3(0.2, 0.1, 0.8);
+uniform vec3 object_color = vec3(0.8, 0.2, 0.2);
 
 
 void main (void)
@@ -17,8 +17,9 @@ void main (void)
     vec4 outval = texture(tex_samp, tex_coord);
     // Adjust specified object color according to the grayscale texture value
 
-	outval = vec4(outval.r * object_color.r, outval.g * object_color.g, outval.b * object_color.b, sqrt(sqrt(outval.r))*frag_color.a);
-
-    // Set output fragment color
+	//outval = vec4(outval.r * object_color.r, outval.g * object_color.g, outval.b * object_color.b, sqrt(sqrt(outval.r))*frag_color.a);
+	outval = vec4(object_color.r, object_color.g, object_color.b, frag_color.a);
+    
+	// Set output fragment color
     gl_FragColor = outval;
 }

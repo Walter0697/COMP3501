@@ -10,7 +10,7 @@ namespace game
 
 		beingDragged = false;			// being dragged check
 		onFloor = false;				// onFloor check
-		gravity = -0.4f;				// gravity value
+		gravity = -0.8f;				// gravity value
 	}
 
 	Block::~Block() {}
