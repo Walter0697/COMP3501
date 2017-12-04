@@ -126,6 +126,7 @@ namespace game
 		resman_.CreateSphereParticles("SphereParticle");
 		resman_.CreateTorusParticles("TorusParticle");
 		resman_.CreateConeParticles("ConeParticle");
+		resman_.CreateControlPoints("ControlPoints", 64);
 
 		/* Loading Material for Particle System */
 		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/fire");
@@ -136,6 +137,8 @@ namespace game
 		resman_.LoadResource(Material, "deathMaterial", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/bullet");
 		resman_.LoadResource(Material, "bulletMaterial", filename.c_str());
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/spline");
+		resman_.LoadResource(Material, "splineMaterial", filename.c_str());
 
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanBody.obj");
 		resman_.LoadResource(PointSet, "humanBodyParticle", filename.c_str(), 200000);
@@ -268,7 +271,7 @@ namespace game
 		humanParticle = createParticle("humanParticleInstance", "humanParticle", "FireMaterial", "Flame", glm::vec3(1, 1, 1));
 		flyParticle = createParticle("flyParticleInstance", "flyParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
 		humanParticle2 = createParticle("humanParticleInstance2", "humanParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
-
+	
 		player = createFly("player");														// Create player
 		target = createTarget("playerTarget");												// Create target for shooting
 		createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
@@ -293,7 +296,10 @@ namespace game
 		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
 
 		
-
+		webParticle = createParticle("webParticleInstance", "TorusParticle", "splineMaterial", "", glm::vec3(1, 1, 1));
+		Resource *cp = resman_.GetResource("ControlPoints");
+		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
+		webParticle->startAnimate(player->body->getAbsolutePosition(), player->body->getAbsoluteOrientation(), 999);
 		/* setting blending to false becuz we cannot see that clearly */
 		//dragonFlyParticle->getParticle()->SetBlending(false);
 		//spiderParticle->getParticle()->SetBlending(false);

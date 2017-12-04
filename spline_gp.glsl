@@ -5,18 +5,19 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 // Attributes passed from the vertex shader
+// Particle id is not used here, but can be useful in modifications to the shader
+in float particle_id[]; 
 in vec4 particle_color[];
-in float particle_id[];
 
 // Uniform (global) buffer
 uniform mat4 projection_mat;
 
-// Simulation parameters (constants)
-float particle_size = 0.2;
-
 // Attributes passed to the fragment shader
-out vec4 frag_color;
 out vec2 tex_coord;
+out vec4 frag_color;
+
+// Simulation parameters (constants)
+float particle_size = 0.1;
 
 
 void main(void){
@@ -35,11 +36,10 @@ void main(void){
     v[3] = vec4(position.x + 0.5*particle_size, position.y + 0.5*particle_size, position.z, 1.0);
 
     // Create the new geometry: a quad with four vertices from the vector v
-    int fid = int(floor(1 * 4.0)); // 0-3 used to pick sector from flame 2x2 drawing
     for (int i = 0; i < 4; i++){
         gl_Position = projection_mat * v[i];
-        tex_coord = vec2(floor(i / 2)*0.5 + 0.5*(fid / 2), (i % 2)*0.5 + 0.5*(fid % 2));
-        frag_color = particle_color[0]; // Specify only blending value
+        tex_coord = vec2(floor(i / 2), i % 2);
+		frag_color = vec4(vec3(0, 0, 0), particle_color[0].a);
         EmitVertex();
      }
 
