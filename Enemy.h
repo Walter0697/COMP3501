@@ -43,6 +43,7 @@ namespace game
 			}
 		}
 
+		std::vector<Projectile*> projectiles;   //store the projectiles
 
 	private:
 	protected:
@@ -53,7 +54,6 @@ namespace game
 		time_t lastUpdate;
 		time_t updateTime;
 		int state;
-		std::vector<Projectile*> projectiles;   //store the projectiles
 		bool firing;
 		float shotTimer;
 		float fireRate;

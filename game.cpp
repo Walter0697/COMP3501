@@ -6,6 +6,9 @@
 #include "bin/path_config.h"
 
 // TO DO:
+// ASK ABOUT Z_ buffer
+// ASK ABOUT SPLINES 
+//
 // MAKE HUMAN MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
 // SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
 // REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -375,6 +378,7 @@ namespace game
 						dragonFlies[i]->leftWing->del = true;		// Delete node from sceneGraph
 						dragonFlies[i]->rightWing->del = true;		// Delete node from sceneGraph
 						dragonFlies[i]->legs->del = true;			// Delete node from sceneGraph
+						dragonFlies[i]->projectiles.clear();
 						delete dragonFlies[i];
 						dragonFlies.erase(dragonFlies.begin() + i); // Delete from dragonfly vector
 					}
@@ -396,6 +400,7 @@ namespace game
 						spiders[j]->body->del = true;			// Delete node from sceneGraph
 						spiders[j]->leftLeg->del = true;		// Delete node from sceneGraph
 						spiders[j]->rightLeg->del = true;		// Delete node from sceneGraph
+						spiders[j]->projectiles.clear();
 						delete spiders[j];
 						spiders.erase(spiders.begin() + j);		// Delete from spiders vector
 					}
@@ -1259,8 +1264,10 @@ namespace game
 			if (player->collision(humans[k]->body, humans[k]->offset, humans[k]->boundingRadius) ||
 				player->collision(humans[k]->body, humans[k]->offset + humans[k]->boundingRadius, humans[k]->boundingRadius))
 			{
+				std::cout << "human collision" << std::endl;
+				player->health -= 10;
 				glm::vec3 direc = glm::normalize(player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition());
-				camera_.Translate(player->speed * 3.f * direc);
+				camera_.Translate(player->speed * 10.f * direc);
 			}
 		}
 	}
