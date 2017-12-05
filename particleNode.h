@@ -12,8 +12,6 @@ namespace game
 		ParticleNode(SceneNode *);
 		~ParticleNode();
 
-		bool shouldDisappear;
-
 		void update(void);
 		void startAnimate(glm::vec3 position, glm::quat orientation, double duration);
 		void updatePosition(glm::vec3 position);

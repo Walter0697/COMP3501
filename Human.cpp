@@ -11,10 +11,10 @@ namespace game
 		lastUpdate = -1;								// Last update time
 		updateTime = 0.5;								// Update time
 		state = 0;										// State in state machine 
-		speed = 0.3;									// Human speed of movement
+		speed = 0.6;									// Human speed of movement
 		fireRate = 0;									// Human fireRate 
 		maxFireRate = 60;								// Human maxFireRate
-		maxHealth = 30;									// Max health
+		maxHealth = 1000;									// Max health
 		health = maxHealth;								// Health
 		firing = false;									// Controls if the enemy is shooting
 		shotTimer = -1.f;								
@@ -51,13 +51,14 @@ namespace game
 		}
 
 		if (state == 0) {} //Idle
-		else if (state == 1) 
+		else if (state == 1 || state == 3) 
 		{
 			//Move to player
 			body->Translate(glm::vec3(direction.x, 0, direction.z) * speed);
 		}
 		else if (state == 2) 
 		{ 
+			/*
 			//Attack
 			if (fireRate <= 0)
 			{
@@ -65,8 +66,9 @@ namespace game
 				fireRate = maxFireRate;
 			}
 			else { state = 0; }
+			*/
+
 		}
-		else if (state == 3) {} //Patrol
 		else { std::cout << "Invalid state in Human" << std::endl; }
 
 		// Check rockets when timer is 0 delete the rocket

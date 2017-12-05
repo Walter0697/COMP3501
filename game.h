@@ -80,10 +80,7 @@ namespace game
 			ParticleNode *flyParticle;
 			ParticleNode *humanParticle;
 			ParticleNode *spiderParticle;
-			ParticleNode *humanParticleRing;
-
-			ParticleNode *ringParticle1;
-			ParticleNode *ringParticle2;
+			ParticleNode *humanParticle2;
 
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs
@@ -104,6 +101,7 @@ namespace game
             static void ResizeCallback(GLFWwindow* window, int width, int height);
 			
 			void checkInput();
+			void update();
 			void gameCollisionDetection();																	// All game collision detection
 			void projectileCollision();																		// All Projectile Collision detection
 			void environmentCollision();																	// All Environment Collision detection
