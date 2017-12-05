@@ -289,7 +289,7 @@ namespace game
 		spiderParticle = createParticle("spiderParticleInstance", "spiderParticle", "deathMaterial", "", glm::vec3(0.02, 0.02, 0.02));
 		humanParticle = createParticle("humanParticleInstance", "humanParticle", "FireMaterial", "Flame", glm::vec3(1, 1, 1));
 		flyParticle = createParticle("flyParticleInstance", "flyParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
-		humanParticleRing = createParticle("humanParticleInstance2", "humanParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
+		humanParticleRing = createParticle("humanParticleInstance2", "humanParticle", "ringMaterial", "", glm::vec3(1, 1, 1));
 		ringParticle1 = createParticle("ringInstance1", "RingParticle", "ringMaterial", "", glm::vec3(0.5, 0.5, 0.5));
 		ringParticle2 = createParticle("ringInstance2", "RingParticle", "ringMaterial", "", glm::vec3(0.5, 0.5, 0.5));
 		

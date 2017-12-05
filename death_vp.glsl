@@ -52,6 +52,6 @@ void main()
     gl_Position = view_mat * position;
     
     // Define amount of blending depending on the cyclic time
-    float alpha = 1.0 - circtime/5;
+    float alpha = 1.0 - circtime/2;
     particle_color = vec4(color, alpha);
 }
