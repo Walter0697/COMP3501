@@ -9,7 +9,7 @@ set(HDRS
 )
  
 set(SRCS
-    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp Block.cpp particleNode.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl fire_gp.glsl fire_vp.glsl fire_fp.glsl particle_gp.glsl particle_vp.glsl particle_fp.glsl death_gp.glsl death_vp.glsl death_fp.glsl bullet_gp.glsl bullet_vp.glsl bullet_fp.glsl spline_gp.glsl spline_vp.glsl spline_fp.glsl
+    camera.cpp CameraNode.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp Rocket.cpp fly.cpp Human.cpp Spider.cpp DragonFly.cpp Environment.cpp Web.cpp wall.cpp room.cpp Block.cpp particleNode.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl texture_vp.glsl texture_fp.glsl fire_gp.glsl fire_vp.glsl fire_fp.glsl particle_gp.glsl particle_vp.glsl particle_fp.glsl death_gp.glsl death_vp.glsl death_fp.glsl bullet_gp.glsl bullet_vp.glsl bullet_fp.glsl ring_gp.glsl ring_vp.glsl ring_fp.glsl spline_gp.glsl spline_vp.glsl spline_fp.glsl
 
 )
 
