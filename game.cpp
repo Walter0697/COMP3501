@@ -290,8 +290,8 @@ namespace game
 		humanParticle = createParticle("humanParticleInstance", "humanParticle", "FireMaterial", "Flame", glm::vec3(1, 1, 1));
 		flyParticle = createParticle("flyParticleInstance", "flyParticle", "ExplosionMaterial", "", glm::vec3(1, 1, 1));
 		humanParticleRing = createParticle("humanParticleInstance2", "humanParticle", "ringMaterial", "", glm::vec3(1, 1, 1));
-		ringParticle1 = createParticle("ringInstance1", "RingParticle", "ringMaterial", "", glm::vec3(0.5, 0.5, 0.5));
-		ringParticle2 = createParticle("ringInstance2", "RingParticle", "ringMaterial", "", glm::vec3(0.5, 0.5, 0.5));
+		ringParticle1 = createParticle("ringInstance1", "RingParticle", "ringMaterial", "", glm::vec3(0.8, 0.8, 0.8));
+		ringParticle2 = createParticle("ringInstance2", "RingParticle", "ringMaterial", "", glm::vec3(0.8, 0.8, 0.8));
 		
 		player = createFly("player");														// Create player
 		player->body->SetVisible(false);
@@ -396,6 +396,7 @@ namespace game
 							game->world->RemoveChild(game->blocks[i]->object);
 							game->player->myBlock = game->blocks[i];
 							game->player->myBlock->beingDragged = true;
+							game->player->myBlock->needAnimate = true;
 							game->blocks[i]->object->SetPosition(game->player->body->GetPosition() + (glm::vec3(0, -0.8, 0)));
 							game->player->body->AddChild(game->blocks[i]->object);
 						}
@@ -1123,7 +1124,16 @@ namespace game
 		{
 			if (environment->collision(blocks[i]->object, blocks[i]->boundingRadius, blocks[i]->offset, &norm))
 			{
-				if (norm == glm::vec3(0, 1, 0)) { blocks[i]->onFloor = true; }
+				if (norm == glm::vec3(0, 1, 0)) {
+					if (blocks[i]->needAnimate)
+					{
+						ringParticle1->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
+						ringParticle2->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
+						ringParticle2->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.6, 0.6, 0.6)));
+						blocks[i]->needAnimate = false;
+					}
+					blocks[i]->onFloor = true;
+				}
 			}
 			else { blocks[i]->onFloor = false; }
 		}

@@ -34,6 +34,8 @@ namespace game
 		void update();		//update block and all things that are related to it
 		bool collision(SceneNode*, float , float);
 
+		bool needAnimate;
+
 	private:
 	protected:
 	};
