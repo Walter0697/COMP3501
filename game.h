@@ -80,7 +80,10 @@ namespace game
 			ParticleNode *flyParticle;
 			ParticleNode *humanParticle;
 			ParticleNode *spiderParticle;
-			ParticleNode *humanParticle2;
+			ParticleNode *humanParticleRing;
+
+			ParticleNode *ringParticle1;
+			ParticleNode *ringParticle2;
 
 			std::vector<Rocket*> rockets;					// All Rockets
 			std::vector<Web*> webs;							// All webs

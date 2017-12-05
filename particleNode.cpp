@@ -7,6 +7,7 @@ namespace game
 		particle = part; 
 		particle->SetVisible(false);
 		particle->SetBlending(true);
+		shouldDisappear = false;
 	}
 	ParticleNode::~ParticleNode() {}
 
@@ -18,7 +19,7 @@ namespace game
 			timer -= (glfwGetTime() - lasttime);
 			lasttime = glfwGetTime();
 			if (timer < 0)
-				particle->SetVisible(false);
+				shouldDisappear = true;
 		}
 	}
 
@@ -35,6 +36,7 @@ namespace game
 		particle->SetVisible(true);
 		timer = duration;
 		lasttime = glfwGetTime();
+		shouldDisappear = false;
 	}
 
 	SceneNode *ParticleNode::getParticle()
