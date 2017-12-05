@@ -1202,17 +1202,17 @@ void ResourceManager::CreateTorusParticles(std::string object_name, int num_part
 		w = ((double)rand() / (RAND_MAX));
 
 		// Use u to define the angle theta along one direction of the sphere
-		theta = u * 2.0*glm::pi<float>();
+		//theta = u * 2.0*glm::pi<float>();
 		// Use v to define the angle phi along the other direction of the sphere
-		phi = acos(2.0*v - 1.0);
+		//phi = acos(2.0*v - 1.0);
 		// Use w to define how much we can deviate from the surface of the sphere (change of radius)
-		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
+		//spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
 
 															// Define the normal and point based on theta, phi and the spray
-		glm::vec3 wander(spray*cos(theta)*sin(phi), spray*sin(theta)*sin(phi), spray*cos(phi));
+		//glm::vec3 wander(spray*cos(theta)*sin(phi), spray*sin(theta)*sin(phi), spray*cos(phi));
 
 		// Assign the wander direction to the normal
-		normal = wander;
+		//normal = wander;
 
 		// Add vectors to the data buffer
 		for (int k = 0; k < 3; k++) {
