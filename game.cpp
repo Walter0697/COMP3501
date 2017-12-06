@@ -1,18 +1,15 @@
  #include <iostream>
 #include <time.h>
 #include <sstream>
-#include <stdlib.h>
 
 #include "game.h"
 #include "bin/path_config.h"
 
 // TO DO:
 // LOCKING AT THE PLAYER ??????????????????????
-// MAKE HUMAN MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
-// SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
 // REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// SPLINE TRAJECTORIES WITH SPIDER WEB ATTACK
-// PARTICLE SYSTEMS FOR THE DEATH OR DESTRUCTION OF OBJS
+// MAKE HUMANS MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
+// SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
 
 // SHADOW MAPPING (OPTIONAL)
 
@@ -294,10 +291,12 @@ namespace game
 		
 		player = createFly("player");														// Create player
 		player->body->SetVisible(false);
-		target = createTarget("playerTarget");	// Create target for shooting
+		target = createTarget("playerTarget");												// Create target for shooting
+		createHuman("human1", glm::vec3(0, 0, -200));										// Create human enemies
 
 		int randomx;
 		int randomz;
+
 		//creating human
 		for (int i = 0; i < 6; i++)
 		{
@@ -315,7 +314,7 @@ namespace game
 				createHuman("human", glm::vec3(randomx, 0, randomz));
 			}
 		}
-		
+
 		//creating spider
 		for (int i = 0; i < 10; i++)
 		{
@@ -333,9 +332,10 @@ namespace game
 				createSpider("spider", glm::vec3(randomx, 0, randomz));
 			}
 		}
-		
+
 		//creating dragonfly
 		for (int i = 0; i < 10; i++)
+
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
@@ -351,7 +351,7 @@ namespace game
 				createDragonFly("dragonfly", glm::vec3(randomx, 0, randomz));
 			}
 		}
-		
+
 		//creating block
 		for (int i = 0; i < 8; i++)
 		{
@@ -369,26 +369,6 @@ namespace game
 				createBlock("block", glm::vec3(randomx, -20.3, randomz));
 			}
 		}
-		/*createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
-		createHuman("human2", glm::vec3(100, 0, -200));
-		createHuman("human3", glm::vec3(100, 0, 200));
-		createHuman("human4", glm::vec3(0, 0, 200));
-		createHuman("human5", glm::vec3(100, 0, 100));
-		createSpider("spider1", glm::vec3(10, 0, -20));								// Create Spider enemy
-		createSpider("spider2", glm::vec3(100, 0, -20));
-		createSpider("spider3", glm::vec3(10, 0, 20));
-		createSpider("spider4", glm::vec3(-50, 0, -30));
-		createSpider("spider5", glm::vec3(30, 0, -50));
-		createDragonFly("dragonfly1", glm::vec3(-10, 0, -20));					// Create dragonfly enemy
-		createDragonFly("dragonfly2", glm::vec3(-100, 0, -20));
-		createDragonFly("dragonfly3", glm::vec3(100, 0, -20));
-		createDragonFly("dragonfly4", glm::vec3(10, 0, -20));
-		createDragonFly("dragonfly5", glm::vec3(-100, 0, 20));
-		createBlock("block1", glm::vec3(200, -0.3, -0.6));							// Create block instances
-		createBlock("block2", glm::vec3(0, -20.3, -0.6));
-		createBlock("block3", glm::vec3(100, -20.3, -0.6));
-		createBlock("block4", glm::vec3(-50, -20.3, -0.6));
-		createBlock("block5", glm::vec3(-100, -20.3, -0.6));*/
 
 		environment = new Environment();
 		room = createRoom("Room1", 0);
@@ -416,16 +396,14 @@ namespace game
 			/* DRAW */
 			scene_.Draw(&camera_);		// Draw the scene
 
-			//check if player health > 0 & gamestate
-			if (player->health > 0 && gamestart_)
+			//check if player health > 0 & gamestate & if we no longer have enemies 
+			if ((player->health > 0 && gamestart_) || (humans.size() == 0 && spiders.size() == 0 && dragonFlies.size() == 0))
 			{
 				/* COLLISION DETECTION */
 				gameCollisionDetection();
 
 				/* UPDATE */
 				update();
-
-
 			}
 			
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
@@ -675,17 +653,6 @@ namespace game
 		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
 		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
 		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
-
-		/*SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyParticle", "FireMaterial", "Flame");
-		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftParticle", "FireMaterial", "Flame");
-		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightParticle", "FireMaterial", "Flame");
-		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegParticle", "FireMaterial", "Flame");
-		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegParticle", "FireMaterial", "Flame");
-		humanBody->SetBlending(true);
-		humanLeftHand->SetBlending(true);
-		humanRightHand->SetBlending(true);
-		humanLeftLeg->SetBlending(true);
-		humanRightLeg->SetBlending(true);*/
 
 		// Setup Heirarchy
 		world->AddChild(humanBody);
@@ -957,39 +924,50 @@ namespace game
 				dragonFlies[i]->leftWing->del = true;		// Delete node from sceneGraph
 				dragonFlies[i]->rightWing->del = true;		// Delete node from sceneGraph
 				dragonFlies[i]->legs->del = true;			// Delete node from sceneGraph
+				dragonFlies[i]->deleteProjectiles();
 				dragonFlies[i]->projectiles.clear();
 				delete dragonFlies[i];
 				dragonFlies.erase(dragonFlies.begin() + i); // Delete from dragonfly vector
 			}
-			else
+			else  // check distances before updating 
 			{
-				dragonFlies[i]->updateTarget(player->body->getAbsolutePosition());
-				dragonFlies[i]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-				dragonFlies[i]->update();
-				if (dragonFlies[i]->getFiring()) { dragonFlies[i]->fire(createRocket("Rocket4", dragonFlies[i]->getDirection(), dragonFlies[i]->body->getAbsolutePosition())); }
+				glm::vec3 distancce = player->body->getAbsolutePosition() - dragonFlies[i]->body->getAbsolutePosition();
+
+				if (glm::length(distancce) < 500.0)
+				{
+					dragonFlies[i]->updateTarget(player->body->getAbsolutePosition());
+					dragonFlies[i]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+					dragonFlies[i]->update();
+					if (dragonFlies[i]->getFiring()) { dragonFlies[i]->fire(createRocket("Rocket4", dragonFlies[i]->getDirection(), dragonFlies[i]->body->getAbsolutePosition())); }
+				}
 			}
 		}
 
 		for (int j = 0; j < spiders.size(); j++)
 		{
-
 			if (spiders[j]->health <= 0)
 			{
 				spiderParticle->startAnimate(spiders[j]->body->getAbsolutePosition(), spiders[j]->body->getAbsoluteOrientation(), 3);
 				spiders[j]->body->del = true;			// Delete node from sceneGraph
 				spiders[j]->leftLeg->del = true;		// Delete node from sceneGraph
 				spiders[j]->rightLeg->del = true;		// Delete node from sceneGraph
+				spiders[j]->deleteProjectiles();
 				spiders[j]->projectiles.clear();
 				delete spiders[j];
 				spiders.erase(spiders.begin() + j);		// Delete from spiders vector
 			}
-			else
+			else // check distance before updating
 			{
-				spiders[j]->updateTarget(player->body->getAbsolutePosition());
-				spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-				spiders[j]->update();
-				if (spiders[j]->getFiring()) {
-					spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition()));
+				glm::vec3 distancce = player->body->getAbsolutePosition() - spiders[j]->body->getAbsolutePosition();
+
+				if (glm::length(distancce) < 500.0)
+				{
+					spiders[j]->updateTarget(player->body->getAbsolutePosition());
+					spiders[j]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+					spiders[j]->update();
+					if (spiders[j]->getFiring()) {
+						spiders[j]->fire(createWeb("Rocket3", spiders[j]->getDirection(), spiders[j]->body->getAbsolutePosition()));
+					}
 				}
 			}
 		}
@@ -1007,12 +985,16 @@ namespace game
 				delete humans[k];
 				humans.erase(humans.begin() + k);			// Delete from human vector
 			}
-			else
+			else  // check distance before updating
 			{
-				humans[k]->updateTarget(player->body->getAbsolutePosition());
-				humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
-				humans[k]->update();
-				//if (humans[k]->getFiring()) { human->fire(createRocket("Rocket2", humans[k]->getDirection(), humans[k]->body->getAbsolutePosition())); }
+				glm::vec3 distancce = player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition();
+
+				if (glm::length(distancce) < 500.0)
+				{
+					humans[k]->updateTarget(player->body->getAbsolutePosition());
+					humans[k]->updateTargetOrientation(player->body->getAbsoluteOrientation());
+					humans[k]->update();
+				}
 			}
 		}
 
@@ -1362,7 +1344,6 @@ namespace game
 			if (player->collision(humans[k]->body, humans[k]->offset, humans[k]->boundingRadius) ||
 				player->collision(humans[k]->body, humans[k]->offset + humans[k]->boundingRadius, humans[k]->boundingRadius))
 			{
-				std::cout << "human collision" << std::endl;
 				player->health -= 10;
 				glm::vec3 direc = glm::normalize(player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition());
 				camera_.Translate(player->speed * 30.f * direc);

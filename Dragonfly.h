@@ -23,6 +23,7 @@ namespace game
 	
 		void update();									//update function to update position or AI of the dragonfly
 		bool collision(SceneNode*, float, float);		//collision function of the dragonfly with other objects
+		void deleteProjectiles();						//deletes all projectiles after killing the dragonfly
 
 	private:
 	protected:

@@ -24,6 +24,7 @@ namespace game
 
 		void update();								// update human position
 		bool collision(SceneNode*, float, float);	// collision detection for human
+
 	private:
 	protected:
 	};

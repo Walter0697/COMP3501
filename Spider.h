@@ -25,7 +25,8 @@ namespace game
 			
 		void update();												// Update spider position
 		virtual	void updateTargetOrientation(glm::quat orient);		// Update targets Orientation overload
-		bool collision(SceneNode*, float, float);					//collision detection
+		bool collision(SceneNode*, float, float);					// Collision detection
+		void deleteProjectiles();									// Deletes all projectiles after killing the spider
 
 	private:
 	protected:

@@ -48,8 +48,6 @@ namespace game
 		body->Rotate(glm::angleAxis(angle , axis));
 		//body->SetOrientation(glm::quat(direction , forward));
 
-		std::cout << forward.x << std::endl;
-
 		//body->SetOrientation(targetOrientation);
 		
 

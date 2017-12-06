@@ -50,8 +50,8 @@ void main()
 	vec4 norm = normal_mat * vec4(normal, 1.0);
 
 	position.x += 10 * norm.x * t * speed - grav * speed * up_vec.x * t * t;
-	position.y += 10 * norm.y * t * speed - grav * speed * up_vec.y * t * t;
-	position.z += 0 * t * speed - grav * speed * up_vec.z * t * t;
+	//position.y += 0 * norm.y * t * speed - grav * speed * up_vec.y * t * t;
+	position.z += 10 *norm.z * t * speed - grav * speed * up_vec.z * t * t;
     //position += speed*up_vec*accel*t*t; // Particle moves up
     
     // Define output position but do not apply the projection matrix yet

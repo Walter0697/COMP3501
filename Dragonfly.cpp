@@ -112,4 +112,13 @@ namespace game
 		//compare distances 
 		return ((std::sqrt(std::pow(difference[0], 2) + std::pow(difference[1], 2) + std::pow(difference[2], 2))) <= boundRad + boundingRadius);
 	}
+
+	/* Deleting projectiles */
+	void DragonFly::deleteProjectiles()
+	{
+		for (int i = 0; i < projectiles.size(); i++)
+		{
+			projectiles[i]->node->del = true;
+		}
+	}
 }

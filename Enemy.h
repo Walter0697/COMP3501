@@ -45,6 +45,7 @@ namespace game
 
 		std::vector<Projectile*> projectiles;											//store the projectiles of the enemy
 
+
 	private:
 	protected:
 		glm::vec3 direction;				//vector between enemy and player
