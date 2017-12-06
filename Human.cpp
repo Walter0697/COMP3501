@@ -38,14 +38,38 @@ namespace game
 		direction = glm::normalize(targetPos - body->getAbsolutePosition());
 		fireRate--;
 		
-		glm::vec3 forward = glm::normalize(glm::vec3(0 , 0 , 1.0) * body->getAbsoluteOrientation());
-		glm::vec3 side = glm::normalize(glm::vec3(0 , 0 , 1.0) * body->getAbsoluteOrientation());
+
+		glm::vec3 forward = glm::normalize(glm::vec3(0 , 0 , 1.0) * body->GetOrientation());
+		glm::vec3 side = glm::normalize(glm::vec3(1.0 , 0 , 0.0) * body->GetOrientation());
 		glm::vec3 up = glm::normalize(glm::cross(forward , side));
 
+		forwardBall->SetPosition(body->getAbsolutePosition() + forward);
+		
+		glm::vec3 zaxis = direction;
+		zaxis.y = 0.0f;
+		glm::vec3 xaxis = glm::normalize(glm::cross(up , zaxis));
+		glm::vec3 yaxis = glm::vec3(0 , 1 , 0);
+		
+		body->SetOrientation(glm::quat(glm::mat3(xaxis , yaxis , zaxis)));
+		/*
 		float angle = glm::dot(forward, direction);
-		glm::vec3 axis = glm::normalize(glm::cross(forward , direction));
+		//std::cout << angle << std::endl;
+		angle = acos(angle);
 
-		body->Rotate(glm::angleAxis(angle , axis));
+		if (glm::length(forward - direction) <= 0.000001) 
+		{ 
+			std::cout << "hello" << std::endl;
+			glm::vec3 axis = up;
+			//body->Rotate(glm::angleAxis(angle, axis));
+		}
+		else if (angle - 1 < 0.0000001)
+		{
+			std::cout << "hellobae" << std::endl;
+			glm::vec3 axis = glm::normalize(glm::cross(forward, direction));
+			body->Rotate(glm::angleAxis(angle, axis));
+		}
+
+		*/
 		//body->SetOrientation(glm::quat(direction , forward));
 
 		//body->SetOrientation(targetOrientation);
@@ -58,7 +82,7 @@ namespace game
 		else if (state == 1 || state == 3) 
 		{
 			//Move to player
-			body->Translate(glm::vec3(direction.x, 0, direction.z) * speed);
+			//body->Translate(glm::vec3(direction.x, 0, direction.z) * speed);
 		}
 		else if (state == 2) { }
 		else { std::cout << "Invalid state in Human" << std::endl; }

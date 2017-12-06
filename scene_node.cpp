@@ -142,16 +142,15 @@ namespace game
 		// Set absolute position and orientation
 		if (parent_ != NULL) 
 		{
-			prevAbsolutePosition = absolutePosition;
 			glm::vec4 temp = parent_transf * glm::vec4(GetPosition().x , GetPosition().y , GetPosition().z , 1.0);
 			absolutePosition = glm::vec3(temp.x, temp.y, temp.z);		
 			absoluteOrientation = parent_->getAbsoluteOrientation() * GetOrientation();
 		}
+
 		// Select blending or not
 		if (blending_) {
 			// Disable z-buffer
 			glDisable(GL_DEPTH_TEST);
-			//glEnable(GL_DEPTH_TEST);
 			
 			// Enable blending
 			glEnable(GL_BLEND);
@@ -181,10 +180,8 @@ namespace game
 			// Set world matrix and other shader input variables
 			glm::mat4 transf = SetupShader(material_, parent_transf);
 
-			for (int i = 0; i < shader_att_.size(); i++) {
-				shader_att_[i].SetupShader(material_);
+			for (int i = 0; i < shader_att_.size(); i++){ shader_att_[i].SetupShader(material_); }
 
-			}
 			// Draw geometry
 			if (mode_ == GL_POINTS) { glDrawArrays(mode_, 0, size_); }
 			else { glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0); }

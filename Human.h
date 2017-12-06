@@ -22,8 +22,11 @@ namespace game
 		float gravity;								// gravity value
 		bool onFloor;								// check whether human is on the floor
 
+		SceneNode* forwardBall;
+
 		void update();								// update human position
 		bool collision(SceneNode*, float, float);	// collision detection for human
+
 
 	private:
 	protected:

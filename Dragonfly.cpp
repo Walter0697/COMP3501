@@ -37,11 +37,14 @@ namespace game
 		direction = glm::normalize(targetPos - body->getAbsolutePosition());
 
 		glm::vec3 forward = glm::normalize(glm::vec3(0, 0, 1.0) * body->getAbsoluteOrientation());
-		glm::vec3 side = glm::normalize(glm::vec3(0, 0, 1.0) * body->getAbsoluteOrientation());
+		glm::vec3 side = glm::normalize(glm::vec3(1.0, 0, 0.0) * body->getAbsoluteOrientation());
 		glm::vec3 up = glm::normalize(glm::cross(forward, side));
 
-		body->Rotate(glm::quat(direction, forward));
+		glm::vec3 zaxis = direction;
+		glm::vec3 xaxis = glm::normalize(glm::cross(up, zaxis));
+		glm::vec3 yaxis = glm::vec3(0, 1, 0);
 
+		body->SetOrientation(glm::quat(glm::mat3(xaxis, yaxis, zaxis)));
 		//glm::quat rotation(prevDirection,direction);
 		//body->Rotate(rotation);
 

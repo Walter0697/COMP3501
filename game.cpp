@@ -674,6 +674,11 @@ namespace game
 		Human* hum = new Human(humanBody, humanLeftHand, humanRightHand, humanLeftLeg, humanRightLeg);
 		humans.push_back(hum);
 
+		hum->forwardBall = createSceneNode("meh" , "rocketMesh" , "objectMaterial" , "");
+		hum->forwardBall->Rotate(glm::angleAxis(glm::pi<float>()/2 , glm::vec3(1,0,0)));
+		hum->forwardBall->SetPosition(hum->body->GetPosition() + glm::vec3(0 , 0 , 1.0));
+		world->AddChild(hum->forwardBall);
+
 		return hum;
 	}
 
