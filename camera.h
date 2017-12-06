@@ -16,8 +16,8 @@ namespace game
             Camera(void);
             ~Camera();
  
-			bool firstPerson;	//first or third person
-			float distance;		//distance from camera to player
+			bool firstPerson;						//first or third person
+			float distance;							//distance from camera to player
 
             // Get global camera attributes
             glm::vec3 GetPosition(void) const;
@@ -52,12 +52,12 @@ namespace game
             void SetupShader(GLuint program);
 
         private:
-            glm::vec3 position_; // Position of camera
-            glm::quat orientation_; // Orientation of camera
-            glm::vec3 forward_; // Initial forward vector
-            glm::vec3 side_; // Initial side vector
-            glm::mat4 view_matrix_; // View matrix
-            glm::mat4 projection_matrix_; // Projection matrix
+            glm::vec3 position_;				 // Position of camera
+            glm::quat orientation_;				 // Orientation of camera
+            glm::vec3 forward_;					 // Initial forward vector
+            glm::vec3 side_;					 // Initial side vector
+            glm::mat4 view_matrix_;				 // View matrix
+            glm::mat4 projection_matrix_;		 // Projection matrix
 
             // Create view matrix from current camera parameters
             void SetupViewMatrix(void);

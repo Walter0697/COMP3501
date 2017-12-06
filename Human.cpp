@@ -8,18 +8,15 @@ namespace game
 		
 		targetPos = glm::vec3(0, 0, 0);					// Store target position
 		targetOrientation = glm::quat(0, 0, 0, 0);		// Store target orientation
-		lastUpdate = -1;								// Last update time
-		updateTime = 0.5;								// Update time
 		state = 0;										// State in state machine 
 		speed = 0.6;									// Human speed of movement
 		fireRate = 0;									// Human fireRate 
 		maxFireRate = 60;								// Human maxFireRate
-		maxHealth = 1000;									// Max health
+		maxHealth = 1000;								// Max health
 		health = maxHealth;								// Health
 		firing = false;									// Controls if the enemy is shooting
-		shotTimer = -1.f;								
-		boundingRadius = 7.0;								// Bounding Circle
-		offset = 7;
+		boundingRadius = 7.0;							// Bounding Circle
+		offset = 7;										// Offset from center 
 		onFloor = false;								// Check whether enemy is on the floor
 		gravity = -0.2f;								// Gravity
 		body = humanBody;								// Body of the human node
@@ -37,18 +34,27 @@ namespace game
 	{
 		// find forward direction of enemy
 		if (!onFloor) { body->Translate(glm::vec3(0, gravity, 0)); }
-		prevDirection = glm::normalize(direction);
+
 		direction = glm::normalize(targetPos - body->getAbsolutePosition());
 		fireRate--;
-		body->SetOrientation(targetOrientation);
 		
-		time_t t = time(0);
-		if (lastUpdate == -1 || t - lastUpdate > updateTime) 
-		{
-			state = int(rand() % 3);
-			lastUpdate = t;
-			//std::cout << "************SWITCH TO " << state << std::endl;
-		}
+		glm::vec3 forward = glm::normalize(glm::vec3(0 , 0 , 1.0) * body->getAbsoluteOrientation());
+		glm::vec3 side = glm::normalize(glm::vec3(0 , 0 , 1.0) * body->getAbsoluteOrientation());
+		glm::vec3 up = glm::normalize(glm::cross(forward , side));
+
+		float angle = glm::dot(forward, direction);
+		glm::vec3 axis = glm::normalize(glm::cross(forward , direction));
+
+		body->Rotate(glm::angleAxis(angle , axis));
+		//body->SetOrientation(glm::quat(direction , forward));
+
+		std::cout << forward.x << std::endl;
+
+		//body->SetOrientation(targetOrientation);
+		
+
+		state = rand() % 3;
+	
 
 		if (state == 0) {} //Idle
 		else if (state == 1 || state == 3) 
@@ -56,19 +62,7 @@ namespace game
 			//Move to player
 			body->Translate(glm::vec3(direction.x, 0, direction.z) * speed);
 		}
-		else if (state == 2) 
-		{ 
-			/*
-			//Attack
-			if (fireRate <= 0)
-			{
-				this->firing = true;
-				fireRate = maxFireRate;
-			}
-			else { state = 0; }
-			*/
-
-		}
+		else if (state == 2) { }
 		else { std::cout << "Invalid state in Human" << std::endl; }
 
 		// Check rockets when timer is 0 delete the rocket

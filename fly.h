@@ -22,7 +22,7 @@
 #include "Block.h"
 #include "particleNode.h"
 
-// FLIES ARE COLLIDABLES AND CHARACTERS
+// FLIES ARE CHARACTERS
 namespace game 
 {
     class Fly : public Character
@@ -31,22 +31,18 @@ namespace game
 		Fly(SceneNode*,SceneNode*,SceneNode*);
 		~Fly();
 
-		std::vector<ParticleNode *> rockets_particles;
-		std::vector<Rocket*> rockets; //store the rockets
+		std::vector<ParticleNode *> rockets_particles;					//Particles of the rockets 
+		std::vector<Rocket*> rockets;									//store the rockets
+		SceneNode* body;												//body sceneNode
+		SceneNode* wings;												//wings sceneNode
+		SceneNode* legs;												//legs sceneNode
+		Block* myBlock;													//block that player is dragging
+		int timer;														//timer for animation of fly's wings
+		bool upWingMovement;											//check for up or down wing movement
+		bool dragging;													//if we want to disallow shooting while dragging
 
-		SceneNode* body;
-		SceneNode* wings;
-		SceneNode* legs;
-		Block* myBlock;
-		int dragtimer;
-		int dragwait;
-		int timer;
-		bool upWingMovement;
-		bool moving;
-		bool dragging;		// if we want to disallow shooting while dragging
-
-		void update();						//update fly and all things that are related to it
-		bool collision(SceneNode*, float, float);	//collision detection
+		void update();													//update fly and its bullets
+		bool collision(SceneNode*, float, float);						//collision detection
 
 	private:
 	protected:

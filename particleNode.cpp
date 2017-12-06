@@ -3,14 +3,21 @@
 
 namespace game
 {
+	/* Constructor */
 	ParticleNode::ParticleNode(SceneNode *part) {
 		particle = part; 
 		particle->SetVisible(false);
 		particle->SetBlending(true);
 		shouldDisappear = false;
 	}
+
+	/* Destructor */
 	ParticleNode::~ParticleNode() {}
 
+	/* Getters */
+	SceneNode *ParticleNode::getParticle() { return particle; }
+
+	/* Updates */
 	void ParticleNode::update() 
 	{
 		if (timer == 999) return;
@@ -23,11 +30,9 @@ namespace game
 		}
 	}
 
-	void ParticleNode::updatePosition(glm::vec3 position)
-	{
-		particle->SetPosition(position);
-	}
+	void ParticleNode::updatePosition(glm::vec3 position) { particle->SetPosition(position); }
 
+	/* Modifiers */
 	void ParticleNode::startAnimate(glm::vec3 position, glm::quat orientation, double duration) 
 	{
 		particle->SetPosition(position);
@@ -39,13 +44,5 @@ namespace game
 		shouldDisappear = false;
 	}
 
-	SceneNode *ParticleNode::getParticle()
-	{
-		return particle;
-	}
-
-	void ParticleNode::deleteNode()
-	{
-		particle->del = true;
-	}
+	void ParticleNode::deleteNode() { particle->del = true; }
 }

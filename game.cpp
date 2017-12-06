@@ -7,8 +7,6 @@
 
 // TO DO:
 // LOCKING AT THE PLAYER ??????????????????????
-// ASK ABOUT Z_ buffer for particle effects
-// ASK ABOUT SPLINE TRAJECTORY
 // MAKE HUMAN MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
 // SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
 // REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -396,7 +394,7 @@ namespace game
 							game->world->RemoveChild(game->blocks[i]->object);
 							game->player->myBlock = game->blocks[i];
 							game->player->myBlock->beingDragged = true;
-							game->player->myBlock->needAnimate = true;
+							game->player->myBlock->hitFloor = true;
 							game->blocks[i]->object->SetPosition(game->player->body->GetPosition() + (glm::vec3(0, -0.8, 0)));
 							game->player->body->AddChild(game->blocks[i]->object);
 						}
@@ -1125,12 +1123,12 @@ namespace game
 			if (environment->collision(blocks[i]->object, blocks[i]->boundingRadius, blocks[i]->offset, &norm))
 			{
 				if (norm == glm::vec3(0, 1, 0)) {
-					if (blocks[i]->needAnimate)
+					if (blocks[i]->hitFloor)
 					{
 						ringParticle1->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
 						ringParticle2->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
 						ringParticle2->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.6, 0.6, 0.6)));
-						blocks[i]->needAnimate = false;
+						blocks[i]->hitFloor= false;
 					}
 					blocks[i]->onFloor = true;
 				}

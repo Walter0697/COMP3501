@@ -3,6 +3,7 @@
 
 namespace game
 {
+	/* Constructors */
 	Environment::Environment() {}
 
 	Environment::Environment(SceneNode *floor) 
@@ -10,8 +11,10 @@ namespace game
 		this->floor = floor;
 	}
 
+	/* Destructor */
 	Environment::~Environment() {}
 
+	/* Collision */
 	bool Environment::collision(SceneNode*, float, float) { return false; }
 
 	//need normals of each plane I create 
@@ -24,6 +27,7 @@ namespace game
 		return false;
 	}
 
+	/* Modifiers */
 	void Environment::addRoom(Room *myRoom)
 	{
 		rooms.push_back(myRoom);

@@ -9,78 +9,59 @@
 #include "resource_manager.h"
 #include "model_loader.h"
 
-namespace game {
+// RESOURCE MANAGER
+namespace game
+{
+	/* Constructor */
+	ResourceManager::ResourceManager(void) {}
 
-	ResourceManager::ResourceManager(void) {
-	}
+	/* Destructor */
+	ResourceManager::~ResourceManager() {}
 
-
-	ResourceManager::~ResourceManager() {
-	}
-
-
-	void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size) {
-
+	/* Modifiers */
+	void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size) 
+	{
 		Resource *res;
-
 		res = new Resource(type, name, resource, size);
-
 		resource_.push_back(res);
 	}
 
-
-	void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint array_buffer, GLuint element_array_buffer, GLsizei size) {
-
+	void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint array_buffer, GLuint element_array_buffer, GLsizei size)
+	{
 		Resource *res;
-
 		res = new Resource(type, name, array_buffer, element_array_buffer, size);
-
 		resource_.push_back(res);
 	}
 
-	void ResourceManager::AddResource(ResourceType type, const std::string name, GLfloat *data, GLsizei size) {
-
+	void ResourceManager::AddResource(ResourceType type, const std::string name, GLfloat *data, GLsizei size) 
+	{
 		Resource *res;
-
 		res = new Resource(type, name, data, size);
-
 		resource_.push_back(res);
 	}
 
-	void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename, int num_particles) {
-
+	void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename, int num_particles) 
+	{
 		// Call appropriate method depending on type of resource
-		if (type == Material) {
-			LoadMaterial(name, filename);
-		}
-		else if (type == Texture) {
-			LoadTexture(name, filename);
-		}
-		else if (type == Mesh) {
-			LoadMesh(name, filename);
-		}
-		else if (type == PointSet) {
-			LoadMeshParticles(name, filename, num_particles);
-		}
-		else {
-			throw(std::invalid_argument(std::string("Invalid type of resource")));
-		}
+		if (type == Material)      { LoadMaterial(name, filename); }
+		else if (type == Texture)  { LoadTexture(name, filename); }
+		else if (type == Mesh)	   { LoadMesh(name, filename); }
+		else if (type == PointSet) { LoadMeshParticles(name, filename, num_particles); }
+		else					   { throw(std::invalid_argument(std::string("Invalid type of resource"))); }
 	}
 
-
-	Resource *ResourceManager::GetResource(const std::string name) const {
-
+	Resource *ResourceManager::GetResource(const std::string name) const 
+	{
 		// Find resource with the specified name
-		for (int i = 0; i < resource_.size(); i++) {
-			if (resource_[i]->GetName() == name) {
-				return resource_[i];
-			}
+		for (int i = 0; i < resource_.size(); i++) 
+		{
+			if (resource_[i]->GetName() == name) { return resource_[i]; }
 		}
 		return NULL;
 	}
 
-	void ResourceManager::LoadMaterial(const std::string name, const char *prefix) {
-
+	void ResourceManager::LoadMaterial(const std::string name, const char *prefix) 
+	{
 		// Load vertex program source code
 		std::string filename = std::string(prefix) + std::string(VERTEX_PROGRAM_EXTENSION);
 		std::string vp = LoadTextFile(filename.c_str());
@@ -173,8 +154,6 @@ namespace game {
 		// Add a resource for the shader program
 		AddResource(Material, name, sp, 0);
 	}
-
-
 
 	std::string ResourceManager::LoadTextFile(const char *filename) {
 

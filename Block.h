@@ -17,10 +17,9 @@
 #include "resource.h"
 #include "camera.h"
 #include "scene_node.h"
-//#include "Rocket.h"
 #include "Draggable.h"
 
-// FLIES ARE COLLIDABLES AND CHARACTERS
+// Drag and Drop blocks
 namespace game
 {
 	class Block : public Draggable
@@ -29,12 +28,12 @@ namespace game
 		Block(SceneNode*);
 		~Block();
 
-		SceneNode* object;
+		SceneNode* object;									//SceneNode for drawing 
 
-		void update();		//update block and all things that are related to it
-		bool collision(SceneNode*, float , float);
+		void update();										//Update block's position
+		bool collision(SceneNode*, float , float);			//Check for collision with it
 
-		bool needAnimate;
+		bool hitFloor;										//bool to check for hitting the floor for particle animation
 
 	private:
 	protected:

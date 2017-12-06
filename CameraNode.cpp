@@ -2,16 +2,17 @@
 
 namespace game
 {
+	/* Constrcutor */
 	CameraNode::CameraNode(Camera* cam) : SceneNode("Camera" , 0 , 0, 0)
 	{
 		this->camera = cam;
 		visible = false;
 	}
 
+	/* Destructor */
 	CameraNode::~CameraNode() {}
 
-
-	// MIGHT NEED TO BE CHANGED !!!!!!!!
+	/* Getters */
 	glm::vec3 CameraNode::GetPosition(void) const
 	{
 		if (camera->firstPerson) { return camera->GetPosition() - (camera->GetForward() * camera->distance); }

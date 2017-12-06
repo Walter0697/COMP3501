@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "scene_node.h"
 
+// Encapsulation of camera as a sceneNode
 namespace game
 {
 	class CameraNode : public SceneNode
@@ -18,12 +19,12 @@ namespace game
 	public:
 		CameraNode(Camera*);
 		~CameraNode();
-		glm::vec3 GetPosition(void)const;
-		glm::quat GetOrientation(void)const;
+
+		glm::vec3 GetPosition(void)const;		//An overload of the getPosition of sceneNode
+		glm::quat GetOrientation(void)const;	//An overload of the getOrientation of sceneNode
 
 	private:
 		Camera* camera;
-
 	};
 }
 #endif //CAMERANODE_H

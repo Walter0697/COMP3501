@@ -13,16 +13,16 @@ namespace game
 		DragonFly(SceneNode*, SceneNode*, SceneNode*, SceneNode*);
 		~DragonFly();
 
-		SceneNode* body;
-		SceneNode* leftWing;
-		SceneNode* rightWing;
-		SceneNode* legs;
+		SceneNode* body;								//body node for dragonfly
+		SceneNode* leftWing;							//leftwing node
+		SceneNode* rightWing;							//rightwing node
+		SceneNode* legs;								//leg node
 		
-		int timer;
-		bool upWingMovement;
+		int timer;										//timer for the animation of the wings of the dragonfly
+		bool upWingMovement;							//check for whether we want up or down wing movement(depends on the timer value)
 	
-		void update();
-		bool collision(SceneNode*, float, float);
+		void update();									//update function to update position or AI of the dragonfly
+		bool collision(SceneNode*, float, float);		//collision function of the dragonfly with other objects
 
 	private:
 	protected:

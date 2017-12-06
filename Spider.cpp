@@ -3,12 +3,11 @@
 // Spider is fixed
 namespace game
 {
+	/* Constructor */
 	Spider::Spider(SceneNode* spiderBody, SceneNode* spiderLeftLeg, SceneNode* spiderRightLeg)
 	{
 		targetPos = glm::vec3(0, 0, 0);				// Store target position
 		targetOrientation = glm::quat(0, 0, 0, 0);	// Store target orientation
-		lastUpdate = -1;							// Last update time
-		updateTime = 0.5;							// Update time
 		state = 0;									// Machine state
 		speed = 0.3;								// Speed of movement the spider
 		fireRate = 0;								// FireRate of the shooting webs
@@ -16,12 +15,11 @@ namespace game
 		maxHealth = 30;								// Maximum health
 		health = maxHealth;							// Health
 		firing = false;								// Controls if the enemy is shooting
-		shotTimer = -1.f;
 		timer = 5;									// Timer for leg movement
 		legMovement = true;							// Check for leg movement
 		isMoving = false;							// Check for movement
 		boundingRadius = 0.8;						// Radius bounding
-		offset = 0.7;
+		offset = 0.7;								// Center offset
 		onFloor = false;							// Check whether on floor or not
 		gravity = -0.2f;							// Gravity
 		body = spiderBody;							// Body of the spider node
@@ -29,18 +27,23 @@ namespace game
 		rightLeg = spiderRightLeg;					// Right leg of the spider node
 	}
 
+	/* Destructor */
 	Spider::~Spider() {}
 
 	/* Update */
 	void Spider::update()
 	{
+		// check if it is on the floor 
 		if (!onFloor) { body->Translate(glm::vec3(0, gravity, 0)); }
+		//decrement firerate
 		fireRate--;
 
+		//setup orientation
 		direction = glm::normalize(targetPos - body->getAbsolutePosition());
 
 		body->SetOrientation(targetOrientation);
 
+		//leg movement of spider
 		if (isMoving)
 		{
 			if (legMovement)
@@ -58,15 +61,10 @@ namespace game
 				if (timer >= 10) { legMovement = true; }
 			}
 		}
-
-		time_t t = time(0);
-		if (lastUpdate == -1 || t - lastUpdate > updateTime)
-		{
-			state = int(rand() % 3);
-			lastUpdate = t;
-		}
-
+		
 		// State machine
+		state = rand() % 3;
+
 		if (state == 0) {}
 	    else if (state == 1) 
 		{ 

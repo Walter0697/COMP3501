@@ -14,17 +14,15 @@ namespace game
 		Environment();
 		Environment(SceneNode*);
 		~Environment();
-
-		glm::vec3 normals;
-		bool collision(SceneNode* , float,float);
-		bool collision(SceneNode*, float, float, glm::vec3*);
-		void addRoom(Room*);
+		
+		bool collision(SceneNode* , float,float);					//dummy function for the collidables interface
+		bool collision(SceneNode*, float, float, glm::vec3*);		//collision function with all rooms of environment
+		void addRoom(Room*);										//add a room to the vector in the environment
 
 	private:
-		std::vector<Room*> rooms;
-		SceneNode *floor;  //should remove later
-
-		SceneNode *sky;
+		std::vector<Room*> rooms;									//store vector of rooms
+		SceneNode* floor;											//sceneNode for the floor
+		SceneNode *sky;												//sceneNode for a sky
 
 	protected:
 	};

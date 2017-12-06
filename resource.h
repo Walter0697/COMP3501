@@ -15,9 +15,9 @@ namespace game
     class Resource 
 	{
         private:
-            ResourceType type_; // Type of resource
-            std::string name_; // Reference name
-			GLsizei size_; // Number of primitives in geometry
+            ResourceType type_;		// Type of resource
+            std::string name_;		// Reference name
+			GLsizei size_;			// Number of primitives in geometry
             union {
                 struct {
                     GLuint resource_; // OpenGL handle for resource
@@ -27,7 +27,7 @@ namespace game
                     GLuint element_array_buffer_; // element buffer
                 };
 				struct {
-					GLfloat *data_;
+					GLfloat *data_;		//data for particle systems
 				};
             };
 

@@ -2,26 +2,29 @@
 
 namespace game
 {
+	/* Constructor */
 	Block::Block(SceneNode* obj)
 	{
-		object = obj;					// Object
+		object = obj;					// SceneNode object
 		boundingRadius = 2.0;			// bounding radius
 		offset = 0.0;					// offset from center
-
 		beingDragged = false;			// being dragged check
 		onFloor = false;				// onFloor check
 		gravity = -0.8f;				// gravity value
-		needAnimate = false;
+		hitFloor = false;				// for animation
 	}
 
+	/* Destructor */
 	Block::~Block() {}
 
+	/* Update */
 	void Block::update()
 	{
 		// not being dragged and not on the floor -> drop with gravity
 		if (!beingDragged && !onFloor) { object->Translate(glm::vec3(0, gravity, 0)); }
 	}
-
+	
+	/* Collision */
 	bool Block::collision(SceneNode * obj, float off, float boundRad)
 	{
 		//find real center of the object

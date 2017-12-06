@@ -12,6 +12,7 @@
 #include "Collidable.h"
 #include "scene_node.h"
 
+//PROJECTILES
 namespace game
 {
 	class Projectile : public Collidable

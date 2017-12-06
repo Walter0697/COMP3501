@@ -9,12 +9,14 @@
 
 namespace game
 {
+	/* Constrcutor */
 	Camera::Camera(void)
 	{
 		firstPerson = false;
 		distance = 0.6f;
 	}
 
+	/* Destructor */
 	Camera::~Camera() {}
 
 	/* Getters */
@@ -29,18 +31,21 @@ namespace game
 	void Camera::Translate(glm::vec3 trans)				{ position_ += trans; }
 	void Camera::Rotate(glm::quat rot)					{ orientation_ = rot * orientation_; }
 
+	//Forward
 	glm::vec3 Camera::GetForward(void) const 
 	{
 		glm::vec3 current_forward = orientation_ * forward_;
 		return -glm::normalize(current_forward); // Return -forward since the camera coordinate system points in the opposite direction
 	}
 
+	//Side
 	glm::vec3 Camera::GetSide(void) const 
 	{
 		glm::vec3 current_side = orientation_ * side_;
 		return glm::normalize(current_side);
 	}
 
+	//Up
 	glm::vec3 Camera::GetUp(void) const 
 	{
 		glm::vec3 current_forward = orientation_ * forward_;
@@ -50,24 +55,28 @@ namespace game
 		return current_up;
 	}
 
+	//Pitch
 	void Camera::Pitch(float angle) 
 	{
 		glm::quat rotation = glm::angleAxis(angle, GetSide());
 		orientation_ = rotation * orientation_;
 	}
 
+	//Yaw
 	void Camera::Yaw(float angle) 
 	{
 		glm::quat rotation = glm::angleAxis(angle, GetUp());
 		orientation_ = rotation * orientation_;
 	}
 
+	//Roll
 	void Camera::Roll(float angle) 
 	{
 		glm::quat rotation = glm::angleAxis(angle, GetForward());
 		orientation_ = rotation * orientation_;
 	}
 
+	//Setup View
 	void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up) 
 	{
 		// Store initial forward and side vectors
@@ -82,6 +91,7 @@ namespace game
 		orientation_ = glm::quat();
 	}
 
+	//Projection
 	void Camera::SetProjection(GLfloat fov, GLfloat near, GLfloat far, GLfloat w, GLfloat h) 
 	{
 		// Set projection based on field-of-view
@@ -90,6 +100,7 @@ namespace game
 		projection_matrix_ = glm::frustum(-right, right, -top, top, near, far);
 	}
 
+	//Shader
 	void Camera::SetupShader(GLuint program) 
 	{
 		// Update view matrix
@@ -104,6 +115,7 @@ namespace game
 		glUniformMatrix4fv(projection_mat, 1, GL_FALSE, glm::value_ptr(projection_matrix_));
 	}
 
+	//View Matrix
 	void Camera::SetupViewMatrix(void) 
 	{
 		//view_matrix_ = glm::lookAt(position, look_at, up);

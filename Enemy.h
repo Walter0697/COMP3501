@@ -12,51 +12,47 @@
 #include "Character.h"
 #include "Projectile.h"
 
-// CREATE A GENERAL CHARACTER WHICH WILL BE INHERITED BY ALL CHARACTER TYPES 
+// CREATE A GENERAL ENEMY WHICH IS A CHARACTER AND IS INHERITED BY ALL ENEMY TYPES
 namespace game
 {
 	class Enemy : public Character
 	{
 	public:
-		float offset;
+		glm::vec3 getDirection() { return direction; }									//get direction vector from enemy to player
 
-		glm::vec3 getDirection() { return direction; }
-
-		virtual void updateTarget(glm::vec3 targPos) 
+		virtual void updateTarget(glm::vec3 targPos)									//update targetPosition in enemy to follow or use AI 
 		{
 			targetPos = targPos; 
 		}
 
-		virtual	void updateTargetOrientation(glm::quat orient)
+		virtual	void updateTargetOrientation(glm::quat orient)							//update target's orientation also for Ai purposes
 		{
 			targetOrientation = orient;
 			glm::quat rotation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
 			targetOrientation = rotation * targetOrientation;
 		}
 
-		virtual bool getFiring() { return firing; }
+		virtual bool getFiring() { return firing; }										//check if the enemy is firing according to the AI
 
-		virtual void fire(Projectile* p) {
-			if (firing) {
+		virtual void fire(Projectile* p)												//add a projectile to the projectile vector of the enemy
+		{
+			if (firing) 
+			{
 				firing = false;
 				projectiles.push_back(p);
 			}
 		}
 
-		std::vector<Projectile*> projectiles;   //store the projectiles
+		std::vector<Projectile*> projectiles;											//store the projectiles of the enemy
 
 	private:
 	protected:
-		glm::vec3 direction;
-		glm::vec3 prevDirection;
-		glm::vec3 targetPos;
-		glm::quat targetOrientation;
-		time_t lastUpdate;
-		time_t updateTime;
-		int state;
-		bool firing;
-		float shotTimer;
-		float fireRate;
+		glm::vec3 direction;				//vector between enemy and player
+		glm::vec3 prevDirection;			//previous direction between enemy and player
+		glm::vec3 targetPos;				//position of target for AI
+		glm::quat targetOrientation;		//orientation of target also for AI
+		int state;							//state variable for state machine
+		bool firing;						//check whether enemy is firing										
 	};
 }
 #endif // ENEMY_H

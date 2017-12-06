@@ -2,15 +2,15 @@
 
 namespace game
 {
+	/* Constructor */
 	Room::Room() {}
+	/* Destructor */
 	Room::~Room() {}
 
-	//add wall to wall vector
-	void Room::addWall(Wall* myWall)
-	{
-		walls.push_back(myWall);
-	}
+	/* Modifiers */
+	void Room::addWall(Wall* myWall) { walls.push_back(myWall); }
 
+	/* Collision */
 	bool Room::collision(SceneNode*, float,float) { return false; }
 
 	//check for collision on all walls in a room
@@ -23,7 +23,9 @@ namespace game
 		return false;
 	}
 
+	/* Setter */
 	void Room::SetFloor(SceneNode *myFloor){ floor = myFloor; }
 
+	/* Getter */
 	SceneNode *Room::getFloor() { return floor; }
 }

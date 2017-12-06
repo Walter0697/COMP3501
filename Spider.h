@@ -17,16 +17,16 @@ namespace game
 		SceneNode* leftLeg;		// Spider left leg
 		SceneNode* rightLeg;	// Spider right leg
 
-		bool isMoving;
-		bool legMovement;
-		int timer;
-		float gravity;
-		bool onFloor;
+		bool isMoving;			// Check whether the spider is moving
+		bool legMovement;		// Check for leg movement
+		int timer;				// Timer for animations
+		float gravity;			// Gravity value
+		bool onFloor;			// Check whether spider is on the floor
+			
+		void update();												// Update spider position
+		virtual	void updateTargetOrientation(glm::quat orient);		// Update targets Orientation overload
+		bool collision(SceneNode*, float, float);					//collision detection
 
-		void update();
-		virtual	void updateTargetOrientation(glm::quat orient);
-
-		bool collision(SceneNode*, float, float);
 	private:
 	protected:
 	};

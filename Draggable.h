@@ -11,9 +11,9 @@ namespace game
 	class Draggable : public Collidable
 	{
 	public:
-		bool beingDragged;
-		bool onFloor;
-		float gravity;
+		bool beingDragged;			//Check for whether the object is being dragged
+		bool onFloor;				//Check for whether the object hit the floor after falling from gravity
+		float gravity;				//Gravity value for the draggable object
 	};
 }
 #endif // DRAGGABLE_H

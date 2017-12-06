@@ -23,10 +23,9 @@ namespace game
 		Web(SceneNode*, ParticleNode*, glm::vec3);
 		~Web();
 
-		float boundingRadius;
-		ParticleNode *webParticle;
+		ParticleNode *webParticle;						// particle for the web
 
-		void update();							// update the position of the rocket
+		void update();									// update the position of the rocket
 		bool collision(SceneNode*, float, float);		// collision Detection
 
 	private:

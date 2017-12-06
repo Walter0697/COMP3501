@@ -25,18 +25,8 @@ namespace game
 		Rocket(SceneNode*, glm::vec3);
 		~Rocket();
 
-		/*
-		glm::vec3 direction;	// direction of the rocket
-		float speed;			// speed of the rocket
-		int timer;				// time after which rocket gets deleted 
-		SceneNode* rocketNode;	// rocket node
-		*/
-
-		virtual void update();	// update the position of the rocket
-		bool collision(SceneNode* , Camera*);	// collision detection between rocket and other collidables
-		bool collision(SceneNode*, float, float);
-
-		float boundingRadius;
+		virtual void update();							// update the position of the rocket
+		bool collision(SceneNode*, float, float);		// collision detection between rocket and other collidables
 
 	private:
 	protected:

@@ -8,8 +8,8 @@ namespace game
 	/* Constructor */
 	Web::Web(SceneNode* node, ParticleNode *particle, glm::vec3 direction)
 	{
-		offset = 1.0;
-		webParticle = particle;
+		offset = 1.0;									 // Center offset
+		webParticle = particle;							 // Web particle
 		this->node = node;		 						 // SceneNode for Web
 		this->direction = glm::normalize(direction);	 // Direction of the Web
 		this->speed = 0.5;								 // Speed of the Web

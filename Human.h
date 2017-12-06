@@ -5,7 +5,7 @@
 #include "Character.h"
 #include "Enemy.h"
 
-// HUMANS ARE CHARACTERS AND COLLIDABLES 
+// HUMANS ARE ENEMIES WHICH ARE CHARACTERS AND COLLIDABLES
 namespace game
 {
 	class Human : public Enemy
@@ -14,16 +14,16 @@ namespace game
 		Human(SceneNode*, SceneNode*, SceneNode*, SceneNode*, SceneNode*);
 		~Human();
 
-		SceneNode* body;		// human body
-		SceneNode* leftHand;	// left hand
-		SceneNode* rightHand;	// right hand
-		SceneNode* leftLeg;		// left leg
-		SceneNode* rightLeg;	// right leg
-		float gravity;
-		bool onFloor;
+		SceneNode* body;							// human body
+		SceneNode* leftHand;						// left hand
+		SceneNode* rightHand;						// right hand
+		SceneNode* leftLeg;							// left leg
+		SceneNode* rightLeg;						// right leg
+		float gravity;								// gravity value
+		bool onFloor;								// check whether human is on the floor
 
-		void update();
-		bool collision(SceneNode*, float, float);
+		void update();								// update human position
+		bool collision(SceneNode*, float, float);	// collision detection for human
 	private:
 	protected:
 	};

@@ -31,6 +31,7 @@ namespace game {
             ShaderAttribute(std::string name, DataType type, int size, GLfloat *data);
             ~ShaderAttribute();
 
+			/* Getters */
             std::string GetName(void) const;
             DataType GetType(void) const;
             int GetSize(void) const;

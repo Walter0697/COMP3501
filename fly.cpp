@@ -13,12 +13,8 @@ namespace game
 		upWingMovement = true;			// Checking for upwards or downwards fly rotation
 		maxHealth = 100;				// Maximum health
 		health = maxHealth;				// Health of fly
-
 		myBlock = NULL;
 		dragging = false;
-		dragwait = 1;
-		dragtimer = -1;
-		
 		boundingRadius = 1;			// Radius of bounds
 		body = flyBody;					// Body of fly
 		wings = flyWings;				// Wings of the fly

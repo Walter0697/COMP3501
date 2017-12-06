@@ -85,21 +85,20 @@ namespace game {
             glm::quat orientation_; // Orientation of node
 			glm::quat absoluteOrientation; // Absolute orientation
             glm::vec3 scale_; // Scale of node
-			bool blending_;
-			bool visible_;
-			double start_time_;
+			bool blending_; //blending
+			bool visible_; //draw or not
+			double start_time_; //start time for effects
 			
             // Hierarchy
-            SceneNode *parent_;
-            std::vector<SceneNode *> children_;
+            SceneNode *parent_;						//parent of a sceneNode
+            std::vector<SceneNode *> children_;		//children of the sceneNode
 
 			std::vector<ShaderAttribute> shader_att_; // Shader attributes
             // Set matrices that transform the node in a shader program
             // Return transformation of current node combined with
             // parent transformation, without including scaling
             glm::mat4 SetupShader(GLuint program, glm::mat4 parent_transf);
-			void maintainChildren();
-
+			void maintainChildren();				//deletes nodes that need to be deleted from the graph before drawing them
     }; // class SceneNode
 } // namespace game
 #endif // SCENE_NODE_H_

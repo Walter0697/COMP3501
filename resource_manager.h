@@ -48,7 +48,7 @@ namespace game
 		std::string LoadTextFile(const char *filename);	 // Load a text file into memory (could be source code)
 		void LoadTexture(const std::string name, const char *filename);	// Load a texture
 		void LoadMesh(const std::string name, const char *filename);	// Loads a mesh in obj format
-		void LoadMeshParticles(std::string name, const char *filename, int num_particles = 20000); //Load a mesh with particle only
+		void LoadMeshParticles(std::string name, const char *filename, int num_particles = 20000); //Load a mesh with particles only
 
     };// class ResourceManager
 }// namespace game
