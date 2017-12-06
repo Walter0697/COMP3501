@@ -104,7 +104,8 @@ namespace game
 
 	void SceneNode::AppendChild(SceneNode *node)
 	{
-		children_.insert(children_.begin(), node);
+		//children_.insert(children_.begin(), node);
+		children_.push_back(node);
 		node->parent_ = this;
 	}
 
@@ -149,8 +150,8 @@ namespace game
 		// Select blending or not
 		if (blending_) {
 			// Disable z-buffer
-			//glDisable(GL_DEPTH_TEST);
-			glEnable(GL_DEPTH_TEST);
+			glDisable(GL_DEPTH_TEST);
+			//glEnable(GL_DEPTH_TEST);
 			
 			// Enable blending
 			glEnable(GL_BLEND);
