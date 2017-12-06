@@ -1,6 +1,7 @@
  #include <iostream>
 #include <time.h>
 #include <sstream>
+#include <stdlib.h>
 
 #include "game.h"
 #include "bin/path_config.h"
@@ -293,8 +294,82 @@ namespace game
 		
 		player = createFly("player");														// Create player
 		player->body->SetVisible(false);
-		target = createTarget("playerTarget");												// Create target for shooting
-		createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
+		target = createTarget("playerTarget");	// Create target for shooting
+
+		int randomx;
+		int randomz;
+		//creating human
+		for (int i = 0; i < 6; i++)
+		{
+			//choosing which room to go
+			if (rand() % 2 == 0)
+			{
+				randomx = rand() % 500 - 250;
+				randomz = rand() % 500 - 250;
+				createHuman("human", glm::vec3(randomx, 0, randomz));
+			}
+			else
+			{
+				randomx = rand() % 500 + 230;
+				randomz = rand() % 500 - 850;
+				createHuman("human", glm::vec3(randomx, 0, randomz));
+			}
+		}
+		
+		//creating spider
+		for (int i = 0; i < 10; i++)
+		{
+			//choosing which room to go
+			if (rand() % 2 == 0)
+			{
+				randomx = rand() % 500 - 250;
+				randomz = rand() % 500 - 250;
+				createSpider("spider", glm::vec3(randomx, 0, randomz));
+			}
+			else
+			{
+				randomx = rand() % 500 + 230;
+				randomz = rand() % 500 - 850;
+				createSpider("spider", glm::vec3(randomx, 0, randomz));
+			}
+		}
+		
+		//creating dragonfly
+		for (int i = 0; i < 10; i++)
+		{
+			//choosing which room to go
+			if (rand() % 2 == 0)
+			{
+				randomx = rand() % 500 - 250;
+				randomz = rand() % 500 - 250;
+				createDragonFly("dragonfly", glm::vec3(randomx, 0, randomz));
+			}
+			else
+			{
+				randomx = rand() % 500 + 230;
+				randomz = rand() % 500 - 850;
+				createDragonFly("dragonfly", glm::vec3(randomx, 0, randomz));
+			}
+		}
+		
+		//creating block
+		for (int i = 0; i < 8; i++)
+		{
+			//choosing which room to go
+			if (rand() % 2 == 0)
+			{
+				randomx = rand() % 500 - 250;
+				randomz = rand() % 500 - 250;
+				createBlock("block", glm::vec3(randomx, -20.3, randomz));
+			}
+			else
+			{
+				randomx = rand() % 500 + 230;
+				randomz = rand() % 500 - 850;
+				createBlock("block", glm::vec3(randomx, -20.3, randomz));
+			}
+		}
+		/*createHuman("human1", glm::vec3(0, 0, -200));								// Create human enemies
 		createHuman("human2", glm::vec3(100, 0, -200));
 		createHuman("human3", glm::vec3(100, 0, 200));
 		createHuman("human4", glm::vec3(0, 0, 200));
@@ -313,7 +388,7 @@ namespace game
 		createBlock("block2", glm::vec3(0, -20.3, -0.6));
 		createBlock("block3", glm::vec3(100, -20.3, -0.6));
 		createBlock("block4", glm::vec3(-50, -20.3, -0.6));
-		createBlock("block5", glm::vec3(-100, -20.3, -0.6));
+		createBlock("block5", glm::vec3(-100, -20.3, -0.6));*/
 
 		environment = new Environment();
 		room = createRoom("Room1", 0);
