@@ -62,9 +62,6 @@ namespace game
 			Fly* player;									// Player fly
 			SceneNode* target;								// Target for shooting
 			SceneNode* world;								// Dummy for root of the heirarchy
-			Human* human;									// human enemy
-			Spider* spider;									// Spider enemy
-			DragonFly* dragonFly;							// Dragon fly enemy
 			std::vector<Block*> blocks;						// list of draggable objs
 			Environment* environment;						// Environment
 			Room* room;										// A room (not used)

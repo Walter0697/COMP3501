@@ -6,7 +6,6 @@
 #include "bin/path_config.h"
 
 // TO DO:
-// RESIZE IS FUCKING UP 
 // FPS IS LOW BECAUSE OF THE NUMBER OF ENEMIES
 // MAKE HUMANS MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
 // SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
@@ -304,7 +303,7 @@ namespace game
 		int randomz;
 
 		//creating human
-		for (int i = 0; i < 15; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
@@ -322,7 +321,7 @@ namespace game
 		}
 
 		//creating spider
-		for (int i = 0; i < 25; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
@@ -340,7 +339,7 @@ namespace game
 		}
 
 		//creating dragonfly
-		for (int i = 0; i < 25; i++)
+		for (int i = 0; i < 5; i++)
 
 		{
 			//choosing which room to go
@@ -403,18 +402,21 @@ namespace game
 			scene_.Draw(&camera_);		// Draw the scene
 
 			//check if player health > 0 & gamestate & if we no longer have enemies 
-			if ((player->health > 0 && gamestart_) || (humans.size() == 0 && spiders.size() == 0 && dragonFlies.size() == 0))
+			if (gamestart_ || (humans.size() == 0 && spiders.size() == 0 && dragonFlies.size() == 0))
 			{
-				/* COLLISION DETECTION */
-				gameCollisionDetection();
+				if (player->health > 0)
+				{
+					/* COLLISION DETECTION */
+					gameCollisionDetection();
 
-				/* UPDATE */
-				update();
+					/* UPDATE */
+					update();
+				}
+
+				scene_.UpdateHealthData(player->health, player->maxHealth);
+				scene_.DrawToTexture(&camera_);
+				scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 			}
-			
-			scene_.UpdateHealthData(player->health, player->maxHealth);
-			scene_.DrawToTexture(&camera_);
-			scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 			
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
 			glfwPollEvents();			// Update other events like input handling
@@ -689,6 +691,7 @@ namespace game
 		hum->forwardBall = createSceneNode("meh" , "rocketMesh" , "objectMaterial" , "");
 		hum->forwardBall->Rotate(glm::angleAxis(glm::pi<float>()/2 , glm::vec3(1,0,0)));
 		hum->forwardBall->SetPosition(hum->body->GetPosition() + glm::vec3(0 , 0 , 1.0));
+		hum->forwardBall->SetVisible(false);
 		world->AddChild(hum->forwardBall);
 
 		return hum;
