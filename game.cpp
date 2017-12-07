@@ -266,6 +266,12 @@ namespace game
 		resman_.LoadResource(Mesh, "flyWingsMesh", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/flyLegs.obj");
 		resman_.LoadResource(Mesh, "flyLegsMesh", filename.c_str());
+
+		//loading material for the screen-space effect
+		filename = std::string(MATERIAL_DIRECTORY) + std::string("/screen_space");
+		resman_.LoadResource(Material, "ScreenSpaceMaterial", filename.c_str());
+
+		scene_.SetupDrawToTexture();
 	}
 
 	/* Setup game elements */
@@ -405,6 +411,9 @@ namespace game
 				/* UPDATE */
 				update();
 			}
+			
+			scene_.DrawToTexture(&camera_);
+			scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 			
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
 			glfwPollEvents();			// Update other events like input handling
