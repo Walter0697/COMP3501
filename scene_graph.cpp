@@ -225,6 +225,8 @@ namespace game
 		float current_time = glfwGetTime();
 		glUniform1f(timer_var, current_time);
 
+		health_data.SetupShader(program);
+
 		// Bind texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture_);
@@ -275,5 +277,22 @@ namespace game
 		// Reset frame buffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+
+	void SceneGraph::SetUpHealthData(void){
+		GLfloat *healthinfo = new GLfloat[3];
+		healthinfo[0] = 100000.f;
+		healthinfo[1] = 100000.f;
+		health_data = ShaderAttribute("health", Vec3Type, 3, healthinfo);
+	}
+
+	void SceneGraph::UpdateHealthData(float data, float max)
+	{
+		GLfloat *healthinfo = health_data.GetData();
+		healthinfo[0] = (GLfloat)data;
+		healthinfo[1] = (GLfloat)max;
+		std::cout << healthinfo[0] << std::endl;
+		health_data.SetData(healthinfo);
+	}
+
 
 } // namespace game

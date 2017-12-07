@@ -28,6 +28,7 @@ namespace game {
     class ShaderAttribute {
 
         public:
+			ShaderAttribute();
             ShaderAttribute(std::string name, DataType type, int size, GLfloat *data);
             ~ShaderAttribute();
 
@@ -36,6 +37,9 @@ namespace game {
             DataType GetType(void) const;
             int GetSize(void) const;
             GLfloat *GetData(void) const;
+
+			/* Setter */
+			void SetData(GLfloat*);
  
             // Set attribute in the shader
             void SetupShader(GLuint program);

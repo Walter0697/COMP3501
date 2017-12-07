@@ -3,6 +3,8 @@
 
 namespace game {
 
+ShaderAttribute::ShaderAttribute() {}
+
 ShaderAttribute::ShaderAttribute(std::string name, DataType type, int size, GLfloat *data){
 
     name_ = name;
@@ -39,6 +41,9 @@ GLfloat *ShaderAttribute::GetData(void) const {
     return data_;
 }
 
+void ShaderAttribute::SetData(GLfloat *data) {
+	data_ = data;
+}
 
 void ShaderAttribute::SetupShader(GLuint program){
 

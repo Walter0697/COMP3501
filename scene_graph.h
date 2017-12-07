@@ -35,6 +35,9 @@ namespace game {
 			GLuint texture_;
 			GLuint depth_buffer_;
 
+			//shader attribute for the health data
+			ShaderAttribute health_data;
+
         public:
             SceneGraph(void);
             ~SceneGraph();
@@ -62,6 +65,9 @@ namespace game {
 			void DisplayTexture(GLuint program);
 			// Save texture to a file in ppm format
 			void SaveTexture(char *filename);
+
+			void SetUpHealthData(void);
+			void UpdateHealthData(float, float);
 
     }; // class SceneGraph
 

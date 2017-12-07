@@ -277,7 +277,8 @@ namespace game
 	/* Setup game elements */
 	void Game::SetupScene(void)
 	{
-		scene_.SetBackgroundColor(viewport_background_color_g);								// Set background color for the scene
+		scene_.SetBackgroundColor(viewport_background_color_g);		// Set background color for the scene
+		scene_.SetUpHealthData();                                   // Set up data for the screen space effect
 
 		/* Menu Screen */
 		menuNode = createSceneNode("menuInstance", "wallMesh", "textureMaterial", "menuTex");
@@ -297,8 +298,7 @@ namespace game
 		
 		player = createFly("player");														// Create player
 		player->body->SetVisible(false);
-		target = createTarget("playerTarget");												// Create target for shooting
-		createHuman("human1", glm::vec3(0, 0, -200));										// Create human enemies
+		target = createTarget("playerTarget");												// Create target for shooting								// Create human enemies
 
 		int randomx;
 		int randomz;
@@ -412,6 +412,7 @@ namespace game
 				update();
 			}
 			
+			scene_.UpdateHealthData(player->health, player->maxHealth);
 			scene_.DrawToTexture(&camera_);
 			scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 			
