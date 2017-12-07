@@ -304,7 +304,7 @@ namespace game
 		int randomz;
 
 		//creating human
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 15; i++)
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
@@ -322,7 +322,7 @@ namespace game
 		}
 
 		//creating spider
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 25; i++)
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
@@ -340,7 +340,7 @@ namespace game
 		}
 
 		//creating dragonfly
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 25; i++)
 
 		{
 			//choosing which room to go
@@ -359,7 +359,7 @@ namespace game
 		}
 
 		//creating block
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
