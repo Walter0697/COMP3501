@@ -12,8 +12,8 @@
 #include "camera.h"
 #include "CameraNode.h"
 
-#define FRAME_BUFFER_WIDTH 1024
-#define FRAME_BUFFER_HEIGHT 768
+#define FRAME_BUFFER_WIDTH 1920
+#define FRAME_BUFFER_HEIGHT 1080
 
 namespace game {
 
