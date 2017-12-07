@@ -6,8 +6,8 @@
 #include "bin/path_config.h"
 
 // TO DO:
-// LOCKING AT THE PLAYER ??????????????????????
-// REDO HOW ENEMIES LOCK ON TO PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// RESIZE IS FUCKING UP 
+// FPS IS LOW BECAUSE OF THE NUMBER OF ENEMIES
 // MAKE HUMANS MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
 // SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
 
@@ -457,6 +457,7 @@ namespace game
 							game->world->RemoveChild(game->blocks[i]->object);
 							game->player->myBlock = game->blocks[i];
 							game->player->myBlock->beingDragged = true;
+							game->player->myBlock->dropped = false;
 							game->player->myBlock->hitFloor = true;
 							game->blocks[i]->object->SetPosition(game->player->body->GetPosition() + (glm::vec3(0, -0.8, 0)));
 							game->player->body->AddChild(game->blocks[i]->object);
@@ -467,9 +468,10 @@ namespace game
 				else
 				{
 					std::cout << "dropping" << std::endl;
+					game->player->myBlock->dropped = true;
 					game->player->myBlock->beingDragged = false;
 					game->player->body->RemoveChild(game->player->myBlock->object);
-					game->player->myBlock->object->SetPosition(game->player->myBlock->object->getPrevAbsolutePosition());
+					game->player->myBlock->object->SetPosition(game->player->myBlock->object->getAbsolutePosition());
 					game->world->AddChild(game->player->myBlock->object);
 					game->player->myBlock = 0;
 				}
@@ -1194,13 +1196,15 @@ namespace game
 		{
 			if (environment->collision(blocks[i]->object, blocks[i]->boundingRadius, blocks[i]->offset, &norm))
 			{
-				if (norm == glm::vec3(0, 1, 0)) {
-					if (blocks[i]->hitFloor)
+				if (norm == glm::vec3(0, 1, 0)) 
+				{
+					if (blocks[i]->hitFloor && blocks[i]->dropped)
 					{
 						ringParticle1->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
 						ringParticle2->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
 						ringParticle2->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.6, 0.6, 0.6)));
 						blocks[i]->hitFloor= false;
+						blocks[i]->dropped = false;
 					}
 					blocks[i]->onFloor = true;
 				}

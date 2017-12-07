@@ -290,7 +290,7 @@ namespace game
 		GLfloat *healthinfo = health_data.GetData();
 		healthinfo[0] = (GLfloat)data;
 		healthinfo[1] = (GLfloat)max;
-		std::cout << healthinfo[0] << std::endl;
+		//std::cout << healthinfo[0] << std::endl;
 		health_data.SetData(healthinfo);
 	}
 

@@ -34,7 +34,7 @@ namespace game
 		bool collision(SceneNode*, float , float);			//Check for collision with it
 
 		bool hitFloor;										//bool to check for hitting the floor for particle animation
-
+		bool dropped;										//check for dropping block
 	private:
 	protected:
 	};
