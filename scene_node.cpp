@@ -104,8 +104,8 @@ namespace game
 
 	void SceneNode::AppendChild(SceneNode *node)
 	{
-		//children_.insert(children_.begin(), node);
-		children_.push_back(node);
+		children_.insert(children_.begin(), node);
+		//children_.push_back(node);
 		node->parent_ = this;
 	}
 

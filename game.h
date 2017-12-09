@@ -109,7 +109,7 @@ namespace game
 			Spider* createSpider(std::string entity_name, glm::vec3 pos);									// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name, glm::vec3 pos);								// Create a dragonfly instance
 			SceneNode* createSky();																			// Create a sky
-			ParticleNode* createParticle(std::string entity_name, std::string geometry, std::string material, std::string texture, glm::vec3 scale);// Create particles
+			ParticleNode* createParticle(std::string entity_name, std::string geometry, std::string material, std::string texture, glm::vec3 scale, bool insertFlag = false);// Create particles
 			Block* createBlock(std::string entity_name, glm::vec3 pos);										// Create a block
 			Room* createRoom(std::string entity_name, int);													// Create a room with 4 walls and a floor
 			SceneNode* createSceneNode(std::string, std::string, std::string, std::string);					// General SceneNode creator

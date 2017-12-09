@@ -786,7 +786,7 @@ namespace game
 		webNode->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
 		webNode->SetPosition(pos + 4.f * glm::normalize(direction));
 
-		ParticleNode* webParticle = createParticle(entity_name + "Particle", "TorusParticle", "splineMaterial", "", glm::vec3(0.2, 0.2, 0.2));
+		ParticleNode* webParticle = createParticle(entity_name + "Particle", "TorusParticle", "splineMaterial", "", glm::vec3(0.2, 0.2, 0.2), true);
 		Resource *cp = resman_.GetResource("ControlPoints");
 		webParticle->getParticle()->AddShaderAttribute("control_point", Vec3Type, cp->GetSize(), cp->GetData());
 		webParticle->startAnimate(pos + 2.f * glm::normalize(direction), player->body->getAbsoluteOrientation(), 999);
@@ -926,10 +926,13 @@ namespace game
 	}
 
 	// Function to create a new ParticleNode
-	ParticleNode *Game::createParticle(std::string entity_name, std::string geometry, std::string material, std::string texture, glm::vec3 scale)
+	ParticleNode *Game::createParticle(std::string entity_name, std::string geometry, std::string material, std::string texture, glm::vec3 scale, bool insertFlag)
 	{
 		SceneNode *particle = createSceneNode(entity_name, geometry, material, texture);
-		world->AppendChild(particle);
+		if (insertFlag)
+			world->AppendChild(particle);
+		else
+			world->AddChild(particle);
 		particle->SetScale(scale);
 		particle->SetBlending(true);
 		return new ParticleNode(particle);
