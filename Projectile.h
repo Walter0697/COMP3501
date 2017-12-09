@@ -11,6 +11,7 @@
 
 #include "Collidable.h"
 #include "scene_node.h"
+#include "particleNode.h"
 
 //PROJECTILES
 namespace game
@@ -22,10 +23,10 @@ namespace game
 		float speed;					// speed of the rocket
 		int timer;						// time after which rocket gets deleted 
 		SceneNode* node;				// scene node for projectiles
+		ParticleNode* particle;			// particle system
 
 		virtual void update() = 0;		// update projectiles
 	private:
 	protected:
-
 	};
 }

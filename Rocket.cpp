@@ -8,7 +8,7 @@ namespace game
 	{
 		offset = 0.0;							// offset off center
 		this->direction = glm::normalize(dir);	// direction of the rocket
-		this->speed = 0.8;						// speed 
+		this->speed = 0.6;						// speed 
 		this->timer = 200;						// timer to get rid of rocket
 		this->node = node;						// SceneNode for drawing rocket
 		boundingRadius = 0.1;					// radius of bounding sphere

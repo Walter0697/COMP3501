@@ -11,15 +11,14 @@ namespace game
 		fireRate = 0;					// fire rate handler
 		timer = 10;						// Timer for wing movement
 		upWingMovement = true;			// Checking for upwards or downwards fly rotation
-		maxHealth = 100;				// Maximum health
+		maxHealth = 200;				// Maximum health
 		health = maxHealth;				// Health of fly
-		myBlock = NULL;
-		dragging = false;
-		boundingRadius = 1;			// Radius of bounds
+		myBlock = NULL;					// Block when fly is dragging
+		dragging = false;				// check for whether the fly is dragging
+		boundingRadius = 1;				// Radius of bounds
 		body = flyBody;					// Body of fly
 		wings = flyWings;				// Wings of the fly
 		legs = flyLegs;					// Legs of fly
-
 	}
 
 	/* Destructor */

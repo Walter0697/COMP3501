@@ -5,9 +5,6 @@
 #include "game.h"
 #include "bin/path_config.h"
 
-// TO DO:
-// MAKE HUMANS MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
-
 // Spacebar to shoot rocket
 // W,A,S,D for movement
 // Right click to move from first to third person
@@ -210,9 +207,6 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/sky-texture.jpg");
 		resman_.LoadResource(Texture, "skyTex", filename.c_str());
 
-		//healthBar->SetScale(healthBar->GetScale() - glm::vec3(damage * (1.0 / 3.2), 0.0, 0.0));
-		//healthBar->SetScale(glm::vec3((health / maxHealth) * 3.2, healthBar->GetScale().y, healthBar->GetScale().z));
-
 		// BLOCK TEXTURE
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
 		resman_.LoadResource(Texture, "blockTex", filename.c_str());
@@ -295,10 +289,10 @@ namespace game
 		ringParticle1 = createParticle("ringInstance1", "RingParticle", "ringMaterial", "", glm::vec3(0.8, 0.8, 0.8));
 		ringParticle2 = createParticle("ringInstance2", "RingParticle", "ringMaterial", "", glm::vec3(0.8, 0.8, 0.8));
 		
-		player = createFly("player");														// Create player
+		player = createFly("player");											
 		player->body->SetVisible(false);
-		target = createTarget("playerTarget");												// Create target for shooting								// Create human enemies
-		player->healthBar = createHealthBar("playerHealthBar");										// Create Health Bar for living
+		target = createTarget("playerTarget");																			
+		player->healthBar = createHealthBar("playerHealthBar");										
 
 		int randomx;
 		int randomz;
@@ -359,7 +353,7 @@ namespace game
 		}
 
 		//creating block
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			//choosing which room to go
 			if (rand() % 2 == 0)
@@ -402,8 +396,12 @@ namespace game
 			/* DRAW */
 			scene_.Draw(&camera_);		// Draw the scene
 
+			std::cout << "spiders: " << spiders.size() << std::endl;
+			std::cout << "dragonflies: " << dragonFlies.size() << std::endl;
+			std::cout <<  "humans: " << humans.size() << std::endl;
+
 			//check if player health > 0 & gamestate & if we no longer have enemies 
-			if (gamestart_ || (humans.size() == 0 && spiders.size() == 0 && dragonFlies.size() == 0))
+			if (gamestart_ && !(humans.size() == 0 && spiders.size() == 0 && dragonFlies.size() == 0))
 			{
 				if (player->health > 0)
 				{
@@ -456,43 +454,6 @@ namespace game
 
 			// Quit game if ESC button is pressed
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-
-			// Used for modifying 3 glm::vec3 variables
-			// Ideal for modifying the scale and position of a given object in real time
-			/*
-			bool shiftIsPressed = false;
-			float xyscale = 0.1;
-			float zscale = 0.1;
-			if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
-				game->input_shift = !game->input_shift;
-			}
-			if (game->input_shift) {
-				xyscale *= -1.0;
-				zscale *= -1.0;
-			}
-			if (key == GLFW_KEY_U && action == GLFW_PRESS) {
-				game->player->healthBar->Translate(glm::vec3(xyscale, 0.0, 0.0));
-			}
-			if (key == GLFW_KEY_I && action == GLFW_PRESS) { 
-				game->player->healthBar->Translate(glm::vec3(0.0, xyscale, 0.0));
-			}
-			if (key == GLFW_KEY_O && action == GLFW_PRESS) { 
-				game->player->healthBar->Translate(glm::vec3(0.0, 0.0, zscale));
-			}
-			if (key == GLFW_KEY_J && action == GLFW_PRESS) {
-				game->player->healthBar->SetScale(game->player->healthBar->GetScale() + glm::vec3(xyscale, 0.0, 0.0));
-			}
-			if (key == GLFW_KEY_K && action == GLFW_PRESS) { 
-				game->player->healthBar->SetScale(game->player->healthBar->GetScale() + glm::vec3(0.0, xyscale, 0.0));
-			}
-			if (key == GLFW_KEY_L && action == GLFW_PRESS) {
-				game->player->healthBar->SetScale(game->player->healthBar->GetScale() + glm::vec3(0.0, 0.0, xyscale));
-			}
-			if (key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS) {
-				std::cout << "healthBarPosition: x= " << game->player->healthBar->GetPosition().x << " y= " << game->player->healthBar->GetPosition().y << " z= " << game->player->healthBar->GetPosition().z << std::endl;
-				std::cout << "healthBarScale: x= " << game->player->healthBar->GetScale().x << " y= " << game->player->healthBar->GetScale().y << " z= " << game->player->healthBar->GetScale().z << std::endl;
-			}
-			*/
 
 			if (key == GLFW_KEY_G && action == GLFW_PRESS)
 			{
@@ -716,14 +677,6 @@ namespace game
 		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
 		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
 		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
-		
-		/*
-		SceneNode* humanBody = createSceneNode(entity_name + "Body", "CubeMesh", "textureMaterial", "humanTex");
-		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "CubeMesh", "textureMaterial", "humanTex");
-		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "CubeMesh", "textureMaterial", "humanTex");
-		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "CubeMesh", "textureMaterial", "humanTex");
-		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "CubeMesh", "textureMaterial", "humanTex");
-		*/
 
 		// Setup Heirarchy
 		world->AddChild(humanBody);
@@ -1102,7 +1055,7 @@ namespace game
 		{
 			if (!webs[i]->node->del)
 			{
-				webs[i]->webParticle->updatePosition(webs[i]->node->getAbsolutePosition());
+				webs[i]->particle->updatePosition(webs[i]->node->getAbsolutePosition());
 			}
 		}
 	}
@@ -1197,7 +1150,7 @@ namespace game
 			/* PLAYER COLLISION WITH WEBS */
 			if (webs[i]->collision(player->body, player->offset, player->boundingRadius))
 			{
-				webs[i]->webParticle->deleteNode();
+				webs[i]->particle->deleteNode();
 				webs[i]->node->del = true;
 				webs.erase(webs.begin() + i);
 				i--;
@@ -1215,7 +1168,7 @@ namespace game
 			{
 				if (!collided && webs[i]->collision(dragonFlies[j]->body, dragonFlies[j]->offset, dragonFlies[j]->boundingRadius))
 				{
-					webs[i]->webParticle->deleteNode();
+					webs[i]->particle->deleteNode();
 					webs[i]->node->del = true;
 					webs.erase(webs.begin() + i);
 					i--;
@@ -1234,7 +1187,7 @@ namespace game
 				if (!collided && (webs[i]->collision(humans[k]->body, humans[k]->offset, humans[k]->boundingRadius)
 					|| webs[i]->collision(humans[k]->body, humans[k]->boundingRadius + humans[k]->offset, humans[k]->boundingRadius)))
 				{
-					webs[i]->webParticle->deleteNode();
+					webs[i]->particle->deleteNode();
 					webs[i]->node->del = true;
 					webs.erase(webs.begin() + i);
 					i--;
@@ -1252,7 +1205,7 @@ namespace game
 			{
 				if (!collided && webs[i]->collision(spiders[l]->body, spiders[l]->offset, spiders[l]->boundingRadius))
 				{
-					webs[i]->webParticle->deleteNode();
+					webs[i]->particle->deleteNode();
 					webs[i]->node->del = true;
 					webs.erase(webs.begin() + i);
 					i--;
@@ -1313,7 +1266,7 @@ namespace game
 		{
 			if (environment->collision(webs[w]->node, webs[w]->boundingRadius, webs[w]->offset, &norm))
 			{
-				webs[w]->webParticle->deleteNode();
+				webs[w]->particle->deleteNode();
 				webs[w]->node->del = true;
 				webs.erase(webs.begin() + w);
 				w--;

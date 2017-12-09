@@ -51,38 +51,14 @@ namespace game
 		glm::vec3 yaxis = glm::vec3(0 , 1 , 0);
 		
 		body->SetOrientation(glm::quat(glm::mat3(xaxis , yaxis , zaxis)));
-		/*
-		float angle = glm::dot(forward, direction);
-		//std::cout << angle << std::endl;
-		angle = acos(angle);
-
-		if (glm::length(forward - direction) <= 0.000001) 
-		{ 
-			std::cout << "hello" << std::endl;
-			glm::vec3 axis = up;
-			//body->Rotate(glm::angleAxis(angle, axis));
-		}
-		else if (angle - 1 < 0.0000001)
-		{
-			std::cout << "hellobae" << std::endl;
-			glm::vec3 axis = glm::normalize(glm::cross(forward, direction));
-			body->Rotate(glm::angleAxis(angle, axis));
-		}
-
-		*/
-		//body->SetOrientation(glm::quat(direction , forward));
-
-		//body->SetOrientation(targetOrientation);
-		
 
 		state = rand() % 3;
 	
-
 		if (state == 0) {} //Idle
 		else if (state == 1 || state == 3) 
 		{
 			//Move to player
-			//body->Translate(glm::vec3(direction.x, 0, direction.z) * speed);
+			body->Translate(glm::vec3(direction.x, 0, direction.z) * speed);
 		}
 		else if (state == 2) { }
 		else { std::cout << "Invalid state in Human" << std::endl; }

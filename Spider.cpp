@@ -79,9 +79,6 @@ namespace game
 	    else if (state == 1) 
 		{ 
 			//Move to player
-			//body->SetOrientation(targetOrientation);
-
-			//body->Translate(glm::vec3(((targetPos.x - body->GetPosition().x) * 0.01), ((targetPos.y - body->GetPosition().y) * 0.01), ((targetPos.z - body->GetPosition().z) * 0.01)));
 			isMoving = true;
 		}
 		else if (state == 2) 
@@ -139,6 +136,7 @@ namespace game
 		for (int i = 0; i < projectiles.size(); i++)
 		{
 			projectiles[i]->node->del = true;
+			projectiles[i]->particle->getParticle()->del = true;
 		}
 	}
 }

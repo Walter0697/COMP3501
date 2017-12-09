@@ -45,8 +45,6 @@ namespace game
 		glm::vec3 yaxis = glm::vec3(0, 1, 0);
 
 		body->SetOrientation(glm::quat(glm::mat3(xaxis, yaxis, zaxis)));
-		//glm::quat rotation(prevDirection,direction);
-		//body->Rotate(rotation);
 
 		//wing animation
 		if (upWingMovement)
