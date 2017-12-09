@@ -459,7 +459,7 @@ namespace game
 
 			// Used for modifying 3 glm::vec3 variables
 			// Ideal for modifying the scale and position of a given object in real time
-			
+			/*
 			bool shiftIsPressed = false;
 			float xyscale = 0.1;
 			float zscale = 0.1;
@@ -492,8 +492,7 @@ namespace game
 				std::cout << "healthBarPosition: x= " << game->player->healthBar->GetPosition().x << " y= " << game->player->healthBar->GetPosition().y << " z= " << game->player->healthBar->GetPosition().z << std::endl;
 				std::cout << "healthBarScale: x= " << game->player->healthBar->GetScale().x << " y= " << game->player->healthBar->GetScale().y << " z= " << game->player->healthBar->GetScale().z << std::endl;
 			}
-			
-
+			*/
 
 			if (key == GLFW_KEY_G && action == GLFW_PRESS)
 			{
