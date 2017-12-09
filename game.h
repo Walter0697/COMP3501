@@ -97,12 +97,15 @@ namespace game
 			void enemiesCollision();																		// Player collisions
 			void blocksCollision();																			// collision detection for the blocks
 			
+			bool input_shift = false;;
+
 			std::vector<Resource*> loadAssetResources(std::string, std::string, std::string);
 			Rocket* createRocket(std::string, glm::vec3 direction, glm::vec3 pos);							// Create a rocket instance
 			Web* createWeb(std::string, glm::vec3 direction, glm::vec3 pos);								// Create a web instance
 			Fly* createFly(std::string entity_name);														// Create a fly instance
 			Human* createHuman(std::string entity_name, glm::vec3 pos);										// Create a human instance
 			SceneNode* createTarget(std::string entity_name);												// Create a target instance 
+			SceneNode* createHealthBar(std::string entity_name);												// Create a target instance 
 			Spider* createSpider(std::string entity_name, glm::vec3 pos);									// Create a spider instance
 			DragonFly* createDragonFly(std::string entity_name, glm::vec3 pos);								// Create a dragonfly instance
 			SceneNode* createSky();																			// Create a sky

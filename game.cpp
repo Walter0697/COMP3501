@@ -6,11 +6,7 @@
 #include "bin/path_config.h"
 
 // TO DO:
-// FPS IS LOW BECAUSE OF THE NUMBER OF ENEMIES
 // MAKE HUMANS MORE AGGRESSIVE FLY SHOULD NEVER WANT TO GO TO THE FLOOR EXCEPT TO PICK UP A DRAGGABLE TO THROW AT THE HUMAN (CHALLENGE)!!!!
-// SHOULD WE DELETE THE BLOCK AFTER IT COLLIDES WITH AN ENEMY
-
-// SHADOW MAPPING (OPTIONAL)
 
 // Spacebar to shoot rocket
 // W,A,S,D for movement
@@ -214,6 +210,9 @@ namespace game
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/sky-texture.jpg");
 		resman_.LoadResource(Texture, "skyTex", filename.c_str());
 
+		//healthBar->SetScale(healthBar->GetScale() - glm::vec3(damage * (1.0 / 3.2), 0.0, 0.0));
+		//healthBar->SetScale(glm::vec3((health / maxHealth) * 3.2, healthBar->GetScale().y, healthBar->GetScale().z));
+
 		// BLOCK TEXTURE
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/textures/metalTexture.png");
 		resman_.LoadResource(Texture, "blockTex", filename.c_str());
@@ -239,7 +238,8 @@ namespace game
 		resman_.LoadResource(Mesh, "humanLeftLegMesh", filename.c_str());
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/humanRightLeg.obj");
 		resman_.LoadResource(Mesh, "humanRightLegMesh", filename.c_str());
-		
+
+		//healthBar->SetScale(healthBar->GetScale() - glm::vec3(health * (1.0 / 3.2), 0.0, 0.0));
 		// SPIDER BODY and RIGHT AND LEFT LEGS
 		filename = std::string(MATERIAL_DIRECTORY) + std::string("/assets/spiderBody.obj");
 		resman_.LoadResource(Mesh, "spiderBodyMesh", filename.c_str());
@@ -277,7 +277,7 @@ namespace game
 	void Game::SetupScene(void)
 	{
 		scene_.SetBackgroundColor(viewport_background_color_g);		// Set background color for the scene
-		scene_.SetUpHealthData();                                   // Set up data for the screen space effect
+		//scene_.SetUpHealthData();                                   // Set up data for the screen space effect
 
 		/* Menu Screen */
 		menuNode = createSceneNode("menuInstance", "wallMesh", "textureMaterial", "menuTex");
@@ -298,6 +298,7 @@ namespace game
 		player = createFly("player");														// Create player
 		player->body->SetVisible(false);
 		target = createTarget("playerTarget");												// Create target for shooting								// Create human enemies
+		player->healthBar = createHealthBar("playerHealthBar");										// Create Health Bar for living
 
 		int randomx;
 		int randomz;
@@ -413,9 +414,9 @@ namespace game
 					update();
 				}
 
-				scene_.UpdateHealthData(player->health, player->maxHealth);
-				scene_.DrawToTexture(&camera_);
-				scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
+				//scene_.UpdateHealthData(player->health, player->maxHealth);
+				//scene_.DrawToTexture(&camera_);
+				//scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 			}
 			
 			glfwSwapBuffers(window_);	// Push buffer drawn in the background onto the display
@@ -431,7 +432,17 @@ namespace game
 		
 		if (game->gamestart_)
 			// Mouse click checks for 1st or third person
-			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) { game->camera_.firstPerson = !game->camera_.firstPerson; }
+			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) 
+			{
+				//update health bar
+				if (game->camera_.firstPerson)
+				{
+					game->player->healthBar->Translate(glm::vec3(0, 0, 1) * game->camera_.distance);
+				}
+				else { game->player->healthBar->Translate(glm::vec3(0, 0, -1) * game->camera_.distance); }
+
+				game->camera_.firstPerson = !game->camera_.firstPerson; 
+			}
 	}
 
 	void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -445,6 +456,44 @@ namespace game
 
 			// Quit game if ESC button is pressed
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+
+			// Used for modifying 3 glm::vec3 variables
+			// Ideal for modifying the scale and position of a given object in real time
+			
+			bool shiftIsPressed = false;
+			float xyscale = 0.1;
+			float zscale = 0.1;
+			if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
+				game->input_shift = !game->input_shift;
+			}
+			if (game->input_shift) {
+				xyscale *= -1.0;
+				zscale *= -1.0;
+			}
+			if (key == GLFW_KEY_U && action == GLFW_PRESS) {
+				game->player->healthBar->Translate(glm::vec3(xyscale, 0.0, 0.0));
+			}
+			if (key == GLFW_KEY_I && action == GLFW_PRESS) { 
+				game->player->healthBar->Translate(glm::vec3(0.0, xyscale, 0.0));
+			}
+			if (key == GLFW_KEY_O && action == GLFW_PRESS) { 
+				game->player->healthBar->Translate(glm::vec3(0.0, 0.0, zscale));
+			}
+			if (key == GLFW_KEY_J && action == GLFW_PRESS) {
+				game->player->healthBar->SetScale(game->player->healthBar->GetScale() + glm::vec3(xyscale, 0.0, 0.0));
+			}
+			if (key == GLFW_KEY_K && action == GLFW_PRESS) { 
+				game->player->healthBar->SetScale(game->player->healthBar->GetScale() + glm::vec3(0.0, xyscale, 0.0));
+			}
+			if (key == GLFW_KEY_L && action == GLFW_PRESS) {
+				game->player->healthBar->SetScale(game->player->healthBar->GetScale() + glm::vec3(0.0, 0.0, xyscale));
+			}
+			if (key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS) {
+				std::cout << "healthBarPosition: x= " << game->player->healthBar->GetPosition().x << " y= " << game->player->healthBar->GetPosition().y << " z= " << game->player->healthBar->GetPosition().z << std::endl;
+				std::cout << "healthBarScale: x= " << game->player->healthBar->GetScale().x << " y= " << game->player->healthBar->GetScale().y << " z= " << game->player->healthBar->GetScale().z << std::endl;
+			}
+			
+
 
 			if (key == GLFW_KEY_G && action == GLFW_PRESS)
 			{
@@ -662,11 +711,20 @@ namespace game
 	// CREATE HUMAN
 	Human* Game::createHuman(std::string entity_name, glm::vec3 pos)
 	{
+		
 		SceneNode* humanBody = createSceneNode(entity_name + "Body", "humanBodyMesh", "textureMaterial", "humanTex");
 		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "humanLeftHandMesh", "textureMaterial", "humanTex");
 		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "humanRightHandMesh", "textureMaterial", "humanTex");
 		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "humanLeftLegMesh", "textureMaterial", "humanTex");
 		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "humanRightLegMesh", "textureMaterial", "humanTex");
+		
+		/*
+		SceneNode* humanBody = createSceneNode(entity_name + "Body", "CubeMesh", "textureMaterial", "humanTex");
+		SceneNode* humanLeftHand = createSceneNode(entity_name + "LeftHand", "CubeMesh", "textureMaterial", "humanTex");
+		SceneNode* humanRightHand = createSceneNode(entity_name + "RightHand", "CubeMesh", "textureMaterial", "humanTex");
+		SceneNode* humanLeftLeg = createSceneNode(entity_name + "LeftLeg", "CubeMesh", "textureMaterial", "humanTex");
+		SceneNode* humanRightLeg = createSceneNode(entity_name + "RightLeg", "CubeMesh", "textureMaterial", "humanTex");
+		*/
 
 		// Setup Heirarchy
 		world->AddChild(humanBody);
@@ -727,7 +785,7 @@ namespace game
 		webNode->SetScale(glm::vec3(0.1, 0.1, 0.1));
 		webNode->SetOrientation(player->body->getAbsoluteOrientation());
 		webNode->Rotate(glm::normalize(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1.0, 0.0, 0.0))));
-		webNode->SetPosition(pos + 2.f * glm::normalize(direction));
+		webNode->SetPosition(pos + 4.f * glm::normalize(direction));
 
 		ParticleNode* webParticle = createParticle(entity_name + "Particle", "TorusParticle", "splineMaterial", "", glm::vec3(0.2, 0.2, 0.2));
 		Resource *cp = resman_.GetResource("ControlPoints");
@@ -758,6 +816,19 @@ namespace game
 		return Target;
 	}
 
+	// TARGET IS A CHILD OF CAMERA SINCE OUR TARGET IS BASED ON THE CAMERA POSITION AND MOVE WITH IT AND NOT THE PLAYER
+	SceneNode* Game::createHealthBar(std::string entity_name)
+	{
+		// Create a Target instance and make it a child of camera 
+		SceneNode* Target = createSceneNode(entity_name, "targetMesh", "objectMaterial", "");
+		camNode->AddChild(Target);
+
+		//Set initial values
+		Target->SetScale(glm::vec3(3.2, -0.2, 1.9));
+		Target->SetPosition(glm::vec3(0, 1, -1.11));
+
+		return Target;
+	}
 	//GENERALIZE THIS FUNCTION
 	Room* Game::createRoom(std::string entity_name, int direction)
 	{
@@ -1057,7 +1128,8 @@ namespace game
 				rockets.erase(rockets.begin() + i);
 				i--;
 
-				//player->health -= 10;
+				player->health -= 10;
+				player->healthBar->SetScale(glm::vec3((player->health / player->maxHealth) * 3.2f, player->healthBar->GetScale().y, player->healthBar->GetScale().z));
 				collided = true;
 				break;
 			}
@@ -1128,7 +1200,8 @@ namespace game
 				webs.erase(webs.begin() + i);
 				i--;
 
-				//player->health -= 10;
+				player->health -= 10;
+				player->healthBar->SetScale(glm::vec3((player->health / player->maxHealth) * 3.2f, player->healthBar->GetScale().y, player->healthBar->GetScale().z));
 				collided = true;
 				break;
 			}
@@ -1201,15 +1274,22 @@ namespace game
 			{
 				if (norm == glm::vec3(0, 1, 0)) 
 				{
+					if (blocks[i]->dropped) {}
 					if (blocks[i]->hitFloor && blocks[i]->dropped)
 					{
 						ringParticle1->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
 						ringParticle2->startAnimate(blocks[i]->object->getAbsolutePosition(), blocks[i]->object->getAbsoluteOrientation(), 4);
 						ringParticle2->getParticle()->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0.6, 0.6, 0.6)));
 						blocks[i]->hitFloor= false;
-						blocks[i]->dropped = false;
 					}
 					blocks[i]->onFloor = true;
+
+					if (blocks[i]->dropped) 
+					{ 
+						blocks[i]->object->del = true;
+						blocks.erase(blocks.begin() + i);
+					}
+					//blocks[i]->dropped = false;
 				}
 			}
 			else { blocks[i]->onFloor = false; }
@@ -1367,6 +1447,7 @@ namespace game
 				player->collision(humans[k]->body, humans[k]->offset + humans[k]->boundingRadius, humans[k]->boundingRadius))
 			{
 				player->health -= 10;
+				player->healthBar->SetScale(glm::vec3((player->health / player->maxHealth) * 3.2f, player->healthBar->GetScale().y, player->healthBar->GetScale().z));
 				glm::vec3 direc = glm::normalize(player->body->getAbsolutePosition() - humans[k]->body->getAbsolutePosition());
 				camera_.Translate(player->speed * 30.f * direc);
 			}
@@ -1403,7 +1484,11 @@ namespace game
 				if (dragonFlies[i]->collision(blocks[w]->object, blocks[w]->offset, blocks[w]->boundingRadius))
 				{
 					if (blocks[w]->onFloor) { dragonFlies[i]->body->Translate(-dragonFlies[i]->getDirection() * 2.f * dragonFlies[i]->speed); }
-					else { dragonFlies[i]->health = 0; }
+					else
+					{
+						dragonFlies[i]->health = 0;
+					}
+
 				}
 			}
 
@@ -1412,7 +1497,10 @@ namespace game
 				if (spiders[j]->collision(blocks[w]->object, blocks[w]->offset, blocks[w]->boundingRadius))
 				{
 					if (blocks[w]->onFloor) { spiders[j]->body->Translate(-spiders[j]->getDirection() * 2.f * spiders[j]->speed); }
-					else { spiders[j]->health = 0; }
+					else 
+					{ 
+						spiders[j]->health = 0; 
+					}
 				}
 			}
 
@@ -1422,7 +1510,11 @@ namespace game
 					blocks[w]->collision(humans[k]->body, humans[k]->boundingRadius + humans[k]->offset, humans[k]->boundingRadius))
 				{
 					if (blocks[w]->onFloor) { humans[k]->body->Translate(-humans[k]->getDirection() * 2.f * humans[k]->speed); }
-					else { humans[k]->health = 0; }
+					else 
+					{
+
+						humans[k]->health = 0; 
+					}
 				}
 			}
 		}

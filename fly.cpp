@@ -30,6 +30,7 @@ namespace game
 	{
 		fireRate--;		
 		
+
 		// wing animation
 		if (upWingMovement)
 		{

@@ -16,7 +16,6 @@ namespace game
 		SceneNode* body;		// Spider Body
 		SceneNode* leftLeg;		// Spider left leg
 		SceneNode* rightLeg;	// Spider right leg
-
 		bool isMoving;			// Check whether the spider is moving
 		bool legMovement;		// Check for leg movement
 		int timer;				// Timer for animations

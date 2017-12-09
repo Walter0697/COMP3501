@@ -12,8 +12,8 @@ namespace game
 		float speed;					//Speed of the character entity
 		int fireRate;					//FireRate timer for bullets of entity if it has any
 		int maxFireRate;				//Value to reset fireRate to
-		int health;						//Health of the character entity
-		int maxHealth;					//Value to set health to
+		float health;						//Health of the character entity
+		float maxHealth;					//Value to set health to
 
 		virtual void update() = 0;		//Overload and enforcement of update function
 

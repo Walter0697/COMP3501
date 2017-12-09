@@ -33,6 +33,7 @@ namespace game
 
 		std::vector<ParticleNode *> rockets_particles;					//Particles of the rockets 
 		std::vector<Rocket*> rockets;									//store the rockets
+		SceneNode* healthBar;											//GUI element for displaying the player's health
 		SceneNode* body;												//body sceneNode
 		SceneNode* wings;												//wings sceneNode
 		SceneNode* legs;												//legs sceneNode

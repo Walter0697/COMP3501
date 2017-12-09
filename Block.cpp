@@ -5,7 +5,7 @@ namespace game
 	/* Constructor */
 	Block::Block(SceneNode* obj)
 	{
-		dropped = true;
+		dropped = false;				// Dropped by a player
 		object = obj;					// SceneNode object
 		boundingRadius = 2.0;			// bounding radius
 		offset = 0.0;					// offset from center
