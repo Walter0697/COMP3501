@@ -1,16 +1,15 @@
-# COMP3501
+# Flying Undersized Controlled Killer
 #### Our project in COMP 3501
-### Project Name : Flying Undersized Controlled Killer
 
 #### Current progress :wrench: :
 - setting up architecture
-- setting up game objects :trollface:
+- setting up game objects 
 - setting up game world
 - setting up game mechanics
 - setting up AI
 - setting up sounds effects and visual effects
 - setting up additional features
-- debugging
+- debugging :trollface:
 
 #### Game object :penguin: :
 ###### Fly.cpp
