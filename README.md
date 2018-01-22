@@ -9,18 +9,7 @@
 - setting up AI
 - setting up sounds effects and visual effects
 - setting up additional features
-- debugging :trollface:
-
-#### Game object :penguin: :
-###### Fly.cpp
-- the main character of the game
-
-#### Hierarchical model  :bikini: :
-- will be implemented
-
-#### Dev_log  :notebook: :
-###### Week 1 (10/27):
-- nothing
+- debugging
 
 #### Assets :floppy_disk: :
 - https://free3d.com/3d-model/fly-7412.html 
