@@ -1,6 +1,8 @@
 # Flying Undersized Controlled Killer
 #### Our project in COMP 3501
 
+- ![](https://github.com/Walter0697/PersonalWebsite/blob/master/src/sprite/screenshot/fg001.png)
+
 #### Current progress :wrench: :
 - setting up architecture
 - setting up game objects 
